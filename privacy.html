@@ -41,35 +41,41 @@
   li { margin-bottom: 6px; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  .lang-switch {
-    display: inline-block; margin-bottom: 28px; font-size: 14px;
-    color: var(--muted);
-  }
-  .lang-switch a { margin-right: 12px; }
   .highlight {
     background: var(--card); border-radius: 12px; padding: 16px 18px;
     margin: 20px 0; font-size: 16px;
-  }
-  hr.section {
-    border: none; border-top: 1px solid var(--divider);
-    margin: 56px 0 48px;
   }
   footer {
     margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--divider);
     color: var(--muted); font-size: 13px;
   }
+  .lang-toggle {
+    display: inline-flex; gap: 0; margin-bottom: 28px;
+    border: 1px solid var(--divider); border-radius: 8px; overflow: hidden;
+    font-size: 14px;
+  }
+  .lang-toggle button {
+    background: transparent; border: none; color: var(--muted);
+    padding: 6px 16px; cursor: pointer; font-size: 14px;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .lang-toggle button.active {
+    background: var(--accent); color: #fff;
+  }
+  .lang-section { display: none; }
+  .lang-section.active { display: block; }
 </style>
 </head>
 <body>
 <main>
 
-  <nav class="lang-switch">
-    <a href="#zh">中文</a>
-    <a href="#en">English</a>
+  <nav class="lang-toggle">
+    <button class="active" onclick="switchLang('zh')">中文</button>
+    <button onclick="switchLang('en')">English</button>
   </nav>
 
   <!-- ======================= 中文 ======================= -->
-  <section id="zh">
+  <section class="lang-section active" data-lang="zh">
     <h1>Coast 隐私政策</h1>
     <p class="subtitle">生效日期：2026 年 8 月 26 日</p>
 
@@ -113,10 +119,8 @@
     <a href="mailto:eatpoc@gmail.com">eatpoc@gmail.com</a>。</p>
   </section>
 
-  <hr class="section">
-
   <!-- ======================= English ======================= -->
-  <section id="en" lang="en">
+  <section class="lang-section" data-lang="en" lang="en">
     <h1>Coast Privacy Policy</h1>
     <p class="subtitle">Effective date: August 26, 2026</p>
 
@@ -170,9 +174,20 @@
   </section>
 
   <footer>
-    Coast — a FIRE &amp; personal finance app · <a href="index.html">Support</a>
+    Coast · <a href="index.html">Support</a> · <a href="changelog.html">Changelog</a>
   </footer>
 
 </main>
+<script>
+function switchLang(lang) {
+  document.querySelectorAll('.lang-section').forEach(function(s) {
+    s.classList.toggle('active', s.dataset.lang === lang);
+  });
+  document.querySelectorAll('.lang-toggle button').forEach(function(b, i) {
+    b.classList.toggle('active', (lang === 'zh' ? 0 : 1) === i);
+  });
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
+}
+</script>
 </body>
 </html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coast Changelog</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1c1c1e;
+    --muted: #6e6e73;
+    --accent: #0a84ff;
+    --divider: #e5e5ea;
+    --card: #f5f5f7;
+    --tag-bg: #e8f4fd;
+    --tag-fg: #0a6dc2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1e;
+      --fg: #f5f5f7;
+      --muted: #98989d;
+      --accent: #409cff;
+      --divider: #3a3a3c;
+      --card: #2c2c2e;
+      --tag-bg: #1a3a52;
+      --tag-fg: #6cb8f0;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+                 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 15px; margin-bottom: 36px; }
+  h2 { font-size: 20px; font-weight: 600; margin: 36px 0 16px; letter-spacing: -0.01em; }
+  h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
+  p, li { font-size: 16px; color: var(--fg); margin-bottom: 8px; }
+  ul { padding-left: 22px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  footer {
+    margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--divider);
+    color: var(--muted); font-size: 13px;
+  }
+  .lang-toggle {
+    display: inline-flex; gap: 0; margin-bottom: 28px;
+    border: 1px solid var(--divider); border-radius: 8px; overflow: hidden;
+    font-size: 14px;
+  }
+  .lang-toggle button {
+    background: transparent; border: none; color: var(--muted);
+    padding: 6px 16px; cursor: pointer; font-size: 14px;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .lang-toggle button.active {
+    background: var(--accent); color: #fff;
+  }
+  .lang-section { display: none; }
+  .lang-section.active { display: block; }
+  .version-tag {
+    display: inline-block; background: var(--tag-bg); color: var(--tag-fg);
+    font-size: 13px; font-weight: 600; padding: 2px 10px;
+    border-radius: 6px; margin-right: 8px; vertical-align: middle;
+  }
+  .version-date {
+    color: var(--muted); font-size: 14px; vertical-align: middle;
+  }
+  .feature-card {
+    background: var(--card); border-radius: 12px; padding: 16px 18px;
+    margin: 12px 0;
+  }
+  .feature-card h3 { margin: 0 0 6px; font-size: 16px; }
+  .feature-card p { margin: 0; font-size: 15px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+
+  <nav class="lang-toggle">
+    <button class="active" onclick="switchLang('zh')">中文</button>
+    <button onclick="switchLang('en')">English</button>
+  </nav>
+
+  <!-- ======================= 中文 ======================= -->
+  <section class="lang-section active" data-lang="zh">
+    <h1>Coast 更新日志</h1>
+    <p class="subtitle">每一次更新，都离自由更近一步。</p>
+
+    <h2><span class="version-tag">1.0</span><span class="version-date">2026 年 8 月</span></h2>
+    <p>首个正式版本。Coast 是一款以 FIRE（财务自由）进度为核心的记账 App——记账只是输入手段，真正回答的问题是「我离财务自由还有多远」。</p>
+
+    <h3>记账</h3>
+    <div class="feature-card">
+      <h3>快速记账</h3>
+      <p>从任意页面一键唤起，金额 → 分类 → 完成，三步搞定。支持分期、手续费、AA 分摊、借入借出。</p>
+    </div>
+    <div class="feature-card">
+      <h3>周期账单</h3>
+      <p>自动发现重复消费模式，一次设置、每月自动入账。再也不用手动记房租、订阅费。</p>
+    </div>
+    <div class="feature-card">
+      <h3>CSV 导入</h3>
+      <p>支持从支付宝、微信等导出的 CSV 一键导入，自动匹配分类、去重、识别转账。历史账单冷启动不再是问题。</p>
+    </div>
+    <div class="feature-card">
+      <h3>分期中心</h3>
+      <p>所有进行中的分期一目了然：已还多少、还剩多少、每期金额与手续费。</p>
+    </div>
+
+    <h3>数据</h3>
+    <div class="feature-card">
+      <h3>月度数据面板</h3>
+      <p>收支趋势、分类环形图、预算执行率、储蓄率——一屏看清这个月的财务全貌。</p>
+    </div>
+    <div class="feature-card">
+      <h3>预算</h3>
+      <p>按分类设预算，实时追踪剩余额度。超支时在账单页直接标红提醒。</p>
+    </div>
+    <div class="feature-card">
+      <h3>日历视图</h3>
+      <p>日历上每一天标记有无账单，点击查看当日明细，月度节奏一目了然。</p>
+    </div>
+
+    <h3>资产</h3>
+    <div class="feature-card">
+      <h3>资产快照</h3>
+      <p>每月记录各账户余额，自动生成净资产曲线。支持多币种、自动汇率折算。</p>
+    </div>
+    <div class="feature-card">
+      <h3>资产类型</h3>
+      <p>现金及等价物、投资（股票、基金、理财）、负债（信用卡、贷款），按类别汇总。</p>
+    </div>
+
+    <h3>FIRE 进度</h3>
+    <div class="feature-card">
+      <h3>FI 仪表盘</h3>
+      <p>实时计算 Lean FI、标准 FI 数字与进度百分比，追踪 Coast FIRE、Barista FIRE 状态。</p>
+    </div>
+    <div class="feature-card">
+      <h3>储蓄率追踪</h3>
+      <p>当月储蓄率 + 12 月移动平均，FIRE 践行者最关心的第一指标。</p>
+    </div>
+    <div class="feature-card">
+      <h3>被动收入覆盖率</h3>
+      <p>被动收入占必要支出的比例——100% 就是你不用上班的那一天。</p>
+    </div>
+
+    <h3>更多</h3>
+    <ul>
+      <li><strong>iCloud 同步</strong>——多设备无缝切换，数据只存你自己的 iCloud 私有库</li>
+      <li><strong>备份与恢复</strong>——本地 JSON 备份，随时导出、导入</li>
+      <li><strong>深色模式</strong>——跟随系统或手动切换</li>
+      <li><strong>多主题</strong>——多套配色可选</li>
+      <li><strong>中英双语</strong>——应用内随时切换</li>
+      <li><strong>分类管理</strong>——自定义分类、图标、排序，支持二级分类</li>
+      <li><strong>常买小票</strong>——高频消费一键复用</li>
+      <li><strong>隐私优先</strong>——无账号、无服务器、无追踪，你的数据只属于你</li>
+    </ul>
+  </section>
+
+  <!-- ======================= English ======================= -->
+  <section class="lang-section" data-lang="en" lang="en">
+    <h1>Coast Changelog</h1>
+    <p class="subtitle">Every update, one step closer to freedom.</p>
+
+    <h2><span class="version-tag">1.0</span><span class="version-date">August 2026</span></h2>
+    <p>The first release. Coast is a personal finance app built around FIRE (Financial Independence, Retire Early) — tracking spending is just the input; the real question it answers is "how far am I from financial freedom?"</p>
+
+    <h3>Transactions</h3>
+    <div class="feature-card">
+      <h3>Quick Add</h3>
+      <p>One-tap entry from any screen. Amount, category, done — three steps. Supports installments, fees, split bills, and IOUs.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Recurring Transactions</h3>
+      <p>Automatically detects spending patterns. Set it once, and rent, subscriptions, and bills are logged each month.</p>
+    </div>
+    <div class="feature-card">
+      <h3>CSV Import</h3>
+      <p>Import from Alipay, WeChat Pay, and other CSV exports. Auto-categorizes, deduplicates, and detects transfers. Cold-start your history in minutes.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Installment Center</h3>
+      <p>All active installments at a glance: how much paid, how much left, per-period amount and fees.</p>
+    </div>
+
+    <h3>Insights</h3>
+    <div class="feature-card">
+      <h3>Monthly Dashboard</h3>
+      <p>Income and expense trends, category donut chart, budget progress, savings rate — your full financial picture on one screen.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Budgets</h3>
+      <p>Set budgets by category, track remaining balance in real time. Over-budget items are flagged directly on the transaction list.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Calendar View</h3>
+      <p>Each day on the calendar is marked with transactions. Tap to see the daily breakdown and find your spending rhythm.</p>
+    </div>
+
+    <h3>Assets</h3>
+    <div class="feature-card">
+      <h3>Asset Snapshots</h3>
+      <p>Record account balances each month to build a net worth curve over time. Multi-currency with automatic exchange rate conversion.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Asset Types</h3>
+      <p>Cash and equivalents, investments (stocks, funds, savings), liabilities (credit cards, loans) — aggregated by type.</p>
+    </div>
+
+    <h3>FIRE Progress</h3>
+    <div class="feature-card">
+      <h3>FI Dashboard</h3>
+      <p>Real-time Lean FI and Standard FI numbers with progress percentage. Tracks your Coast FIRE and Barista FIRE status.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Savings Rate</h3>
+      <p>Current month savings rate plus 12-month moving average — the single most important metric for FIRE practitioners.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Passive Income Coverage</h3>
+      <p>The ratio of passive income to essential expenses — when it hits 100%, that's the day you no longer need a paycheck.</p>
+    </div>
+
+    <h3>And More</h3>
+    <ul>
+      <li><strong>iCloud Sync</strong> — seamless multi-device, stored only in your personal iCloud private database</li>
+      <li><strong>Backup &amp; Restore</strong> — local JSON backups, export and import anytime</li>
+      <li><strong>Dark Mode</strong> — follows system setting or manual toggle</li>
+      <li><strong>Themes</strong> — multiple color schemes to choose from</li>
+      <li><strong>Bilingual</strong> — switch between Chinese and English in-app</li>
+      <li><strong>Category Management</strong> — custom categories, icons, sorting, with subcategories</li>
+      <li><strong>Frequent Purchases</strong> — one-tap reuse for recurring buys</li>
+      <li><strong>Privacy First</strong> — no accounts, no servers, no tracking. Your data belongs to you</li>
+    </ul>
+  </section>
+
+  <footer>
+    Coast · <a href="index.html">Support</a> · <a href="privacy.html">Privacy</a>
+  </footer>
+
+</main>
+<script>
+function switchLang(lang) {
+  document.querySelectorAll('.lang-section').forEach(function(s) {
+    s.classList.toggle('active', s.dataset.lang === lang);
+  });
+  document.querySelectorAll('.lang-toggle button').forEach(function(b, i) {
+    b.classList.toggle('active', (lang === 'zh' ? 0 : 1) === i);
+  });
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
+}
+</script>
+</body>
+</html>
