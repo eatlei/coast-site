@@ -2,8 +2,10 @@ import * as React from "react"
 import { Check, Cloud, CalendarDays, Smartphone, Upload } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import { Device, DownloadButton, Footer, Header } from "@/components/site/Shell"
+import { Sketch, type SketchId } from "@/components/site/Sketches"
 import { APP_STORE, MAIL, screen, useLang } from "@/lib/i18n"
 import { EASE, REDUCED, ScrollTrigger, SplitText, gsap, useGSAP } from "@/lib/gsap"
 
@@ -21,10 +23,57 @@ function Section({ id, className = "", children, innerRef }: { id?: string; clas
   return <section id={id} ref={innerRef} className={`rule px-6 py-20 md:px-10 md:py-28 ${className}`}>{children}</section>
 }
 
-/* ---------- Hero：横格纸 + 画出来的复利曲线 + 逐行揭示 ---------- */
+/* ---------- 财务模型：和 App 内 MetricsEngine.forecast 同一套逐月迭代 ---------- */
+const NET = 576000, EXP = 10063, INC = 26850, WR = 0.04, RULER = 300 // 25 年标尺
+function monthsToFI(n0: number, s: number, annual: number, fi: number): number | null {
+  if (n0 >= fi) return 0
+  const m = annual / 12
+  if (!(s > 0 || (n0 > 0 && m > 0))) return null
+  let n = n0
+  for (let t = 0; t < 1200; t++) { n = n * (1 + m) + s; if (n >= fi) return t + 1 }
+  return null
+}
+function plan(cut: number, raise: number, extraMonthly = 0) {
+  const exp = EXP * (1 - cut) + extraMonthly, inc = INC * (1 + raise), fi = (exp * 12) / WR, s = inc - exp
+  return { exp, inc, fi, s, mid: monthsToFI(NET, s, 0.05, fi), opt: monthsToFI(NET, s, 0.07, fi), pes: monthsToFI(NET, s, 0.03, fi) }
+}
+const BASELINE = plan(0, 0)
+const fmt = (n: number) => "¥" + Math.round(n).toLocaleString("en-US")
+const fiYear = (m: number | null) => { const now = new Date(); return now.getFullYear() + Math.floor((now.getMonth() + (m ?? 0)) / 12) }
+
+/** 净资产轨迹，固定 N 个采样点（点数固定才能用 GSAP 把两条 path 的 d 平滑过渡） */
+function trajectory(p: ReturnType<typeof plan>, N = 60) {
+  const months = p.mid ?? RULER, m = 0.05 / 12
+  const series = [NET]; let n = NET
+  for (let t = 0; t < months; t++) { n = n * (1 + m) + p.s; series.push(n) }
+  const pts: [number, number][] = []
+  for (let i = 0; i <= N; i++) {
+    const idx = Math.min(series.length - 1, Math.round((i / N) * months))
+    pts.push([(i / N) * months, Math.max(0, Math.min(1, (series[idx] - NET) / (p.fi - NET)))])
+  }
+  return pts
+}
+/** x 轴：normalized 时终点铺满宽度（首屏装饰）；absolute 时按 25 年标尺（试算器，能看到终点左右移动） */
+function pathD(pts: [number, number][], box: { x0: number; w: number; yTop: number; yBot: number }, axis: "normalized" | "absolute") {
+  const last = pts[pts.length - 1][0] || 1
+  return pts.map(([t, y], i) => {
+    const x = box.x0 + box.w * (axis === "normalized" ? t / last : Math.min(1, t / RULER))
+    return `${i ? "L" : "M"}${x.toFixed(1)} ${(box.yBot - (box.yBot - box.yTop) * y).toFixed(1)}`
+  }).join(" ")
+}
+
+/* 滑杆值全页共享：首屏曲线和试算器画的是同一条线 */
+const SimContext = React.createContext<{ cut: number; raise: number; setCut: (v: number) => void; setRaise: (v: number) => void }>({ cut: 0, raise: 0, setCut: () => {}, setRaise: () => {} })
+
+/* ---------- Hero：复利曲线（真算的）+ 逐行揭示 ---------- */
+const HERO_BOX = { x0: 0, w: 1150, yTop: 120, yBot: 975 }
 function Hero() {
   const { t, lang } = useLang()
+  const { cut, raise } = React.useContext(SimContext)
   const root = React.useRef<HTMLDivElement>(null)
+  const pathRef = React.useRef<SVGPathElement>(null)
+  const p = plan(cut / 100, raise / 100)
+  const d = pathD(trajectory(p), HERO_BOX, "normalized")
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduced: REDUCED }, (ctx) => {
@@ -38,22 +87,31 @@ function Hero() {
         .from(".hero-phone", { y: 48, opacity: 0, duration: 1.2 }, "-=1")
         .fromTo(".hero-curve", { drawSVG: "0%" }, { drawSVG: "100%", duration: 1.8, ease: "power2.inOut" }, "curve")
         .from(".hero-dot", { scale: 0, duration: 0.45, ease: "back.out(2.5)" }, "curve+=1.75")
+        .from(".hero-year", { opacity: 0, x: -6, duration: 0.5 }, "curve+=1.9")
       gsap.to(".hero-phone", { yPercent: -10, ease: "none", scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true } })
       return () => split.revert()
     })
   }, { scope: root, dependencies: [lang], revertOnUpdate: true })
+  // 滑杆变了：曲线平滑过渡到新形状。只在 d 真变了才 tween，且不能 overwrite:true——
+  // 那会把同一条 path 上的 DrawSVG 绘制动画一起杀掉（StrictMode 下 effect 跑两次就会触发）
+  React.useEffect(() => {
+    const el = pathRef.current
+    if (!el || el.getAttribute("d") === d) return
+    gsap.to(el, { attr: { d }, duration: 0.6, ease: "power2.out", overwrite: "auto" })
+  }, [d])
 
   return (
     <section ref={root} className="relative overflow-hidden px-6 pb-20 pt-32 md:px-10 md:pb-28 md:pt-40">
-      {/* 曲线按容器拉伸（preserveAspectRatio none），圆点不能画在 SVG 里（会被拉成椭圆），
-          所以用同一套坐标换算成百分比定位：SVG 占底部 70%，终点 (1150, 60) → left 95.8%，top 30% + 70% × 10% */}
-      <svg className="pointer-events-none absolute inset-x-0 bottom-0 h-[70%] w-full" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
-        <path className="hero-curve" d="M0 585 C 320 575, 640 540, 860 420 S 1090 150, 1150 60" fill="none" stroke="var(--primary)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" opacity=".55" />
+      {/* 曲线按容器拉伸，圆点不能画在 SVG 里（会被拉成椭圆），用同一套坐标换算成百分比定位：
+          SVG 铺满整段，终点 (1150, 120) → left 95.8%，top 12%。终点放得高，是为了在 1280 宽时也露在手机上方 */}
+      <svg className="pointer-events-none absolute inset-0 hidden h-full w-full md:block" viewBox="0 0 1200 1000" preserveAspectRatio="none" aria-hidden="true">
+        <path ref={pathRef} className="hero-curve" d={d} fill="none" stroke="var(--primary)" strokeWidth="1.25" vectorEffect="non-scaling-stroke" opacity=".38" />
       </svg>
-      <span className="hero-dot pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" style={{ left: "95.83%", top: "37%" }} aria-hidden="true" />
+      <span className="hero-dot pointer-events-none absolute hidden size-2.5 md:block -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" style={{ left: "95.83%", top: "12%" }} aria-hidden="true" />
+      <span className="hero-year tag pointer-events-none absolute hidden -translate-y-1/2 md:block font-mono text-primary" style={{ left: "calc(95.83% - 12px)", top: "calc(12% + 18px)", transform: "translateX(-100%)" }} aria-hidden="true">{fiYear(p.mid)}</span>
       <div className="relative mx-auto grid w-full max-w-[1200px] items-end gap-12 md:grid-cols-[minmax(0,1fr)_320px] md:gap-20">
         <div>
-                    <h1 key={lang} className="hero-h1 max-w-[720px] text-[34px] font-semibold leading-[1.12] sm:text-[44px] md:text-[60px]">
+          <h1 key={lang} className="hero-h1 max-w-[720px] text-[34px] font-semibold leading-[1.12] sm:text-[44px] md:text-[60px]">
             {lang === "zh" ? <>所有记账都在讲过去，<br />只有它在讲<span className="text-primary">未来</span>。</>
               : <>Every money app talks about the past.<br />This one talks about <span className="text-primary">when you can stop</span>.</>}
           </h1>
@@ -126,40 +184,52 @@ function Features() {
   )
 }
 
-/* ---------- 试算器：和 MetricsEngine.forecast 同一套逐月迭代 ---------- */
-const NET = 576000, EXP = 10063, INC = 26850, WR = 0.04
-function monthsToFI(n0: number, s: number, annual: number, fi: number): number | null {
-  if (n0 >= fi) return 0
-  const m = annual / 12
-  if (!(s > 0 || (n0 > 0 && m > 0))) return null
-  let n = n0
-  for (let t = 0; t < 1200; t++) { n = n * (1 + m) + s; if (n >= fi) return t + 1 }
-  return null
+/* ---------- 试算器：曲线 + 两条滑杆 + 一杯咖啡 ---------- */
+const CHART_BOX = { x0: 0, w: 600, yTop: 14, yBot: 140 }
+function SimChart({ p }: { p: ReturnType<typeof plan> }) {
+  const { t } = useLang()
+  const ref = React.useRef<SVGPathElement>(null)
+  const dotRef = React.useRef<SVGGElement>(null)
+  const dCur = pathD(trajectory(p), CHART_BOX, "absolute")
+  const dBase = React.useMemo(() => pathD(trajectory(BASELINE), CHART_BOX, "absolute"), [])
+  const endX = CHART_BOX.w * Math.min(1, (p.mid ?? RULER) / RULER)
+  React.useEffect(() => {
+    if (!ref.current || !dotRef.current || ref.current.getAttribute("d") === dCur) return
+    gsap.to(ref.current, { attr: { d: dCur }, duration: 0.5, ease: "power2.out", overwrite: "auto" })
+    gsap.to(dotRef.current, { x: endX, duration: 0.5, ease: "power2.out", overwrite: "auto" })
+  }, [dCur, endX])
+  return (
+    <svg className="sim-chart" viewBox="0 0 600 170" preserveAspectRatio="none" aria-hidden="true">
+      <line className="axis" x1="0" y1="140" x2="600" y2="140" strokeWidth="1" />
+      {[0, 5, 10, 15, 20, 25].map((y) => <text key={y} x={(y / 25) * 600} y="160" textAnchor={y === 0 ? "start" : y === 25 ? "end" : "middle"}>{y}{t("年", "y")}</text>)}
+      <path className="base" d={dBase} fill="none" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+      <path ref={ref} className="cur" d={dCur} fill="none" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+      <g ref={dotRef} transform={`translate(${endX} 0)`}><circle cx="0" cy={CHART_BOX.yTop} r="4" fill="var(--primary)" /></g>
+    </svg>
+  )
 }
-function plan(cut: number, raise: number) {
-  const exp = EXP * (1 - cut), inc = INC * (1 + raise), fi = (exp * 12) / WR, s = inc - exp
-  return { exp, inc, s, mid: monthsToFI(NET, s, 0.05, fi), opt: monthsToFI(NET, s, 0.07, fi), pes: monthsToFI(NET, s, 0.03, fi) }
-}
-const BASELINE = plan(0, 0)
-const fmt = (n: number) => "¥" + Math.round(n).toLocaleString("en-US")
+
 function Simulator() {
   const { t, lang } = useLang()
-  const [cut, setCut] = React.useState(0)
-  const [raise, setRaise] = React.useState(0)
+  const { cut, raise, setCut, setRaise } = React.useContext(SimContext)
   const p = plan(cut / 100, raise / 100)
   const [shown, setShown] = React.useState(p.mid ?? 0)
   const shownRef = React.useRef(shown)
-  shownRef.current = shown
+  React.useEffect(() => { shownRef.current = shown }, [shown])
   React.useEffect(() => {
     const o = { v: shownRef.current }
     const tween = gsap.to(o, { v: p.mid ?? 0, duration: 0.45, ease: "power2.out", onUpdate: () => setShown(Math.round(o.v)) })
     return () => { tween.kill() }
   }, [p.mid])
   const d = p.mid === null ? null : BASELINE.mid! - p.mid
-  const now = new Date()
-  const year = (m: number | null) => now.getFullYear() + Math.floor((now.getMonth() + (m ?? 0)) / 12)
   const pct = (v: number) => <span className="tag ml-2">{v > 0 ? "+" : v < 0 ? "−" : ""}{Math.abs(v)}%</span>
   const unit = (zh: string, en: string) => <span className="mx-1.5 font-sans text-base font-normal text-muted-foreground md:text-lg">{t(zh, en)}</span>
+
+  // 一杯咖啡：每天多花 X → 自由日推迟几天。基于当前滑杆状态算，不是基线
+  const [coffee, setCoffee] = React.useState(30)
+  const withCoffee = plan(cut / 100, raise / 100, coffee * 30.4)
+  const delayDays = p.mid !== null && withCoffee.mid !== null ? Math.round((withCoffee.mid - p.mid) * 30.4) : null
+
   return (
     <Section id="try">
       <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-20">
@@ -167,6 +237,20 @@ function Simulator() {
           <Tag>{t("试一试", "Try it")}</Tag>
           <H2>{t("少花多少，自由提前多久？", "Spend less, retire sooner. By how much?")}</H2>
           <Lead>{t("这就是 App 里那两条滑杆。减支双重生效：存得多，要攒的目标也变小；增收只增加储蓄。数字是演示账本的。", "The two sliders from the app. Cutting spending works twice: you save more and the target shrinks. Earning more only adds savings. Numbers are from the demo ledger.")}</Lead>
+          <div className="mt-10 max-w-[420px]">
+            <div className="tag">{t("顺便算一笔", "One more thing")}</div>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-[15px]">
+              <span>{t("每天一笔", "A daily")}</span>
+              <span className="relative"><span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-sm text-muted-foreground">¥</span>
+                <Input type="number" inputMode="decimal" min={0} max={999} value={coffee} onChange={(e) => setCoffee(Math.max(0, Math.min(999, Number(e.target.value) || 0)))} className="h-9 w-24 pl-6 font-mono" aria-label={t("每天多花", "Daily spend")} /></span>
+              <span>{t("的咖啡，", "coffee")}</span>
+            </div>
+            <div className="mt-3 text-[15px]">
+              {delayDays === null ? <span className="text-muted-foreground">{t("当前收支算不出自由日。", "No freedom date at this rate.")}</span>
+                : lang === "zh" ? <>自由日推迟 <b className="font-mono text-primary">{delayDays}</b> 天。</>
+                : <>pushes your freedom date back <b className="font-mono text-primary">{delayDays}</b> days.</>}
+            </div>
+          </div>
         </div>
         <div>
           <div className="tag">{t("距离标准 FI", "Time to standard FI")}</div>
@@ -180,8 +264,10 @@ function Simulator() {
               : lang === "zh" ? `${d > 0 ? "自由日提前" : "自由日推迟"} ${Math.floor(Math.abs(d) / 12)} 年 ${Math.abs(d) % 12} 个月`
               : `Freedom ${d > 0 ? "" : "delayed "}${Math.floor(Math.abs(d) / 12)}y ${Math.abs(d) % 12}m${d > 0 ? " sooner" : ""}`}
           </div>
-          {p.mid !== null && <div className="tag mt-1">{t(`预计 ${year(p.opt)}–${year(p.pes)} 年间达成 · 乐观 7% / 悲观 3%`, `Expected ${year(p.opt)}–${year(p.pes)} · 7% optimistic / 3% pessimistic`)}</div>}
-          <div className="mt-10 grid gap-8">
+          {p.mid !== null && <div className="tag mt-1">{t(`预计 ${fiYear(p.opt)}–${fiYear(p.pes)} 年间达成 · 乐观 7% / 悲观 3%`, `Expected ${fiYear(p.opt)}–${fiYear(p.pes)} · 7% optimistic / 3% pessimistic`)}</div>}
+          <div className="mt-6"><SimChart p={p} /></div>
+          <div className="mt-2 flex gap-4 text-xs text-muted-foreground"><span><span className="mr-1.5 inline-block h-px w-4 border-t border-dashed border-rule align-middle" />{t("现在的账", "As is")}</span><span><span className="mr-1.5 inline-block h-0.5 w-4 bg-primary align-middle" />{t("调整后", "Adjusted")}</span></div>
+          <div className="mt-8 grid gap-7">
             <div>
               <div className="mb-4 flex items-baseline justify-between text-sm"><span className="text-muted-foreground">{t("每月花费", "Monthly spending")}</span><b className="num font-medium">{fmt(p.exp)}{pct(-cut)}</b></div>
               <Slider min={-30} max={30} step={1} value={cut} onValueChange={(v) => setCut(Array.isArray(v) ? v[0] : v)} aria-label="expense" />
@@ -201,7 +287,7 @@ function Simulator() {
   )
 }
 
-/* ---------- 分类 = FI 角色 ---------- */
+/* ---------- 分类：把三笔钱归类 ---------- */
 type Cat = { id: string; e: string; zh: string; en: string; income?: boolean; f: string[]; role: [string, string]; d: [string, string] }
 const CATS: Cat[] = [
   { id: "fixed", e: "🏠", zh: "固定支出", en: "Fixed", f: ["lean", "std", "cover"], role: ["Lean FI 基数", "Lean FI base"], d: ["房租、保险、订阅。不花不行的那部分，决定你「最低能活」的自由线。", "Rent, insurance, subscriptions. The part you can't skip; it sets your bare-bones freedom line."] },
@@ -211,6 +297,11 @@ const CATS: Cat[] = [
   { id: "salary", e: "💼", zh: "固定收入", en: "Salary", income: true, f: ["rate"], role: ["储蓄率分母", "Savings-rate denominator"], d: ["工资。储蓄率 = 1 − 支出 ÷ 收入，这是倒计时的引擎。", "Wages. Savings rate = 1 − spend ÷ income. The engine of the countdown."] },
   { id: "passive", e: "🌱", zh: "被动收入", en: "Passive", income: true, f: ["cover", "rate"], role: ["覆盖率分子", "Coverage numerator"], d: ["利息、分红、租金。覆盖率到 100%，就是 Lean FIRE 达成。", "Interest, dividends, rent. At 100% coverage, that's Lean FIRE."] },
   { id: "otherIncome", e: "🧧", zh: "其他收入", en: "Other income", income: true, f: ["out"], role: ["默认剔除", "Excluded by default"], d: ["红包、二手、偶然所得。不稳定的钱不该撑起自由日。", "Gifts, resale, windfalls. Unreliable money shouldn't hold up your freedom date."] },
+]
+const QUIZ = [
+  { e: "🏠", zh: "房租", en: "Rent", amt: "¥4,500", ans: "fixed", hintZh: "每个月都得交，金额不变。", hintEn: "Due every month, same amount." },
+  { e: "🍲", zh: "周末火锅", en: "Weekend hotpot", amt: "¥260", ans: "flexible", hintZh: "不吃也行，这是最容易省下来的那类。", hintEn: "Optional, and the easiest kind to cut." },
+  { e: "📈", zh: "基金分红", en: "Fund dividend", amt: "¥1,200", ans: "passive", hintZh: "钱自己生的钱。", hintEn: "Money your money made." },
 ]
 function Tok({ id, active }: { id: string; active: string }) {
   const { lang } = useLang()
@@ -222,27 +313,61 @@ function Line({ k, dim, children }: { k: string; dim: boolean; children: React.R
 }
 function Categories() {
   const { t, lang } = useLang()
-  const [active, setActive] = React.useState("fixed")
-  const c = CATS.find((x) => x.id === active)!
-  const dim = (id: string) => !c.f.includes(id)
+  const [step, setStep] = React.useState(0)                // 0..2 三道题，3 = 完成
+  const [picked, setPicked] = React.useState<string | null>(null)
+  const [wrong, setWrong] = React.useState<string | null>(null)
+  const q = QUIZ[Math.min(step, QUIZ.length - 1)]
+  const done = step >= QUIZ.length
+  const active = picked ?? (done ? "fixed" : "")
+  const c = CATS.find((x) => x.id === active)
+  const dim = (id: string) => !c || !c.f.includes(id)
+  const choose = (id: string) => {
+    if (done || picked) return
+    if (id === q.ans) { setPicked(id); setWrong(null) }
+    else { setWrong(id); setTimeout(() => setWrong(null), 400) }
+  }
+  const next = () => { setPicked(null); setWrong(null); setStep((s) => s + 1) }
+  const restart = () => { setPicked(null); setWrong(null); setStep(0) }
   return (
     <Section>
       <div className="mx-auto w-full max-w-[1200px]">
         <Tag>{t("分类体系", "Categories")}</Tag>
         <H2>{t("分类不是为了统计好看，是为了算自由。", "Categories aren't for pretty charts. They're for the math.")}</H2>
-        <Lead>{t("七个一级分类，每一类在 FIRE 公式里有一个位置。点一个看看它算什么。", "Seven top-level categories, each with a seat in the FIRE formula. Tap one to see where it goes.")}</Lead>
-        <div className="mt-9 flex flex-wrap gap-2">
-          {CATS.map((x) => (
-            <button key={x.id} type="button" className="stamp" data-on={x.id === active} onClick={() => setActive(x.id)}>
-              <span className="text-base leading-none">{x.e}</span>{lang === "zh" ? x.zh : x.en}
-            </button>
-          ))}
-        </div>
+        <Lead>{t("七个一级分类，每一类在 FIRE 公式里有一个位置。来，给这三笔钱归个类。", "Seven top-level categories, each with a seat in the FIRE formula. Try filing these three.")}</Lead>
         <div className="mt-10 grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-20">
           <div>
-            <div className="tag">{lang === "zh" ? c.role[0] : c.role[1]}</div>
-            <h3 className="mt-3 text-[26px]">{c.e} {lang === "zh" ? c.zh : c.en}</h3>
-            <p className="mt-3 max-w-[440px] leading-relaxed text-muted-foreground">{lang === "zh" ? c.d[0] : c.d[1]}</p>
+            {!done ? (
+              <>
+                <div className="tag">{t(`第 ${step + 1} 笔 / 共 3 笔`, `Entry ${step + 1} of 3`)}</div>
+                <div key={step} className="quiz-card mt-3 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3"><span className="text-3xl">{q.e}</span><span className="text-[22px] font-semibold">{lang === "zh" ? q.zh : q.en}</span></div>
+                  <span className="font-mono text-xl">{q.amt}</span>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {CATS.map((x) => (
+                    <button key={x.id} type="button" className="stamp" data-on={x.id === picked} data-right={x.id === picked} data-wrong={x.id === wrong} onClick={() => choose(x.id)} disabled={!!picked}>
+                      <span className="text-base leading-none">{x.e}</span>{lang === "zh" ? x.zh : x.en}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-6 min-h-[72px] text-[15px] leading-relaxed">
+                  {picked && c ? (
+                    <>
+                      <div className="text-success">{t("对。", "Right.")} <b>{lang === "zh" ? c.role[0] : c.role[1]}</b></div>
+                      <p className="mt-1 text-muted-foreground">{lang === "zh" ? c.d[0] : c.d[1]}</p>
+                      <Button size="sm" className="mt-4" onClick={next}>{step < QUIZ.length - 1 ? t("下一笔", "Next") : t("看结论", "See why")}</Button>
+                    </>
+                  ) : wrong ? <span className="text-destructive">{t("不是这类。", "Not that one.")} <span className="text-muted-foreground">{lang === "zh" ? q.hintZh : q.hintEn}</span></span>
+                  : <span className="text-muted-foreground">{t("点一个分类。", "Pick a category.")}</span>}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="tag">{t("三笔都对", "All three filed")}</div>
+                <p className="mt-3 text-[17px] leading-relaxed">{t("房租进 Lean FI 的分母，火锅只进标准 FI，分红进覆盖率的分子。分类不是给饼图用的，是在告诉公式：哪些钱决定你最低能活，哪些钱决定你现在这样活，哪些钱在替你上班。", "Rent goes into Lean FI, hotpot only into Standard FI, the dividend into coverage. Categories aren't for a pie chart. They tell the formula which money keeps you alive, which keeps you living like this, and which is already working for you.")}</p>
+                <Button variant="outline" size="sm" className="mt-5" onClick={restart}>{t("再来一遍", "Play again")}</Button>
+              </>
+            )}
           </div>
           <div>
             <Line k="Lean FI" dim={dim("lean")}>= 25 × (<Tok id="fixed" active={active} />+<Tok id="essential" active={active} />)</Line>
@@ -257,20 +382,20 @@ function Categories() {
   )
 }
 
-/* ---------- 更多亮点：三栏索引，不用卡片 ---------- */
-const MORE = [
-  { zh: ["截图记账", "账单截图丢进来，金额商家在手机上识别，不发网。"], en: ["Receipt scan", "Drop in a screenshot; amount and merchant are read on device."] },
-  { zh: ["分次退款", "1000 先退 500 到信用卡，再退 200 到储蓄卡，都记得住。"], en: ["Partial refunds", "¥500 back to the card, ¥200 to savings, later. It keeps track."] },
-  { zh: ["余额校准", "核对一次真实余额，之后流水自动往上叠。"], en: ["Reconcile once", "Check your real balance once; entries stack on top."] },
-  { zh: ["周期账单识别", "同名、金额 ±15%、出现 3 次以上，才叫周期。"], en: ["Recurring detection", "Same name, ±15% amount, seen 3+ times. Then it counts."] },
-  { zh: ["分类规则学习", "改一次分类，问你要不要记住，之后自动归类。"], en: ["Rules that learn", "Change a category once, it offers to remember."] },
-  { pro: true, zh: ["月度回顾", "输出结论不是数字堆，按重要性把数字翻译成人话。"], en: ["Month in review", "Conclusions, not a pile of numbers, ranked by what matters."] },
-  { pro: true, zh: ["复购洞察", "哪家店去了多少次、花了多少，一年下来是什么数。"], en: ["Repeat-buy insights", "Which places you keep going back to, and what a year of that costs."] },
-  { pro: true, zh: ["场景模拟", "换城市、涨薪、买房，几条路存下来并排比。"], en: ["Scenarios", "Move cities, get a raise, buy a home. Save paths, compare."] },
-  { zh: ["桌面小组件", "本月还能花、净资产、自由倒计时，不用打开 App。"], en: ["Widgets", "Left to spend, net worth, countdown. No app needed."] },
-  { pro: true, zh: ["多币种", "每日汇率自动拉，账户账单报销全程折算。"], en: ["Multi-currency", "Daily rates; accounts, entries and reimbursements all convert."] },
-  { pro: true, zh: ["主题与图标", "6 套主题、20 多个 App 图标，分类图标四种来源一键换套。"], en: ["Themes & icons", "6 themes, 20+ app icons, category icons from four sources."] },
-  { zh: ["隐私模式", "一个眼睛开关，全 App 金额一键打码。"], en: ["Privacy mode", "One toggle blurs every amount in the app."] },
+/* ---------- 更多亮点：三栏索引 + 小动画 ---------- */
+const MORE: { id: SketchId; pro?: boolean; zh: [string, string]; en: [string, string] }[] = [
+  { id: "scan", zh: ["截图记账", "账单截图丢进来，金额商家在手机上识别，不发网。"], en: ["Receipt scan", "Drop in a screenshot; amount and merchant are read on device."] },
+  { id: "refund", zh: ["分次退款", "1000 先退 500 到信用卡，再退 200 到储蓄卡，都记得住。"], en: ["Partial refunds", "¥500 back to the card, ¥200 to savings, later. It keeps track."] },
+  { id: "reconcile", zh: ["余额校准", "核对一次真实余额，之后流水自动往上叠。"], en: ["Reconcile once", "Check your real balance once; entries stack on top."] },
+  { id: "recurring", zh: ["周期账单识别", "同名、金额 ±15%、出现 3 次以上，才叫周期。"], en: ["Recurring detection", "Same name, ±15% amount, seen 3+ times. Then it counts."] },
+  { id: "rules", zh: ["分类规则学习", "改一次分类，问你要不要记住，之后自动归类。"], en: ["Rules that learn", "Change a category once, it offers to remember."] },
+  { id: "review", pro: true, zh: ["月度回顾", "输出结论不是数字堆，按重要性把数字翻译成人话。"], en: ["Month in review", "Conclusions, not a pile of numbers, ranked by what matters."] },
+  { id: "repeat", pro: true, zh: ["复购洞察", "哪家店去了多少次、花了多少，一年下来是什么数。"], en: ["Repeat-buy insights", "Which places you keep going back to, and what a year of that costs."] },
+  { id: "scenarios", pro: true, zh: ["场景模拟", "换城市、涨薪、买房，几条路存下来并排比。"], en: ["Scenarios", "Move cities, get a raise, buy a home. Save paths, compare."] },
+  { id: "widgets", zh: ["桌面小组件", "本月还能花、净资产、自由倒计时，不用打开 App。"], en: ["Widgets", "Left to spend, net worth, countdown. No app needed."] },
+  { id: "currency", pro: true, zh: ["多币种", "每日汇率自动拉，账户账单报销全程折算。"], en: ["Multi-currency", "Daily rates; accounts, entries and reimbursements all convert."] },
+  { id: "themes", pro: true, zh: ["主题与图标", "6 套主题、20 多个 App 图标，分类图标四种来源一键换套。"], en: ["Themes & icons", "6 themes, 20+ app icons, category icons from four sources."] },
+  { id: "privacy", zh: ["隐私模式", "一个眼睛开关，全 App 金额一键打码。"], en: ["Privacy mode", "One toggle blurs every amount in the app."] },
 ]
 function More() {
   const { t, lang } = useLang()
@@ -279,16 +404,17 @@ function More() {
       <div className="mx-auto w-full max-w-[1200px]">
         <Tag>{t("还有这些", "And then some")}</Tag>
         <H2>{t("为一年只用两次的场景，也认真做了。", "Built carefully, even for things you'll do twice a year.")}</H2>
-        <div className="mt-12 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-x-10 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
           {MORE.map((m) => {
             const [title, body] = lang === "zh" ? m.zh : m.en
             return (
-              <div key={title} data-reveal className="py-4">
+              <div key={m.id} data-reveal className="py-4">
                 <div className="flex items-baseline gap-2">
                   <h3 className="font-sans text-[16px] font-semibold tracking-normal">{title}</h3>
                   {m.pro && <span className="tag text-primary">Pro</span>}
                 </div>
                 <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">{body}</p>
+                <Sketch id={m.id} />
               </div>
             )
           })}
@@ -314,8 +440,7 @@ function Shots() {
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
-      // 距离按轨道自己的可见宽度算（它在 max-w 1200 的容器里），不能拿整个 section 的宽度：
-      // 宽屏上 section 比内容还宽，会算出 0，既不平移也不 pin，最右一台被裁掉
+      // 距离按轨道自己的可见宽度算（它在 max-w 1200 的容器里），不能拿整个 section 的宽度
       const dist = () => Math.max(0, track.current!.scrollWidth - track.current!.clientWidth)
       if (dist() <= 0) return
       gsap.to(track.current, {
@@ -332,7 +457,7 @@ function Shots() {
           {SHOTS.map(([img, zh, en]) => (
             <figure key={img} className="w-[220px] shrink-0">
               <Device src={screen(img, lang)} width={200} />
-              <figcaption className="tag mt-4 text-center normal-case tracking-normal">{lang === "zh" ? zh : en}</figcaption>
+              <figcaption className="tag mt-4 text-center">{lang === "zh" ? zh : en}</figcaption>
             </figure>
           ))}
         </div>
@@ -374,14 +499,26 @@ function Privacy() {
   )
 }
 
-/* ---------- 定价：一张收据 ---------- */
+/* ---------- 定价：一张会打印出来的收据 ---------- */
 const FREE = [["不限量记账，不按笔数收费", "Unlimited entries"], ["全部账户与账本工具", "Every account and ledger tool"], ["CSV / Excel 导入导出", "CSV / Excel import and export"], ["FI 进度与倒计时、总预算、小组件", "FI countdown, total budget, widgets"]]
 const PRO = [["达成区间", "Achievement range"], ["收支试算滑杆", "What-if sliders"], ["场景模拟器", "Scenario simulator"], ["Coast FIRE 与 Barista FIRE", "Coast & Barista FIRE"], ["高级 FI 参数", "Advanced FI parameters"], ["完整月报与复购洞察", "Full monthly report, repeat-buy"], ["分类预算与配速图", "Category budgets with pace"], ["多币种记账与每日汇率", "Multi-currency, daily rates"], ["配色主题与 App 图标", "Themes and app icons"]]
 function Pricing() {
   const { t, lang } = useLang()
   const pick = (p: string[]) => (lang === "zh" ? p[0] : p[1])
+  const root = React.useRef<HTMLElement>(null)
+  useGSAP(() => {
+    const mm = gsap.matchMedia()
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      // 收据从出纸口逐行打印出来，最后条形码闪一下
+      const rows = gsap.utils.toArray<HTMLElement>(".receipt > *")
+      const tl = gsap.timeline({ scrollTrigger: { trigger: ".receipt-slot", start: "top 80%", once: true } })
+      tl.from(".receipt", { y: -28, duration: 0.6, ease: "power2.out" })
+        .from(rows, { opacity: 0, y: -6, duration: 0.35, stagger: 0.07, ease: "none" }, 0.1)
+        .fromTo(".barcode", { opacity: 0.2 }, { opacity: 0.8, duration: 0.15, repeat: 3, yoyo: true }, "-=0.2")
+    })
+  }, { scope: root })
   return (
-    <Section id="pricing">
+    <Section id="pricing" innerRef={root}>
       <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,1fr)_400px] md:gap-24">
         <div>
           <Tag>{t("定价", "Pricing")}</Tag>
@@ -391,21 +528,21 @@ function Pricing() {
             {FREE.map((f) => <div key={f[0]} className="flex items-center gap-3 py-2 text-[15px]"><Check className="size-4 text-success" />{pick(f)}</div>)}
           </div>
         </div>
-        <div className="receipt font-mono text-[13px]">
-          <div className="row"><span className="tag">Coast Pro</span><span className="tag">{t("会员", "Membership")}</span></div>
-          <div className="mt-6 space-y-3">
-            <div className="row"><span>{t("包年", "Yearly")}</span><span className="text-[15px]">¥30 <span className="text-muted-foreground">/ {t("年", "yr")}</span></span></div>
-            <div className="text-[12px] text-muted-foreground">{t("前 7 天免费试用，可随时取消", "7-day free trial, cancel anytime")}</div>
-            <div className="row"><span>{t("永久", "Lifetime")}</span><span className="text-[15px]">¥60</span></div>
-            <div className="text-[12px] text-muted-foreground">{t("一次付费，不转订阅", "One-time, never a subscription")}</div>
+        <div className="receipt-slot">
+          <div className="receipt font-mono text-[13px]">
+            <div className="row"><span className="tag">Coast Pro</span><span className="tag">{t("会员", "Membership")}</span></div>
+            <div className="row mt-6"><span>{t("包年", "Yearly")}</span><span className="text-[15px]">¥30 <span className="text-muted-foreground">/ {t("年", "yr")}</span></span></div>
+            <div className="mt-2 text-[12px] text-muted-foreground">{t("前 7 天免费试用，可随时取消", "7-day free trial, cancel anytime")}</div>
+            <div className="row mt-3"><span>{t("永久", "Lifetime")}</span><span className="text-[15px]">¥60</span></div>
+            <div className="mt-2 text-[12px] text-muted-foreground">{t("一次付费，不转订阅", "One-time, never a subscription")}</div>
+            <div className="dash my-5" />
+            <div className="tag mb-3">{t("解锁", "Unlocks")}</div>
+            {PRO.map((f) => <div key={f[0]} className="row py-[3px]"><span>{pick(f)}</span><span className="text-muted-foreground">✓</span></div>)}
+            <div className="dash my-5" />
+            <div className="row text-[12px] text-muted-foreground"><span>{t("App 内购买 · Apple 处理支付", "In-app purchase · Apple handles payment")}</span></div>
+            <div className="barcode mt-5 h-8 w-full opacity-80" style={{ background: "repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 9px, currentColor 9px 12px, transparent 12px 14px)" }} aria-hidden="true" />
+            <Button className="mt-6 w-full" nativeButton={false} render={<a href={APP_STORE} rel="noopener" />}>{t("免费下载，在 App 内升级", "Download free, upgrade in app")}</Button>
           </div>
-          <div className="dash my-5" />
-          <div className="tag mb-3">{t("解锁", "Unlocks")}</div>
-          <ul className="space-y-1.5">{PRO.map((f) => <li key={f[0]} className="row"><span>{pick(f)}</span><span className="text-muted-foreground">✓</span></li>)}</ul>
-          <div className="dash my-5" />
-          <div className="row text-[12px] text-muted-foreground"><span>{t("App 内购买 · Apple 处理支付", "In-app purchase · Apple handles payment")}</span></div>
-          <div className="mt-5 h-8 w-full opacity-80" style={{ background: "repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 9px, currentColor 9px 12px, transparent 12px 14px)" }} aria-hidden="true" />
-          <Button className="mt-6 w-full" nativeButton={false} render={<a href={APP_STORE} rel="noopener" />}>{t("免费下载，在 App 内升级", "Download free, upgrade in app")}</Button>
         </div>
       </div>
     </Section>
@@ -444,9 +581,22 @@ function Faq() {
   )
 }
 
-/* ---------- 收尾：金句随滚动逐字浮现 ---------- */
+/* ---------- 收尾：真的倒计时 ---------- */
 function Closing() {
   const { t, lang } = useLang()
+  const { cut, raise } = React.useContext(SimContext)
+  const p = plan(cut / 100, raise / 100)
+  // 目标日 = 现在 + 剩余月数，按当前滑杆状态算；秒在跳
+  const [now, setNow] = React.useState(() => Date.now())
+  React.useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id) }, [])
+  const target = React.useMemo(() => { if (p.mid === null) return null; const d = new Date(); d.setMonth(d.getMonth() + p.mid); d.setHours(9, 0, 0, 0); return d.getTime() }, [p.mid])
+  let parts: { v: string; zh: string; en: string }[] = []
+  if (target) {
+    const diff = Math.max(0, target - now)
+    const days = Math.floor(diff / 86400000), y = Math.floor(days / 365), mo = Math.floor((days % 365) / 30.4), dd = Math.floor((days % 365) % 30.4)
+    const h = Math.floor((diff % 86400000) / 3600000), mi = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000)
+    parts = [{ v: String(y), zh: "年", en: "yrs" }, { v: String(mo), zh: "个月", en: "mos" }, { v: String(dd), zh: "天", en: "days" }, { v: `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:${String(s).padStart(2, "0")}`, zh: "", en: "" }]
+  }
   const root = React.useRef<HTMLElement>(null)
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -459,8 +609,13 @@ function Closing() {
   return (
     <section ref={root} className="rule px-6 py-28 md:px-10 md:py-40">
       <div className="mx-auto w-full max-w-[1200px]">
-        <div className="tag">{t("设计原则", "Principle")}</div>
-        <p key={lang} className="closing-q mt-6 max-w-[900px] font-heading text-[28px] leading-[1.3] md:text-[44px]">{t("一个 App 让你怎么分类，就是在告诉你它认为钱是什么。", "How an app asks you to categorize money is how it tells you what it thinks money is.")}</p>
+        <div className="tag">{t("按演示账本，距离自由日", "On the demo ledger, freedom is")}</div>
+        {target ? (
+          <div className="countdown mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[40px] leading-none md:text-[72px]">
+            {parts.map((x, i) => <span key={i}>{x.v}<span className="ml-1.5 font-sans text-base text-muted-foreground md:text-xl">{lang === "zh" ? x.zh : x.en}</span></span>)}
+          </div>
+        ) : <div className="mt-4 text-[28px] text-muted-foreground">{t("当前收支算不出自由日。", "No freedom date at this rate.")}</div>}
+        <p className="closing-q mt-14 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("一个 App 让你怎么分类，就是在告诉你它认为钱是什么。", "How an app asks you to categorize money is how it tells you what it thinks money is.")}</p>
         <div className="mt-10"><DownloadButton size="lg" full /></div>
       </div>
     </section>
@@ -469,6 +624,8 @@ function Closing() {
 
 export default function Home() {
   const root = React.useRef<HTMLElement>(null)
+  const [cut, setCut] = React.useState(0)
+  const [raise, setRaise] = React.useState(0)
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduced: REDUCED }, (ctx) => {
@@ -482,7 +639,7 @@ export default function Home() {
     return () => window.removeEventListener("load", onLoad)
   }, { scope: root })
   return (
-    <>
+    <SimContext.Provider value={{ cut, raise, setCut, setRaise }}>
       <Header />
       <main ref={root}>
         <Hero />
@@ -497,6 +654,6 @@ export default function Home() {
         <Closing />
         <Footer />
       </main>
-    </>
+    </SimContext.Provider>
   )
 }
