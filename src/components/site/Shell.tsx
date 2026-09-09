@@ -1,9 +1,10 @@
 import * as React from "react"
-import { Menu } from "lucide-react"
+import { Languages, Menu, Monitor, Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { getTheme, setTheme, type Theme } from "@/lib/theme"
 import { APP_STORE, BASE, MAIL, asset, useLang, type Lang } from "@/lib/i18n"
 
 const NAV = [
@@ -15,23 +16,47 @@ const NAV = [
   { href: `${BASE}changelog.html`, zh: "更新日志", en: "Changelog" },
 ]
 
-export function LangToggle() {
-  const { lang, setLang } = useLang()
+/** 右上角两个下拉：语言、亮暗模式。都是单选，选中项打勾 */
+export function LangMenu() {
+  const { lang, setLang, t } = useLang()
   return (
-    <ToggleGroup
-      value={[lang]}
-      onValueChange={(v) => { const next = (v as Lang[])[0]; if (next) setLang(next) }}
-      variant="outline"
-      size="sm"
-      aria-label="Language"
-    >
-      <ToggleGroupItem value="zh" className="px-3 text-xs font-semibold">中文</ToggleGroupItem>
-      <ToggleGroupItem value="en" className="px-3 text-xs font-semibold">EN</ToggleGroupItem>
-    </ToggleGroup>
+    <DropdownMenu>
+      <DropdownMenuTrigger nativeButton={false} render={<Button variant="outline" size="sm" className="gap-1.5 px-2.5 text-xs font-medium" aria-label={t("语言", "Language")} />}>
+        <Languages className="size-3.5" />{lang === "zh" ? "中文" : "EN"}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup value={lang} onValueChange={(v) => setLang(v as Lang)}>
+          <DropdownMenuRadioItem value="zh">中文</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
-/** Apple 标志。lucide 的 `Apple` 是苹果水果的轮廓，不是品牌标志 */
+const THEME_ICON = { auto: Monitor, light: Sun, dark: Moon } as const
+export function ThemeMenu() {
+  const { t } = useLang()
+  const [theme, setThemeState] = React.useState<Theme>(() => (typeof window === "undefined" ? "auto" : getTheme()))
+  const pick = (v: Theme) => { setTheme(v); setThemeState(v) }
+  const Icon = THEME_ICON[theme]
+  const label = { auto: t("自动", "Auto"), light: t("浅色", "Light"), dark: t("深色", "Dark") }
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger nativeButton={false} render={<Button variant="outline" size="sm" className="gap-1.5 px-2.5 text-xs font-medium" aria-label={t("外观", "Appearance")} />}>
+        <Icon className="size-3.5" />{label[theme]}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup value={theme} onValueChange={(v) => pick(v as Theme)}>
+          <DropdownMenuRadioItem value="auto"><Monitor className="size-4" />{label.auto}</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="light"><Sun className="size-4" />{label.light}</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="dark"><Moon className="size-4" />{label.dark}</DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 export function AppleLogo({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
@@ -67,7 +92,8 @@ export function Header() {
         <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
           {NAV.map((n) => <a key={n.href} href={n.href} className="hover:text-foreground">{t(n.zh, n.en)}</a>)}
         </nav>
-        <LangToggle />
+        <LangMenu />
+        <ThemeMenu />
         <DownloadButton size="sm" className="hidden sm:inline-flex" />
         <Sheet>
           <SheetTrigger render={<Button variant="outline" size="icon-sm" className="md:hidden" aria-label="Menu" />}>

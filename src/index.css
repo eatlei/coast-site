@@ -193,8 +193,6 @@
 /* 账本横线：整页的段落分隔只用一根 1px 的线，不用卡片阴影 */
 .rule { border-top: 1px solid var(--rule); }
 
-/* hero 背景：横格纸 + 一条会被画出来的复利曲线 */
-.ruled { background-image: repeating-linear-gradient(to bottom, transparent 0 39px, color-mix(in oklch, var(--rule) 55%, transparent) 39px 40px); }
 
 /* 收据样式：定价卡；上下边缘的锯齿用 mask 做，不用图片 */
 .receipt {
@@ -225,7 +223,7 @@
 .stamp[data-on="true"] { background: var(--foreground); color: var(--background); border-color: var(--foreground); }
 
 /* 公式行 */
-.formula { font-family: var(--font-heading); font-size: 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 0; border-top: 1px solid var(--rule); transition: opacity .25s; }
+.formula { font-family: var(--font-heading); font-size: 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 9px 0; transition: opacity .25s; }
 .formula .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); min-width: 88px; }
 .formula .t { padding: 1px 7px; border-radius: 2px; border: 1px solid var(--rule); transition: background .2s, color .2s, border-color .2s; }
 .formula .t[data-hot="true"] { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }

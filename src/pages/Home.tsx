@@ -43,7 +43,7 @@ function Hero() {
   }, { scope: root, dependencies: [lang], revertOnUpdate: true })
 
   return (
-    <section ref={root} className="ruled relative overflow-hidden px-6 pb-20 pt-32 md:px-10 md:pb-28 md:pt-40">
+    <section ref={root} className="relative overflow-hidden px-6 pb-20 pt-32 md:px-10 md:pb-28 md:pt-40">
       <svg className="pointer-events-none absolute inset-x-0 bottom-0 h-[70%] w-full" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
         <path className="hero-curve" d="M0 585 C 320 575, 640 540, 860 420 S 1120 130, 1200 40" fill="none" stroke="var(--primary)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" opacity=".55" />
       </svg>
@@ -101,7 +101,7 @@ function Features() {
             {FEATURES.map((f, i) => {
               const [title, body] = lang === "zh" ? f.zh : f.en
               return (
-                <li key={f.img} className="feature-row rule grid cursor-pointer grid-cols-[44px_1fr] gap-3 py-5" data-active={i === active} onClick={() => setActive(i)}>
+                <li key={f.img} className="feature-row grid cursor-pointer grid-cols-[44px_1fr] gap-3 py-4" data-active={i === active} onClick={() => setActive(i)}>
                   <span className="tag pt-1.5">{String(i + 1).padStart(2, "0")}</span>
                   <div>
                     <h3 className="font-sans text-[18px] font-semibold tracking-normal">{title}</h3>
@@ -166,7 +166,7 @@ function Simulator() {
           <H2>{t("少花多少，自由提前多久？", "Spend less, retire sooner. By how much?")}</H2>
           <Lead>{t("这就是 App 里那两条滑杆。减支双重生效：存得多，要攒的目标也变小；增收只增加储蓄。数字是演示账本的。", "The two sliders from the app. Cutting spending works twice: you save more and the target shrinks. Earning more only adds savings. Numbers are from the demo ledger.")}</Lead>
         </div>
-        <div className="rule pt-6 md:border-t-0 md:pt-0">
+        <div>
           <div className="tag">{t("距离标准 FI", "Time to standard FI")}</div>
           <div className="big-num mt-3 text-[56px] md:text-[72px]">
             {p.mid === null ? <span className="text-[28px]">{t("储蓄率为负", "Negative savings")}</span>
@@ -180,16 +180,16 @@ function Simulator() {
           </div>
           {p.mid !== null && <div className="tag mt-1">{t(`预计 ${year(p.opt)}–${year(p.pes)} 年间达成 · 乐观 7% / 悲观 3%`, `Expected ${year(p.opt)}–${year(p.pes)} · 7% optimistic / 3% pessimistic`)}</div>}
           <div className="mt-10 grid gap-8">
-            <div className="rule pt-5">
+            <div>
               <div className="mb-4 flex items-baseline justify-between text-sm"><span className="text-muted-foreground">{t("每月花费", "Monthly spending")}</span><b className="num font-medium">{fmt(p.exp)}{pct(-cut)}</b></div>
               <Slider min={-30} max={30} step={1} value={cut} onValueChange={(v) => setCut(Array.isArray(v) ? v[0] : v)} aria-label="expense" />
             </div>
-            <div className="rule pt-5">
+            <div>
               <div className="mb-4 flex items-baseline justify-between text-sm"><span className="text-muted-foreground">{t("每月收入", "Monthly income")}</span><b className="num font-medium">{fmt(p.inc)}{pct(raise)}</b></div>
               <Slider min={-20} max={30} step={1} value={raise} onValueChange={(v) => setRaise(Array.isArray(v) ? v[0] : v)} aria-label="income" />
             </div>
           </div>
-          <div className="rule mt-8 flex flex-wrap items-center justify-between gap-3 pt-4">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
             <span className="tag">{t("净资产 ¥57.6 万 · 年化 5% · 提取率 4%", "Net worth ¥576k · 5% return · 4% withdrawal")}</span>
             <Button variant="ghost" size="xs" onClick={() => { setCut(0); setRaise(0) }}>{t("重置", "Reset")}</Button>
           </div>
@@ -242,7 +242,7 @@ function Categories() {
             <h3 className="mt-3 text-[26px]">{c.e} {lang === "zh" ? c.zh : c.en}</h3>
             <p className="mt-3 max-w-[440px] leading-relaxed text-muted-foreground">{lang === "zh" ? c.d[0] : c.d[1]}</p>
           </div>
-          <div className="rule border-b border-rule">
+          <div>
             <Line k="Lean FI" dim={dim("lean")}>= 25 × (<Tok id="fixed" active={active} />+<Tok id="essential" active={active} />)</Line>
             <Line k={t("标准 FI", "Standard")} dim={dim("std")}>= 25 × (<Tok id="fixed" active={active} />+<Tok id="essential" active={active} />+<Tok id="flexible" active={active} />)</Line>
             <Line k={t("覆盖率", "Coverage")} dim={dim("cover")}>= <Tok id="passive" active={active} /> ÷ (<Tok id="fixed" active={active} />+<Tok id="essential" active={active} />)</Line>
@@ -281,7 +281,7 @@ function More() {
           {MORE.map((m, i) => {
             const [title, body] = lang === "zh" ? m.zh : m.en
             return (
-              <div key={title} data-reveal className="rule py-5">
+              <div key={title} data-reveal className="py-4">
                 <div className="flex items-baseline gap-3">
                   <span className="tag">{String(i + 1).padStart(2, "0")}</span>
                   <h3 className="font-sans text-[16px] font-semibold tracking-normal">{title}</h3>
@@ -356,7 +356,7 @@ function Privacy() {
           {PRIV.map((m) => {
             const [title, body] = lang === "zh" ? m.zh : m.en
             return (
-              <div key={title} data-reveal className="rule py-5">
+              <div key={title} data-reveal className="py-4">
                 <m.icon className="size-4 text-muted-foreground" />
                 <h3 className="mt-4 font-sans text-[16px] font-semibold tracking-normal">{title}</h3>
                 <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">{body}</p>
@@ -384,7 +384,7 @@ function Pricing() {
           <H2>{t("记录永久免费。会员解锁的是推演未来。", "Recording is free forever. Pro unlocks the future.")}</H2>
           <div className="mt-10 max-w-[480px]">
             <div className="tag mb-2">{t("免费版包含", "Free includes")}</div>
-            {FREE.map((f) => <div key={f[0]} className="rule flex items-center gap-3 py-3 text-[15px]"><Check className="size-4 text-success" />{pick(f)}</div>)}
+            {FREE.map((f) => <div key={f[0]} className="flex items-center gap-3 py-2 text-[15px]"><Check className="size-4 text-success" />{pick(f)}</div>)}
           </div>
         </div>
         <div className="receipt font-mono text-[13px]">
@@ -427,7 +427,7 @@ function Faq() {
           <H2>{t("常见问题", "Questions")}</H2>
           <a href={`mailto:${MAIL}`} className="tag mt-5 inline-block text-primary hover:underline">{t("没找到答案？写信给我们 →", "Not answered? Email us →")}</a>
         </div>
-        <Accordion className="rule">
+        <Accordion>
           {FAQ.map((q, i) => (
             <AccordionItem key={i} value={String(i)} className="border-rule">
               <AccordionTrigger className="py-4 text-[15px] font-medium">{lang === "zh" ? q[0] : q[2]}</AccordionTrigger>
