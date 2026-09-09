@@ -145,13 +145,13 @@ function Features() {
     const mm = gsap.matchMedia()
     mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
       ScrollTrigger.create({
-        trigger: root.current, start: "top 64px", end: () => "+=" + FEATURES.length * 60 + "%", pin: true, scrub: true, anticipatePin: 1,
+        trigger: root.current, start: "top 84px", end: () => "+=" + FEATURES.length * 60 + "%", pin: true, scrub: true, anticipatePin: 1,
         onUpdate: (self) => setActive(Math.min(FEATURES.length - 1, Math.floor(self.progress * FEATURES.length))),
       })
     })
   }, { scope: root })
   return (
-    <Section id="features" innerRef={root} className="md:min-h-[calc(100vh-64px)] md:py-20">
+    <Section id="features" innerRef={root} className="md:min-h-[calc(100vh-84px)] md:py-20">
       <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,1fr)_360px] md:gap-20">
         <div>
           <Tag>{t("四件事", "Four things")}</Tag>
@@ -468,12 +468,12 @@ function Shots() {
       if (dist() <= 0) return
       gsap.to(track.current, {
         x: () => -dist(), ease: "none",
-        scrollTrigger: { trigger: root.current, pin: true, scrub: 0.6, start: "top 64px", end: () => "+=" + dist(), invalidateOnRefresh: true, anticipatePin: 1 },
+        scrollTrigger: { trigger: root.current, pin: true, scrub: 0.6, start: "top 84px", end: () => "+=" + dist(), invalidateOnRefresh: true, anticipatePin: 1 },
       })
     })
   }, { scope: root })
   return (
-    <section ref={root} className="rule overflow-hidden py-16 md:h-[calc(100vh-64px)] md:py-0">
+    <section ref={root} className="rule overflow-hidden py-16 md:h-[calc(100vh-84px)] md:py-0">
       <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col justify-center">
         <div className="tag px-6 md:px-10">{t("界面", "Screens")}</div>
         <div ref={track} className="no-scrollbar mt-8 flex gap-8 overflow-x-auto px-6 pb-4 md:overflow-visible md:px-10">
@@ -604,12 +604,11 @@ function Faq() {
   )
 }
 
-/* ---------- 收尾：真的倒计时 ---------- */
+/* ---------- 收尾：倒计时 + 自由日凭证 + FI 进度标尺 + footer ---------- */
 function Closing() {
   const { t, lang } = useLang()
   const { cut, raise } = React.useContext(SimContext)
   const p = plan(cut / 100, raise / 100)
-  // 目标日 = 现在 + 剩余月数，按当前滑杆状态算；秒在跳
   const [now, setNow] = React.useState(() => Date.now())
   React.useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id) }, [])
   const target = React.useMemo(() => { if (p.mid === null) return null; const d = new Date(); d.setMonth(d.getMonth() + p.mid); d.setHours(9, 0, 0, 0); return d.getTime() }, [p.mid])
@@ -620,28 +619,68 @@ function Closing() {
     const h = Math.floor((diff % 86400000) / 3600000), mi = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000)
     parts = [{ v: String(y), zh: "年", en: "yrs" }, { v: String(mo), zh: "个月", en: "mos" }, { v: String(dd), zh: "天", en: "days" }, { v: `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:${String(s).padStart(2, "0")}`, zh: "", en: "" }]
   }
+  const tdate = target ? new Date(target) : null
+  const dateText = tdate ? (lang === "zh" ? `${tdate.getFullYear()} 年 ${tdate.getMonth() + 1} 月` : tdate.toLocaleDateString("en-US", { year: "numeric", month: "long" })) : "—"
+  const savingsRate = Math.max(0, Math.round((p.s / p.inc) * 100))
+  const progress = Math.min(1, NET / p.fi)
+  const wan = (n: number) => (lang === "zh" ? `¥${(n / 10000).toFixed(n >= 1e6 ? 0 : 1)} 万` : `¥${Math.round(n / 1000)}k`)
+  const ticks = React.useMemo(() => { const step = 500000; const out: number[] = []; for (let v = 0; v <= p.fi; v += step) out.push(v); return out }, [p.fi])
+
   const root = React.useRef<HTMLElement>(null)
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      // charsClass 配合 CSS 把字改回 inline：SplitText 默认 inline-block 会让「。」丢掉行首禁则、单独换行
       const split = SplitText.create(".closing-q", { type: lang === "zh" ? "chars" : "words", charsClass: "cq", wordsClass: "cq", autoSplit: true })
-      gsap.from(split.chars.length ? split.chars : split.words, { opacity: 0.12, stagger: 0.02, ease: "none", scrollTrigger: { trigger: root.current, start: "top 75%", end: "top 30%", scrub: true } })
+      gsap.from(split.chars.length ? split.chars : split.words, { opacity: 0.12, stagger: 0.02, ease: "none", scrollTrigger: { trigger: ".closing-q", start: "top 85%", end: "top 45%", scrub: true } })
+      gsap.from(".ruler .fill", { scaleX: 0, duration: 1.4, ease: "power3.out", scrollTrigger: { trigger: ".ruler", start: "top 85%", once: true } })
+      gsap.from(".ruler .you", { opacity: 0, y: -6, duration: 0.5, delay: 1.1, scrollTrigger: { trigger: ".ruler", start: "top 85%", once: true } })
       return () => split.revert()
     })
   }, { scope: root, dependencies: [lang], revertOnUpdate: true })
+
   return (
-    <section ref={root} className="rule px-6 py-28 md:px-10 md:py-40">
+    <section ref={root} className="rule px-6 pt-24 md:px-10 md:pt-32">
       <div className="mx-auto w-full max-w-[1200px]">
-        <div className="tag">{t("按演示账本，距离自由日", "On the demo ledger, freedom is")}</div>
-        {target ? (
-          <div className="countdown mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[40px] leading-none md:text-[72px]">
-            {parts.map((x, i) => <span key={i}>{x.v}<span className="ml-1.5 font-sans text-base text-muted-foreground md:text-xl">{lang === "zh" ? x.zh : x.en}</span></span>)}
+        <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_380px] md:gap-20">
+          <div>
+            <div className="tag">{t("按演示账本，距离自由日", "On the demo ledger, freedom is")}</div>
+            {target ? (
+              <div className="countdown mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[40px] leading-none md:text-[64px]">
+                {parts.map((x, i) => <span key={i}>{x.v}<span className="ml-1.5 font-sans text-base text-muted-foreground md:text-xl">{lang === "zh" ? x.zh : x.en}</span></span>)}
+              </div>
+            ) : <div className="mt-4 text-[28px] text-muted-foreground">{t("当前收支算不出自由日。", "No freedom date at this rate.")}</div>}
+            <div className="mt-12 font-heading text-[22px] leading-[1.35] md:text-[30px]">Coast</div>
+            <p className="closing-q mt-1 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("每一笔，都是通往自由的一步。", "Every entry is a step toward freedom.")}</p>
+            <div className="mt-10"><DownloadButton size="lg" full /></div>
           </div>
-        ) : <div className="mt-4 text-[28px] text-muted-foreground">{t("当前收支算不出自由日。", "No freedom date at this rate.")}</div>}
-        <div className="mt-14 font-heading text-[22px] leading-[1.35] md:text-[30px]">Coast</div>
-        <p className="closing-q mt-1 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("每一笔，都是通往自由的一步。", "Every entry is a step toward freedom.")}</p>
-        <div className="mt-10"><DownloadButton size="lg" full /></div>
+          <div data-reveal className="receipt-slot self-start">
+            <div className="receipt font-mono text-[13px]">
+              <div className="row"><span className="tag">{t("自由日", "Freedom day")}</span><span className="tag">{t("凭证", "Voucher")}</span></div>
+              <div className="mt-5 text-[30px] font-medium leading-none tracking-tight">{dateText}</div>
+              <div className="dash my-5" />
+              <div className="row py-1"><span className="text-muted-foreground">{t("距今", "From today")}</span><span>{p.mid !== null ? `${Math.floor(p.mid / 12)}${t(" 年 ", "y ")}${p.mid % 12}${t(" 个月", "m")}` : "—"}</span></div>
+              <div className="row py-1"><span className="text-muted-foreground">{t("净资产", "Net worth")}</span><span>{wan(NET)}</span></div>
+              <div className="row py-1"><span className="text-muted-foreground">{t("自由所需", "FI number")}</span><span>{wan(p.fi)}</span></div>
+              <div className="row py-1"><span className="text-muted-foreground">{t("储蓄率", "Savings rate")}</span><span>{savingsRate}%</span></div>
+              <div className="row py-1"><span className="text-muted-foreground">{t("年化 / 提取率", "Return / withdrawal")}</span><span>5% / 4%</span></div>
+              <div className="dash my-5" />
+              <div className="row text-[12px] text-muted-foreground"><span>{t("演示账本 · 拖上面的滑杆会变", "Demo ledger · moves with the sliders above")}</span></div>
+              <div className="mt-4 h-7 w-full opacity-80" style={{ background: "repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 9px, currentColor 9px 12px, transparent 12px 14px)" }} aria-hidden="true" />
+            </div>
+          </div>
+        </div>
+        <div className="mt-20 md:mt-24">
+          <div className="flex items-baseline justify-between"><span className="tag">{t("FI 进度", "FI progress")}</span><span className="tag">{t(`已攒 ${Math.round(progress * 100)}%`, `${Math.round(progress * 100)}% there`)}</span></div>
+          <div className="ruler mt-3" aria-hidden="true">
+            <div className="track" />
+            <div className="fill" style={{ width: `${progress * 100}%` }} />
+            {ticks.map((v) => <span key={v} className={`tick ${v % 1000000 === 0 ? "major" : ""}`} style={{ left: `${(v / p.fi) * 100}%` }} />)}
+            {ticks.filter((v) => v % 1000000 === 0 && v / p.fi < 0.9).map((v) => <span key={"l" + v} className="lbl" style={{ left: `${(v / p.fi) * 100}%`, transform: v === 0 ? "none" : undefined }}>{v === 0 ? "¥0" : wan(v)}</span>)}
+            <span className="lbl" style={{ left: "100%", transform: "translateX(-100%)" }}>{t("自由 · ", "Free · ")}{wan(p.fi)}</span>
+            <span className="you" style={{ left: `${progress * 100}%` }}>{t("你在这 · ", "You · ")}{wan(NET)}</span>
+          </div>
+        </div>
+        <div className="mt-16 md:mt-20"><Footer /></div>
       </div>
     </section>
   )
@@ -677,7 +716,6 @@ export default function Home() {
         <Pricing />
         <Faq />
         <Closing />
-        <Footer />
       </main>
     </SimContext.Provider>
   )

@@ -268,3 +268,30 @@
 
 /* 结尾逐字浮现：字保持 inline，中文标点禁则才生效 */
 .closing-q .cq { display: inline; }
+
+/* 顶栏玻璃胶囊：半透明底 + 背景模糊 + 上沿一道高光。深色用更深的底和更弱的高光 */
+.glass {
+  background: color-mix(in oklch, var(--background) 62%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid color-mix(in oklch, var(--foreground) 9%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 10px 30px -18px rgba(0,0,0,.25);
+  transition: background .3s, box-shadow .3s;
+}
+.glass.is-scrolled { background: color-mix(in oklch, var(--background) 74%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 14px 36px -18px rgba(0,0,0,.32); }
+.dark .glass {
+  background: color-mix(in oklch, var(--card) 55%, transparent);
+  border-color: rgba(255,255,255,.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 10px 30px -18px rgba(0,0,0,.7);
+}
+.dark .glass.is-scrolled { background: color-mix(in oklch, var(--card) 72%, transparent); }
+
+/* 结尾：自由日凭证 + FI 进度标尺 */
+.ruler { position: relative; height: 56px; }
+.ruler .track { position: absolute; left: 0; right: 0; top: 26px; height: 2px; background: var(--rule); }
+.ruler .fill { position: absolute; left: 0; top: 26px; height: 2px; background: var(--primary); transform-origin: 0 50%; }
+.ruler .tick { position: absolute; top: 20px; width: 1px; height: 14px; background: var(--rule); }
+.ruler .tick.major { top: 16px; height: 22px; background: color-mix(in oklch, var(--foreground) 40%, transparent); }
+.ruler .lbl { position: absolute; top: 44px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); white-space: nowrap; }
+.ruler .you { position: absolute; top: 0; transform: translateX(-50%); font-family: var(--font-mono); font-size: 12px; color: var(--primary); white-space: nowrap; }
+.ruler .you::after { content: ""; position: absolute; left: 50%; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); transform: translateX(-50%); box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 20%, transparent); }

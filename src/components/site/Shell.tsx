@@ -84,8 +84,8 @@ export function Header() {
     return () => window.removeEventListener("scroll", on)
   }, [])
   return (
-    <header className={`fixed inset-x-0 top-0 z-20 border-b bg-background transition-colors ${scrolled ? "border-rule" : "border-transparent"}`}>
-      <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center gap-4 px-6 md:px-10">
+    <header className="pointer-events-none fixed inset-x-0 top-3 z-20 px-3 md:px-6">
+      <div className={`glass pointer-events-auto mx-auto flex h-14 w-full max-w-[1200px] items-center gap-4 rounded-full pl-5 pr-2.5 md:pl-7 ${scrolled ? "is-scrolled" : ""}`}>
         <a href={BASE} className="mr-auto flex items-center gap-2.5 font-heading text-xl font-semibold">
           <img src={asset("icon.png")} alt="" className="size-7 rounded-md" />Coast
         </a>
@@ -119,7 +119,7 @@ export function Header() {
 export function Footer() {
   const { t } = useLang()
   return (
-    <footer className="rule mx-auto flex w-full max-w-[1200px] flex-wrap items-center gap-x-7 gap-y-3 px-6 py-10 text-xs text-muted-foreground md:px-10">
+    <footer className="rule mx-auto flex w-full max-w-[1200px] flex-wrap items-center gap-x-7 gap-y-3 py-10 text-xs text-muted-foreground">
       <a href={BASE} className="flex items-center gap-2 font-heading text-base text-foreground"><img src={asset("icon.png")} alt="" className="size-6 rounded-md" />Coast</a>
       <span>© 2026 Leon · <a href={`mailto:${MAIL}`} className="hover:text-foreground">{MAIL}</a></span>
       <nav className="flex flex-wrap gap-5 md:ml-auto">
