@@ -236,5 +236,5 @@
 .big-num { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; line-height: 1; }
 .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
-/* 首屏文字逐行揭示的裁切容器（SplitText 的 line 外面包一层 overflow hidden） */
-.split-line { overflow: hidden; display: block; padding-bottom: .08em; margin-bottom: -.08em; }
+/* 首屏逐行揭示：SplitText 的遮罩盒子默认贴着行高，y / g / p 的下伸会被裁掉，留 .15em 再用负 margin 收回 */
+.hl-mask { padding-bottom: .15em; margin-bottom: -.15em; }

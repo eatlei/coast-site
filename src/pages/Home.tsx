@@ -29,9 +29,9 @@ function Hero() {
     const mm = gsap.matchMedia()
     mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduced: REDUCED }, (ctx) => {
       if (ctx.conditions?.reduced) return
-      const split = SplitText.create(".hero-h1", { type: "lines", mask: "lines", autoSplit: true })
+      const split = SplitText.create(".hero-h1", { type: "lines", mask: "lines", linesClass: "hl", autoSplit: true })
       const tl = gsap.timeline({ defaults: { ease: EASE } })
-      tl.from(split.lines, { yPercent: 110, duration: 1.1, stagger: 0.12 }, 0.1)
+      tl.from(split.lines, { yPercent: 120, duration: 1.1, stagger: 0.12 }, 0.1)
         .from(".hero-sub", { y: 18, opacity: 0, duration: 0.9 }, "-=0.6")
         .from(".hero-cta", { y: 12, opacity: 0, duration: 0.7 }, "-=0.6")
         .from(".hero-phone", { y: 48, opacity: 0, duration: 1.2 }, "-=1")
