@@ -43,7 +43,7 @@ export function AppleLogo({ className = "" }: { className?: string }) {
 export function DownloadButton({ size = "default", className = "", full = false }: { size?: "sm" | "default" | "lg"; className?: string; full?: boolean }) {
   const { t } = useLang()
   return (
-    <Button size={size} className={`${size === "lg" ? "h-11 px-5 text-[15px]" : ""} ${className}`} render={<a href={APP_STORE} rel="noopener" />}>
+    <Button size={size} className={`${size === "lg" ? "h-11 px-5 text-[15px]" : ""} ${className}`} nativeButton={false} render={<a href={APP_STORE} rel="noopener" />}>
       <AppleLogo />
       {full ? t("App Store 免费下载", "Free on the App Store") : t("免费下载", "Download")}
     </Button>
@@ -59,8 +59,8 @@ export function Header() {
     return () => window.removeEventListener("scroll", on)
   }, [])
   return (
-    <header className={`fixed inset-x-0 top-0 z-20 border-b transition-colors ${scrolled ? "border-border bg-background/85 backdrop-blur-md" : "border-transparent"}`}>
-      <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center gap-4 px-5">
+    <header className={`fixed inset-x-0 top-0 z-20 border-b bg-background transition-colors ${scrolled ? "border-rule" : "border-transparent"}`}>
+      <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center gap-4 px-6 md:px-10">
         <a href={BASE} className="mr-auto flex items-center gap-2.5 font-heading text-xl font-semibold">
           <img src={asset("icon.png")} alt="" className="size-7 rounded-md" />Coast
         </a>
@@ -93,7 +93,7 @@ export function Header() {
 export function Footer() {
   const { t } = useLang()
   return (
-    <footer className="flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-border px-6 py-10 text-xs text-muted-foreground md:px-10">
+    <footer className="rule mx-auto flex w-full max-w-[1200px] flex-wrap items-center gap-x-7 gap-y-3 px-6 py-10 text-xs text-muted-foreground md:px-10">
       <a href={BASE} className="flex items-center gap-2 font-heading text-base text-foreground"><img src={asset("icon.png")} alt="" className="size-6 rounded-md" />Coast</a>
       <span>© 2026 Leon · <a href={`mailto:${MAIL}`} className="hover:text-foreground">{MAIL}</a></span>
       <nav className="flex flex-wrap gap-5 md:ml-auto">
@@ -112,7 +112,7 @@ export function DocPage({ title, subtitle, children, wide = false }: { title: st
   return (
     <>
       <Header />
-      <main className={`mx-auto w-full px-6 pb-24 pt-28 ${wide ? "max-w-[1040px]" : "max-w-[720px]"}`}>
+      <main className={`mx-auto w-full px-6 pb-24 pt-32 md:px-10 ${wide ? "max-w-[1200px]" : "max-w-[760px]"}`}>
         <h1 className="text-3xl font-semibold md:text-4xl">{title}</h1>
         {subtitle && <p className="mt-2 text-muted-foreground">{subtitle}</p>}
         <div className="prose-coast mt-10">{children}</div>
@@ -125,8 +125,8 @@ export function DocPage({ title, subtitle, children, wide = false }: { title: st
 export function Device({ src, alt = "", width = 300, className = "" }: { src: string; alt?: string; width?: number; className?: string }) {
   const pad = Math.round(width * 0.04), radius = Math.round(width * 0.173)
   return (
-    <div className={`mx-auto border border-border/70 bg-card/60 shadow-[0_30px_60px_-30px_rgba(15,26,46,.35)] ${className}`} style={{ width: width + pad * 2, padding: pad, borderRadius: radius }}>
-      <img src={src} alt={alt} width={width} className="h-auto border border-border/70" style={{ width, borderRadius: radius - pad }} loading="lazy" />
+    <div className={`mx-auto border border-rule bg-card shadow-[0_20px_50px_-30px_rgba(0,0,0,.4)] ${className}`} style={{ width: width + pad * 2, padding: pad, borderRadius: radius }}>
+      <img src={src} alt={alt} width={width} className="h-auto border border-rule" style={{ width, borderRadius: radius - pad }} loading="lazy" />
     </div>
   )
 }

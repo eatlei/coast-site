@@ -13,7 +13,7 @@ export default function Guide() {
           <div className="grid size-12 place-items-center rounded-2xl bg-primary/12 text-primary"><BookOpen className="size-6" /></div>
           <p className="font-medium">{t("内容整理中", "Coming soon")}</p>
           <p className="max-w-[360px] text-sm text-muted-foreground">{t("手册还在写。期间有任何问题，直接写信，我们通常几天内回复。", "The manual is being written. Meanwhile, email us and we usually reply within a few days.")}</p>
-          <Button variant="outline" size="sm" render={<a href={`mailto:${MAIL}`} />}>{MAIL}</Button>
+          <Button variant="outline" size="sm" nativeButton={false} render={<a href={`mailto:${MAIL}`} />}>{MAIL}</Button>
         </CardContent>
       </Card>
     </DocPage>
