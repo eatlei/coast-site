@@ -639,7 +639,8 @@ function Closing() {
             {parts.map((x, i) => <span key={i}>{x.v}<span className="ml-1.5 font-sans text-base text-muted-foreground md:text-xl">{lang === "zh" ? x.zh : x.en}</span></span>)}
           </div>
         ) : <div className="mt-4 text-[28px] text-muted-foreground">{t("当前收支算不出自由日。", "No freedom date at this rate.")}</div>}
-        <p className="closing-q mt-14 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("不问你这个月花了多少，只问你还要工作多久。", "It never asks what you spent this month. Only how much longer you have to work.")}</p>
+        <div className="mt-14 font-heading text-[22px] leading-[1.35] md:text-[30px]">Coast</div>
+        <p className="closing-q mt-1 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("每一笔，都是通往自由的一步。", "Every entry is a step toward freedom.")}</p>
         <div className="mt-10"><DownloadButton size="lg" full /></div>
       </div>
     </section>
