@@ -1,6 +1,6 @@
 import * as React from "react"
 import {
-  Apple, Banknote, BarChart3, Camera, CalendarDays, Cloud, EyeOff, FileText, Gauge, Globe, GitBranch, LayoutGrid,
+  Banknote, BarChart3, Camera, CalendarDays, Cloud, EyeOff, FileText, Gauge, Globe, GitBranch, LayoutGrid,
   Palette, Receipt, Repeat, Scale, ShoppingCart, Smartphone, Split, Timer, Upload, Wand2, Check,
 } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -436,4 +436,4 @@ export default function Home() {
 }
 
 // 避免未用到的导入被 lint 报错（Apple/Banknote 留给以后的图标扩展）
-void Apple; void Banknote
+void Banknote

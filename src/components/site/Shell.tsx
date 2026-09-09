@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Apple, Menu } from "lucide-react"
+import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
@@ -31,11 +31,20 @@ export function LangToggle() {
   )
 }
 
+/** Apple 标志。lucide 的 `Apple` 是苹果水果的轮廓，不是品牌标志 */
+export function AppleLogo({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+      <path d="M16.37 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.5-1-2.5-3.6zM14.1 5.8c.6-.8 1.1-1.9.9-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z" />
+    </svg>
+  )
+}
+
 export function DownloadButton({ size = "default", className = "", full = false }: { size?: "sm" | "default" | "lg"; className?: string; full?: boolean }) {
   const { t } = useLang()
   return (
     <Button size={size} className={`${size === "lg" ? "h-11 px-5 text-[15px]" : ""} ${className}`} render={<a href={APP_STORE} rel="noopener" />}>
-      <Apple />
+      <AppleLogo />
       {full ? t("App Store 免费下载", "Free on the App Store") : t("免费下载", "Download")}
     </Button>
   )
