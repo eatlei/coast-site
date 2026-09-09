@@ -398,6 +398,26 @@ const MORE: { id: SketchId; pro?: boolean; zh: [string, string]; en: [string, st
   { id: "themes", pro: true, zh: ["主题与图标", "6 套主题、20 多个 App 图标，分类图标四种来源一键换套。"], en: ["Themes & icons", "6 themes, 20+ app icons, category icons from four sources."] },
   { id: "privacy", zh: ["隐私模式", "一个眼睛开关，全 App 金额一键打码。"], en: ["Privacy mode", "One toggle blurs every amount in the app."] },
 ]
+/** 跟随鼠标微倾的卡片：transform 全部交给 GSAP（CSS hover 的 transform 会和它打架），阴影走 CSS */
+function TiltCard({ children }: { children: React.ReactNode }) {
+  const ref = React.useRef<HTMLDivElement>(null)
+  const fx = React.useRef<{ rx: gsap.QuickToFunc; ry: gsap.QuickToFunc; y: gsap.QuickToFunc } | null>(null)
+  useGSAP(() => {
+    const el = ref.current!
+    gsap.set(el, { transformPerspective: 900, transformOrigin: "50% 50%" })
+    const opt = { duration: 0.45, ease: "power3" }
+    fx.current = { rx: gsap.quickTo(el, "rotationX", opt), ry: gsap.quickTo(el, "rotationY", opt), y: gsap.quickTo(el, "y", opt) }
+  }, { scope: ref })
+  const move = (e: React.MouseEvent<HTMLDivElement>) => {
+    const f = fx.current; if (!f || matchMedia("(hover: none)").matches) return
+    const r = e.currentTarget.getBoundingClientRect()
+    const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5
+    f.ry(px * 8); f.rx(-py * 6); f.y(-4)
+  }
+  const leave = () => { const f = fx.current; if (!f) return; f.rx(0); f.ry(0); f.y(0) }
+  return <div ref={ref} data-reveal data-card className="feature-card group" onMouseMove={move} onMouseLeave={leave}>{children}</div>
+}
+
 function More() {
   const { t, lang } = useLang()
   return (
@@ -410,18 +430,15 @@ function More() {
             const [title, body] = lang === "zh" ? m.zh : m.en
             const Icon = ICONS[m.id]
             return (
-              <div key={m.id} data-reveal data-card className="feature-card group">
+              <TiltCard key={m.id}>
                 <div className="flex h-6 items-center justify-between">
                   <Icon className="size-5 text-muted-foreground transition-colors group-hover:text-primary" />
-                  {m.pro && <span className="tag rounded-full border border-rule px-2 py-0.5 text-[11px] text-primary">Pro</span>}
+                  {m.pro && <span className="tag rounded-full bg-muted px-2 py-0.5 text-[11px] text-primary">Pro</span>}
                 </div>
                 <h3 className="mt-5 font-sans text-[17px] font-semibold tracking-normal">{title}</h3>
                 <p className="mt-2 min-h-[44px] text-[14px] leading-relaxed text-muted-foreground">{body}</p>
-                <div className="stage mt-6">
-                  <span className="stage-hint">{t("移上来看看", "Hover to see it")}</span>
-                  <div className="stage-body"><Sketch id={m.id} /></div>
-                </div>
-              </div>
+                <div className="stage mt-6"><div className="stage-body"><Sketch id={m.id} /></div></div>
+              </TiltCard>
             )
           })}
         </div>

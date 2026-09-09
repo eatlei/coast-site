@@ -16,6 +16,7 @@ function useSketch(build: (tl: gsap.core.Timeline, q: gsap.utils.SelectorFunc) =
     const q = gsap.utils.selector(root)
     const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out", duration: 0.5 } })
     build(tl, q)
+    tl.progress(1) // 默认停在结束画面，hover 再从头播
     tlRef.current = tl
     const play = contextSafe!(() => { tl.restart() }) as () => void
     const el = root.current!
