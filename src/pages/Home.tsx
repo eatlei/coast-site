@@ -8,8 +8,8 @@ import { APP_STORE, MAIL, screen, useLang } from "@/lib/i18n"
 import { EASE, REDUCED, ScrollTrigger, SplitText, gsap, useGSAP } from "@/lib/gsap"
 
 /* ---------- 版式原语：整站只用这几样，不用卡片 ---------- */
-function Tag({ n, children }: { n: string; children: React.ReactNode }) {
-  return <div className="tag">{n} <span className="mx-1">/</span> <b>{children}</b></div>
+function Tag({ children }: { children: React.ReactNode }) {
+  return <div className="tag">{children}</div>
 }
 function H2({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <h2 className={`mt-5 max-w-[620px] text-[30px] leading-[1.15] md:text-[42px] ${className}`}>{children}</h2>
@@ -50,8 +50,7 @@ function Hero() {
       <svg className="pointer-events-none absolute right-6 top-[36%] md:right-10" width="10" height="10" aria-hidden="true"><circle className="hero-dot" cx="5" cy="5" r="4" fill="var(--primary)" /></svg>
       <div className="relative mx-auto grid w-full max-w-[1200px] items-end gap-12 md:grid-cols-[minmax(0,1fr)_320px] md:gap-20">
         <div>
-          <div className="tag mb-8"><b>Coast</b> <span className="mx-1">/</span> {t("为自由记账", "Budget & FIRE")}</div>
-          <h1 className="hero-h1 max-w-[720px] text-[34px] font-semibold leading-[1.12] sm:text-[44px] md:text-[60px]">
+                    <h1 className="hero-h1 max-w-[720px] text-[34px] font-semibold leading-[1.12] sm:text-[44px] md:text-[60px]">
             {lang === "zh" ? <>所有记账都在讲过去，<br />只有它在讲<span className="text-primary">未来</span>。</>
               : <>Every money app talks about the past.<br />This one talks about <span className="text-primary">when you can stop</span>.</>}
           </h1>
@@ -94,15 +93,15 @@ function Features() {
     <Section id="features" innerRef={root} className="md:min-h-[calc(100vh-64px)] md:py-20">
       <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,1fr)_360px] md:gap-20">
         <div>
-          <Tag n="01">{t("四件事", "Four things")}</Tag>
+          <Tag>{t("四件事", "Four things")}</Tag>
           <H2>{t("多数记账停在「这个月花了 3200」。Coast 多答一句。", "Most trackers stop at \"you spent $480 this month.\" Coast answers one more.")}</H2>
           <Lead>{t("这 3200 让自由日往后推了几天。储蓄率、净资产、预算节奏、FI 倒计时，全部从同一本账里算出来。", "How many days that pushed back your freedom date. Savings rate, net worth, budget pace and the FI countdown all come from one ledger.")}</Lead>
           <ol className="mt-10 max-w-[560px]">
             {FEATURES.map((f, i) => {
               const [title, body] = lang === "zh" ? f.zh : f.en
               return (
-                <li key={f.img} className="feature-row grid cursor-pointer grid-cols-[44px_1fr] gap-3 py-4" data-active={i === active} onClick={() => setActive(i)}>
-                  <span className="tag pt-1.5">{String(i + 1).padStart(2, "0")}</span>
+                <li key={f.img} className="feature-row grid cursor-pointer grid-cols-[20px_1fr] gap-3 py-4" data-active={i === active} onClick={() => setActive(i)}>
+                  <span className="dot mt-[9px]" />
                   <div>
                     <h3 className="font-sans text-[18px] font-semibold tracking-normal">{title}</h3>
                     <p className="mt-1.5 max-w-[460px] text-[14.5px] leading-relaxed text-muted-foreground">{body}</p>
@@ -157,18 +156,18 @@ function Simulator() {
   const now = new Date()
   const year = (m: number | null) => now.getFullYear() + Math.floor((now.getMonth() + (m ?? 0)) / 12)
   const pct = (v: number) => <span className="tag ml-2">{v > 0 ? "+" : v < 0 ? "−" : ""}{Math.abs(v)}%</span>
-  const unit = (zh: string, en: string) => <span className="mx-1 font-sans text-base text-muted-foreground md:text-lg">{t(zh, en)}</span>
+  const unit = (zh: string, en: string) => <span className="mx-1.5 font-sans text-base font-normal text-muted-foreground md:text-lg">{t(zh, en)}</span>
   return (
     <Section id="try">
       <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-20">
         <div>
-          <Tag n="02">{t("试一试", "Try it")}</Tag>
+          <Tag>{t("试一试", "Try it")}</Tag>
           <H2>{t("少花多少，自由提前多久？", "Spend less, retire sooner. By how much?")}</H2>
           <Lead>{t("这就是 App 里那两条滑杆。减支双重生效：存得多，要攒的目标也变小；增收只增加储蓄。数字是演示账本的。", "The two sliders from the app. Cutting spending works twice: you save more and the target shrinks. Earning more only adds savings. Numbers are from the demo ledger.")}</Lead>
         </div>
         <div>
           <div className="tag">{t("距离标准 FI", "Time to standard FI")}</div>
-          <div className="big-num mt-3 text-[56px] md:text-[72px]">
+          <div className="big-num mt-3 text-[52px] md:text-[68px]">
             {p.mid === null ? <span className="text-[28px]">{t("储蓄率为负", "Negative savings")}</span>
               : <>{Math.floor(shown / 12)}{unit("年", "yr")}{shown % 12}{unit("个月", "mo")}</>}
           </div>
@@ -226,7 +225,7 @@ function Categories() {
   return (
     <Section>
       <div className="mx-auto w-full max-w-[1200px]">
-        <Tag n="03">{t("分类体系", "Categories")}</Tag>
+        <Tag>{t("分类体系", "Categories")}</Tag>
         <H2>{t("分类不是为了统计好看，是为了算自由。", "Categories aren't for pretty charts. They're for the math.")}</H2>
         <Lead>{t("七个一级分类，每一类在 FIRE 公式里有一个位置。点一个看看它算什么。", "Seven top-level categories, each with a seat in the FIRE formula. Tap one to see where it goes.")}</Lead>
         <div className="mt-9 flex flex-wrap gap-2">
@@ -275,19 +274,18 @@ function More() {
   return (
     <Section>
       <div className="mx-auto w-full max-w-[1200px]">
-        <Tag n="04">{t("还有这些", "And then some")}</Tag>
+        <Tag>{t("还有这些", "And then some")}</Tag>
         <H2>{t("为一年只用两次的场景，也认真做了。", "Built carefully, even for things you'll do twice a year.")}</H2>
         <div className="mt-12 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
-          {MORE.map((m, i) => {
+          {MORE.map((m) => {
             const [title, body] = lang === "zh" ? m.zh : m.en
             return (
               <div key={title} data-reveal className="py-4">
-                <div className="flex items-baseline gap-3">
-                  <span className="tag">{String(i + 1).padStart(2, "0")}</span>
+                <div className="flex items-baseline gap-2">
                   <h3 className="font-sans text-[16px] font-semibold tracking-normal">{title}</h3>
                   {m.pro && <span className="tag text-primary">Pro</span>}
                 </div>
-                <p className="mt-1.5 pl-[36px] text-[13.5px] leading-relaxed text-muted-foreground">{body}</p>
+                <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">{body}</p>
               </div>
             )
           })}
@@ -323,7 +321,7 @@ function Shots() {
   return (
     <section ref={root} className="rule overflow-hidden py-16 md:h-[calc(100vh-64px)] md:py-0">
       <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col justify-center">
-        <div className="tag px-6 md:px-10">05 <span className="mx-1">/</span> <b>{t("界面", "Screens")}</b></div>
+        <div className="tag px-6 md:px-10">{t("界面", "Screens")}</div>
         <div ref={track} className="no-scrollbar mt-8 flex gap-8 overflow-x-auto px-6 pb-4 md:overflow-visible md:px-10">
           {SHOTS.map(([img, zh, en]) => (
             <figure key={img} className="w-[220px] shrink-0">
@@ -349,7 +347,7 @@ function Privacy() {
   return (
     <Section>
       <div className="mx-auto w-full max-w-[1200px]">
-        <Tag n="06">{t("数据", "Your data")}</Tag>
+        <Tag>{t("数据", "Your data")}</Tag>
         <H2>{t("没有账号，没有服务器，没有地方能看。", "No account. No server. Nowhere for us to look.")}</H2>
         <Lead>{t("唯一的联网请求是拉汇率，不上传任何东西。", "The only network request fetches exchange rates. Nothing is uploaded.")}</Lead>
         <div className="mt-12 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -380,7 +378,7 @@ function Pricing() {
     <Section id="pricing">
       <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,1fr)_400px] md:gap-24">
         <div>
-          <Tag n="07">{t("定价", "Pricing")}</Tag>
+          <Tag>{t("定价", "Pricing")}</Tag>
           <H2>{t("记录永久免费。会员解锁的是推演未来。", "Recording is free forever. Pro unlocks the future.")}</H2>
           <div className="mt-10 max-w-[480px]">
             <div className="tag mb-2">{t("免费版包含", "Free includes")}</div>
@@ -399,7 +397,7 @@ function Pricing() {
           <div className="tag mb-3">{t("解锁", "Unlocks")}</div>
           <ul className="space-y-1.5">{PRO.map((f) => <li key={f[0]} className="row"><span>{pick(f)}</span><span className="text-muted-foreground">✓</span></li>)}</ul>
           <div className="dash my-5" />
-          <div className="row text-[12px] text-muted-foreground"><span>{t("App 内购买 · Apple 处理支付", "In-app purchase · Apple handles payment")}</span><span>#0001</span></div>
+          <div className="row text-[12px] text-muted-foreground"><span>{t("App 内购买 · Apple 处理支付", "In-app purchase · Apple handles payment")}</span></div>
           <div className="mt-5 h-8 w-full opacity-80" style={{ background: "repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 9px, currentColor 9px 12px, transparent 12px 14px)" }} aria-hidden="true" />
           <Button className="mt-6 w-full" nativeButton={false} render={<a href={APP_STORE} rel="noopener" />}>{t("免费下载，在 App 内升级", "Download free, upgrade in app")}</Button>
         </div>
@@ -423,7 +421,7 @@ function Faq() {
     <Section id="faq">
       <div className="mx-auto grid w-full max-w-[1200px] gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-20">
         <div>
-          <Tag n="08">FAQ</Tag>
+          <Tag>FAQ</Tag>
           <H2>{t("常见问题", "Questions")}</H2>
           <a href={`mailto:${MAIL}`} className="tag mt-5 inline-block text-primary hover:underline">{t("没找到答案？写信给我们 →", "Not answered? Email us →")}</a>
         </div>
@@ -455,7 +453,7 @@ function Closing() {
   return (
     <section ref={root} className="rule px-6 py-28 md:px-10 md:py-40">
       <div className="mx-auto w-full max-w-[1200px]">
-        <div className="tag">09 <span className="mx-1">/</span> <b>{t("设计原则", "Principle")}</b></div>
+        <div className="tag">{t("设计原则", "Principle")}</div>
         <p className="closing-q mt-6 max-w-[900px] font-heading text-[28px] leading-[1.3] md:text-[44px]">{t("一个 App 让你怎么分类，就是在告诉你它认为钱是什么。", "How an app asks you to categorize money is how it tells you what it thinks money is.")}</p>
         <div className="mt-10"><DownloadButton size="lg" full /></div>
       </div>

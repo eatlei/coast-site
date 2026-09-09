@@ -6,6 +6,8 @@
 @import "@fontsource/noto-serif-sc/600.css";
 @import "@fontsource/noto-sans-sc/400.css";
 @import "@fontsource/noto-sans-sc/500.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -136,7 +138,7 @@
 @theme inline {
     --font-sans: "Inter Variable", -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
     --font-heading: "Besley Variable", "Noto Serif SC", "Songti SC", Georgia, serif;
-    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
     --color-rule: var(--rule);
@@ -186,9 +188,9 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
 /* 小标签：编号 + 名称，全站统一的「账本页眉」语汇 */
-.tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
-.tag b { color: var(--foreground); font-weight: 500; }
-.num { font-variant-numeric: tabular-nums; }
+.tag { font-size: 13px; color: var(--ink-soft); }
+.dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--rule); transition: background .3s; }
+.feature-row[data-active="true"] .dot { background: var(--primary); }
 
 /* 账本横线：整页的段落分隔只用一根 1px 的线，不用卡片阴影 */
 .rule { border-top: 1px solid var(--rule); }
@@ -224,14 +226,15 @@
 
 /* 公式行 */
 .formula { font-family: var(--font-heading); font-size: 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 9px 0; transition: opacity .25s; }
-.formula .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); min-width: 88px; }
+.formula .k { font-family: var(--font-sans); font-size: 12px; color: var(--ink-soft); min-width: 88px; }
 .formula .t { padding: 1px 7px; border-radius: 2px; border: 1px solid var(--rule); transition: background .2s, color .2s, border-color .2s; }
 .formula .t[data-hot="true"] { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
 .formula .t[data-hot="true"][data-in="true"] { background: var(--success); border-color: var(--success); }
 .formula[data-dim="true"] { opacity: .35; }
 
 /* 试算器数字 */
-.big-num { font-family: var(--font-heading); font-variant-numeric: tabular-nums; line-height: 1; }
+.big-num { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; line-height: 1; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
 /* 首屏文字逐行揭示的裁切容器（SplitText 的 line 外面包一层 overflow hidden） */
 .split-line { overflow: hidden; display: block; padding-bottom: .08em; margin-bottom: -.08em; }
