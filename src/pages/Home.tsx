@@ -311,7 +311,10 @@ function Shots() {
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
-      const dist = () => Math.max(0, track.current!.scrollWidth - root.current!.clientWidth + 80)
+      // 距离按轨道自己的可见宽度算（它在 max-w 1200 的容器里），不能拿整个 section 的宽度：
+      // 宽屏上 section 比内容还宽，会算出 0，既不平移也不 pin，最右一台被裁掉
+      const dist = () => Math.max(0, track.current!.scrollWidth - track.current!.clientWidth)
+      if (dist() <= 0) return
       gsap.to(track.current, {
         x: () => -dist(), ease: "none",
         scrollTrigger: { trigger: root.current, pin: true, scrub: 1, start: "top 64px", end: () => "+=" + dist(), invalidateOnRefresh: true },
