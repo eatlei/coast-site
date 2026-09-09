@@ -40,7 +40,7 @@ function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(640px_420px_at_22%_30%,color-mix(in_oklch,var(--primary)_16%,transparent),transparent_70%),radial-gradient(560px_380px_at_78%_70%,color-mix(in_oklch,var(--success)_14%,transparent),transparent_70%)]" />
       <div className="relative mx-auto grid w-full max-w-[1280px] items-center gap-12 md:grid-cols-[minmax(0,600px)_minmax(0,420px)] md:justify-between md:gap-16">
         <div>
-          <h1 className="max-w-[600px] text-[32px] font-bold leading-[1.18] sm:text-4xl md:text-[54px]">
+          <h1 className="max-w-[600px] text-[32px] font-bold leading-[1.18] sm:text-4xl lg:text-[54px]">
             {lang === "zh" ? <>所有记账都在讲过去，<br />只有它在讲<span className="text-primary">未来</span>。</>
               : <>Every money app talks about the past.<br />This one talks about <span className="text-primary">when you can stop</span>.</>}
           </h1>
