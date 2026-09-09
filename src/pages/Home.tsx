@@ -145,7 +145,7 @@ function Features() {
     const mm = gsap.matchMedia()
     mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
       ScrollTrigger.create({
-        trigger: root.current, start: "top 64px", end: () => "+=" + FEATURES.length * 60 + "%", pin: true, scrub: true,
+        trigger: root.current, start: "top 64px", end: () => "+=" + FEATURES.length * 60 + "%", pin: true, scrub: true, anticipatePin: 1,
         onUpdate: (self) => setActive(Math.min(FEATURES.length - 1, Math.floor(self.progress * FEATURES.length))),
       })
     })
@@ -468,7 +468,7 @@ function Shots() {
       if (dist() <= 0) return
       gsap.to(track.current, {
         x: () => -dist(), ease: "none",
-        scrollTrigger: { trigger: root.current, pin: true, scrub: 1, start: "top 64px", end: () => "+=" + dist(), invalidateOnRefresh: true },
+        scrollTrigger: { trigger: root.current, pin: true, scrub: 0.6, start: "top 64px", end: () => "+=" + dist(), invalidateOnRefresh: true, anticipatePin: 1 },
       })
     })
   }, { scope: root })
