@@ -71,7 +71,7 @@ function Hero() {
 
 /* ---------- 功能四屏：桌面端 pin 住整段，滚动切屏 ---------- */
 const FEATURES = [
-  { img: "fire", zh: ["自由倒计时", "首页最大的数字不是余额，是「还有 8 年 7 个月」。拖动试算滑杆，它实时重算。"], en: ["Freedom countdown", "The biggest number isn't a balance. It's \"9 years, 5 months to go,\" and it moves as you drag the sliders."] },
+  { img: "fire-pro", zh: ["自由倒计时", "首页最大的数字不是余额，是「还有 8 年 7 个月」。拖动试算滑杆，它实时重算。"], en: ["Freedom countdown", "The biggest number isn't a balance. It's \"9 years, 5 months to go,\" and it moves as you drag the sliders."] },
   { img: "ledger", zh: ["复杂的钱也记得清", "AA、报销、分次退款、组合支付、分期、周期账单，都有自己的位置。"], en: ["The messy stuff, handled", "Splits, reimbursements, partial refunds, installments, recurring bills. Each has a place."] },
   { img: "assets", zh: ["资产看趋势", "现金、投资、不动产、负债分开算。校准一次，之后的流水自动往上叠。"], en: ["Net worth as a trend", "Cash, investments, property, debt. Reconcile once; everything after stacks on top."] },
   { img: "budget", zh: ["预算看节奏", "月中就知道会不会超。建议额度按你真实花过的来，不是拍脑袋。"], en: ["Budget by pace", "Know mid-month if you'll go over. Limits from what you actually spent, not a guess."] },
