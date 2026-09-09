@@ -39,5 +39,7 @@ export function useLang() {
 /** 站点根路径（GitHub Pages 子目录），静态资源统一走这里 */
 export const BASE = import.meta.env.BASE_URL
 export const asset = (name: string) => `${BASE}assets/${name}`
+/** 手机截图按语言分两套：screen-<name>.zh.webp / .en.webp */
+export const screen = (name: string, lang: Lang) => `${BASE}assets/screen-${name}.${lang}.webp`
 export const APP_STORE = "https://apps.apple.com/cn/app/id6793885422"
 export const MAIL = "hi@thisleon.com"

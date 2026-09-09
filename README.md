@@ -32,7 +32,7 @@ npm run build    # 产物在 dist/
 
 ## 素材
 
-`public/assets/screen-*.webp` 是手机截图：`screen-fire / ledger / assets` 从 App Store 营销图
-（FIRE 仓库 `app-store-fixed/zh`）裁出，偏移 (140, 500)、尺寸 962×2084；其余来自模拟器
-`--seed-demo --pro` 加对应页面参数直接截屏，状态栏用 `simctl status_bar override` 定成 9:41。
+`public/assets/screen-*.{zh,en}.webp` 是手机截图，按站点语言切换。中文的 `fire / ledger / assets` 从 App Store 营销图
+（FIRE 仓库 `app-store-fixed/zh`）裁出，偏移 (140, 500)、尺寸 962×2084；其余中文图和全部英文图来自模拟器
+`--seed-demo --pro` 加对应页面参数直接截屏（英文加 `-appLanguage en -AppleLanguages "(en)"`），状态栏用 `simctl status_bar override` 定成 9:41。
 `icon.png` 取自 App Store 的应用图标。

@@ -12,7 +12,7 @@ import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Device, DownloadButton, Footer, Header } from "@/components/site/Shell"
-import { APP_STORE, MAIL, asset, useLang } from "@/lib/i18n"
+import { APP_STORE, MAIL, screen, useLang } from "@/lib/i18n"
 
 /* ---------- 小工具 ---------- */
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -53,7 +53,7 @@ function Hero() {
             <span className="text-xs text-muted-foreground">{t("iOS 18+ · 无账号 · 无服务器", "iOS 18+ · No account · No server")}</span>
           </div>
         </div>
-        <Device src={asset("screen-fire.webp")} alt="Coast FIRE" />
+        <Device src={screen("fire", lang)} alt="Coast FIRE" />
       </div>
     </section>
   )
@@ -61,16 +61,16 @@ function Hero() {
 
 /* ---------- 功能四格（Tabs 驱动右侧手机截图） ---------- */
 const FEATURES = [
-  { id: "fire", icon: Timer, img: "screen-fire.webp", zh: ["自由倒计时", "首页最大的数字不是余额，是「还有 8 年 7 个月」。"], en: ["Freedom countdown", "The biggest number isn't a balance. It's \"8 years, 7 months to go.\""] },
-  { id: "ledger", icon: Receipt, img: "screen-ledger.webp", zh: ["复杂的钱也记得清", "AA、报销、分次退款、组合支付、分期、周期账单。"], en: ["The messy stuff, handled", "Splits, reimbursements, partial refunds, installments, recurring bills."] },
-  { id: "assets", icon: BarChart3, img: "screen-assets.webp", zh: ["资产看趋势", "现金、投资、不动产、负债分开算，校准一次自动往上叠。"], en: ["Net worth as a trend", "Cash, investments, property, debt. Reconcile once, it stacks from there."] },
-  { id: "budget", icon: Gauge, img: "screen-budget.webp", zh: ["预算看节奏", "月中就知道会不会超，建议额度按你真实花过的来。"], en: ["Budget by pace", "Know mid-month if you'll go over. Limits from what you actually spent."] },
+  { id: "fire", icon: Timer, img: "fire", zh: ["自由倒计时", "首页最大的数字不是余额，是「还有 8 年 7 个月」。"], en: ["Freedom countdown", "The biggest number isn't a balance. It's \"9 years, 5 months to go.\""] },
+  { id: "ledger", icon: Receipt, img: "ledger", zh: ["复杂的钱也记得清", "AA、报销、分次退款、组合支付、分期、周期账单。"], en: ["The messy stuff, handled", "Splits, reimbursements, partial refunds, installments, recurring bills."] },
+  { id: "assets", icon: BarChart3, img: "assets", zh: ["资产看趋势", "现金、投资、不动产、负债分开算，校准一次自动往上叠。"], en: ["Net worth as a trend", "Cash, investments, property, debt. Reconcile once, it stacks from there."] },
+  { id: "budget", icon: Gauge, img: "budget", zh: ["预算看节奏", "月中就知道会不会超，建议额度按你真实花过的来。"], en: ["Budget by pace", "Know mid-month if you'll go over. Limits from what you actually spent."] },
 ]
 function Features() {
   const { t, lang } = useLang()
   const [active, setActive] = React.useState("fire")
   const cur = FEATURES.find((f) => f.id === active)!
-  React.useEffect(() => { FEATURES.forEach((f) => { new Image().src = asset(f.img) }) }, [])
+  React.useEffect(() => { FEATURES.forEach((f) => { new Image().src = screen(f.img, lang) }) }, [lang])
   return (
     <Section id="features" className="pt-20">
       <div className="grid border-b border-border md:min-h-[380px] md:grid-cols-2">
@@ -81,7 +81,7 @@ function Features() {
             "How many days that pushed back your freedom date. Savings rate, net worth, budget pace and the FI countdown all come from one ledger.")}</Lead>
         </div>
         <div className="flex h-[400px] items-start justify-center overflow-hidden md:h-[520px]">
-          <Device key={cur.img} src={asset(cur.img)} className="animate-in fade-in duration-300" />
+          <Device key={cur.img + lang} src={screen(cur.img, lang)} className="animate-in fade-in duration-300" />
         </div>
       </div>
       <Tabs value={active} onValueChange={(v) => setActive(String(v))}>
@@ -276,12 +276,12 @@ function More() {
 
 /* ---------- 截图横滑带 ---------- */
 const SHOTS = [
-  ["screen-fire-pro.webp", "FIRE 页 · Coast FIRE 线", "FIRE · Coast FIRE line"],
-  ["screen-budget.webp", "预算 · 消费节奏", "Budget · pace"],
-  ["screen-recurring.webp", "周期账单识别", "Recurring detection"],
-  ["screen-ledger.webp", "账单首页", "Ledger"],
-  ["screen-templates.webp", "记账模板", "Templates"],
-  ["screen-assets.webp", "资产组成", "Asset composition"],
+  ["fire-pro", "FIRE 页 · Coast FIRE 线", "FIRE · Coast FIRE line"],
+  ["budget", "预算 · 消费节奏", "Budget · pace"],
+  ["recurring", "周期账单识别", "Recurring detection"],
+  ["ledger", "账单首页", "Ledger"],
+  ["templates", "记账模板", "Templates"],
+  ["assets", "资产组成", "Asset composition"],
 ]
 function Shots() {
   const { lang } = useLang()
@@ -290,7 +290,7 @@ function Shots() {
       <div className="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 py-6 md:px-10">
         {SHOTS.map(([img, zh, en]) => (
           <figure key={img} className="w-[224px] shrink-0 snap-start">
-            <Device src={asset(img)} width={200} />
+            <Device src={screen(img, lang)} width={200} />
             <figcaption className="mt-3 text-center text-xs text-muted-foreground">{lang === "zh" ? zh : en}</figcaption>
           </figure>
         ))}
