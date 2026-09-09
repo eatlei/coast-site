@@ -620,7 +620,6 @@ function Closing() {
     parts = [{ v: String(y), zh: "年", en: "yrs" }, { v: String(mo), zh: "个月", en: "mos" }, { v: String(dd), zh: "天", en: "days" }, { v: `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:${String(s).padStart(2, "0")}`, zh: "", en: "" }]
   }
   const tdate = target ? new Date(target) : null
-  const dateText = tdate ? (lang === "zh" ? `${tdate.getFullYear()} 年 ${tdate.getMonth() + 1} 月` : tdate.toLocaleDateString("en-US", { year: "numeric", month: "long" })) : "—"
   const savingsRate = Math.max(0, Math.round((p.s / p.inc) * 100))
   const progress = Math.min(1, NET / p.fi)
   const wan = (n: number) => (lang === "zh" ? `¥${(n / 10000).toFixed(n >= 1e6 ? 0 : 1)} 万` : `¥${Math.round(n / 1000)}k`)
@@ -653,20 +652,21 @@ function Closing() {
             <p className="closing-q mt-1 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("每一笔，都是通往自由的一步。", "Every entry is a step toward freedom.")}</p>
             <div className="mt-10"><DownloadButton size="lg" full /></div>
           </div>
-          <div data-reveal className="receipt-slot self-start">
-            <div className="receipt font-mono text-[13px]">
-              <div className="row"><span className="tag">{t("自由日", "Freedom day")}</span><span className="tag">{t("凭证", "Voucher")}</span></div>
-              <div className="mt-5 text-[30px] font-medium leading-none tracking-tight">{dateText}</div>
-              <div className="dash my-5" />
-              <div className="row py-1"><span className="text-muted-foreground">{t("距今", "From today")}</span><span>{p.mid !== null ? `${Math.floor(p.mid / 12)}${t(" 年 ", "y ")}${p.mid % 12}${t(" 个月", "m")}` : "—"}</span></div>
-              <div className="row py-1"><span className="text-muted-foreground">{t("净资产", "Net worth")}</span><span>{wan(NET)}</span></div>
-              <div className="row py-1"><span className="text-muted-foreground">{t("自由所需", "FI number")}</span><span>{wan(p.fi)}</span></div>
-              <div className="row py-1"><span className="text-muted-foreground">{t("储蓄率", "Savings rate")}</span><span>{savingsRate}%</span></div>
-              <div className="row py-1"><span className="text-muted-foreground">{t("年化 / 提取率", "Return / withdrawal")}</span><span>5% / 4%</span></div>
-              <div className="dash my-5" />
-              <div className="row text-[12px] text-muted-foreground"><span>{t("演示账本 · 拖上面的滑杆会变", "Demo ledger · moves with the sliders above")}</span></div>
-              <div className="mt-4 h-7 w-full opacity-80" style={{ background: "repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 9px, currentColor 9px 12px, transparent 12px 14px)" }} aria-hidden="true" />
+          <div data-reveal className="cal self-start">
+            <div className="cal-top" />
+            <div className="p-7 pb-8">
+              <div className="tag font-mono">{tdate ? tdate.getFullYear() : "—"}</div>
+              <div className="cal-month mt-1">{tdate ? (lang === "zh" ? `${tdate.getMonth() + 1} 月` : tdate.toLocaleDateString("en-US", { month: "long" })) : "—"}</div>
+              <div className="mt-2 text-[15px]">{t("自由日", "Freedom day")}<span className="text-muted-foreground"> · {t("距今", "in")} {p.mid !== null ? `${Math.floor(p.mid / 12)}${t(" 年 ", "y ")}${p.mid % 12}${t(" 个月", "m")}` : "—"}</span></div>
+              <div className="mt-7 grid grid-cols-2 gap-x-6 gap-y-4 pr-24 font-mono text-[13px]">
+                <div><div className="tag">{t("净资产", "Net worth")}</div><div className="mt-0.5">{wan(NET)}</div></div>
+                <div><div className="tag">{t("自由所需", "FI number")}</div><div className="mt-0.5">{wan(p.fi)}</div></div>
+                <div><div className="tag">{t("储蓄率", "Savings rate")}</div><div className="mt-0.5">{savingsRate}%</div></div>
+                <div><div className="tag">{t("年化 / 提取率", "Return / withdrawal")}</div><div className="mt-0.5">5% / 4%</div></div>
+              </div>
+              <div className="mt-8 text-[12px] text-muted-foreground">{t("演示账本 · 拖上面的滑杆会变", "Demo ledger · moves with the sliders above")}</div>
             </div>
+            <div className="stamp-seal" aria-hidden="true"><span><b>FI</b>{t("自由日", "FREEDOM")}<br />COAST</span></div>
           </div>
         </div>
         <div className="mt-20 md:mt-24">
