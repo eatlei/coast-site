@@ -19,11 +19,16 @@ function useSketch(build: (tl: gsap.core.Timeline, q: gsap.utils.SelectorFunc) =
     tlRef.current = tl
     const play = contextSafe!(() => { tl.restart() }) as () => void
     const el = root.current!
-    el.addEventListener("mouseenter", play)
-    // 进入视口时播一次
-    const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { play(); io.disconnect() } }, { threshold: 0.6 })
-    io.observe(el)
-    return () => { el.removeEventListener("mouseenter", play); io.disconnect() }
+    // 触发源是整张卡片（[data-card]），不是舞台本身：舞台默认是藏着的
+    const card = (el.closest("[data-card]") as HTMLElement | null) ?? el
+    card.addEventListener("mouseenter", play)
+    // 触屏没有 hover：进入视口时播一次
+    let io: IntersectionObserver | null = null
+    if (matchMedia("(hover: none)").matches) {
+      io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { play(); io?.disconnect() } }, { threshold: 0.6 })
+      io.observe(el)
+    }
+    return () => { card.removeEventListener("mouseenter", play); io?.disconnect() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, { scope: root, dependencies: deps })
   return root

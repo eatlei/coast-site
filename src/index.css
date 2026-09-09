@@ -257,3 +257,16 @@
 
 /* 倒计时 */
 .countdown { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* 亮点卡片：默认只讲功能，舞台藏着；hover 边框加深、微抬，舞台里的动效淡入并播放 */
+.feature-card { display: flex; flex-direction: column; padding: 24px; border-radius: 16px; border: 1px solid var(--rule); background: var(--card); transition: border-color .25s, transform .25s, box-shadow .25s; }
+.feature-card:hover { border-color: color-mix(in oklch, var(--foreground) 35%, transparent); transform: translateY(-2px); box-shadow: 0 18px 40px -28px rgba(0,0,0,.35); }
+.feature-card .stage { position: relative; height: 88px; border-radius: 10px; background: var(--muted); overflow: hidden; }
+.feature-card .stage-hint { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; color: var(--ink-soft); transition: opacity .2s; }
+.feature-card .stage-body { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 16px; opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s; }
+.feature-card:hover .stage-hint { opacity: 0; }
+.feature-card:hover .stage-body { opacity: 1; transform: none; }
+@media (hover: none) {
+  .feature-card .stage-hint { display: none; }
+  .feature-card .stage-body { opacity: 1; transform: none; }
+}

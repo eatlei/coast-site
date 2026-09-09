@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Check, Cloud, CalendarDays, Smartphone, Upload } from "lucide-react"
+import { Check, Cloud, CalendarDays, EyeOff, FileText, GitBranch, Globe, LayoutGrid, Palette, Repeat, Scale, ScanLine, ShoppingBag, Smartphone, Undo2, Upload, Wand2 } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -383,6 +383,7 @@ function Categories() {
 }
 
 /* ---------- 更多亮点：三栏索引 + 小动画 ---------- */
+const ICONS: Record<SketchId, React.ComponentType<{ className?: string }>> = { scan: ScanLine, refund: Undo2, reconcile: Scale, recurring: Repeat, rules: Wand2, review: FileText, repeat: ShoppingBag, scenarios: GitBranch, widgets: LayoutGrid, currency: Globe, themes: Palette, privacy: EyeOff }
 const MORE: { id: SketchId; pro?: boolean; zh: [string, string]; en: [string, string] }[] = [
   { id: "scan", zh: ["截图记账", "账单截图丢进来，金额商家在手机上识别，不发网。"], en: ["Receipt scan", "Drop in a screenshot; amount and merchant are read on device."] },
   { id: "refund", zh: ["分次退款", "1000 先退 500 到信用卡，再退 200 到储蓄卡，都记得住。"], en: ["Partial refunds", "¥500 back to the card, ¥200 to savings, later. It keeps track."] },
@@ -404,17 +405,22 @@ function More() {
       <div className="mx-auto w-full max-w-[1200px]">
         <Tag>{t("还有这些", "And then some")}</Tag>
         <H2>{t("为一年只用两次的场景，也认真做了。", "Built carefully, even for things you'll do twice a year.")}</H2>
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {MORE.map((m) => {
             const [title, body] = lang === "zh" ? m.zh : m.en
+            const Icon = ICONS[m.id]
             return (
-              <div key={m.id} data-reveal className="flex flex-col rounded-xl border border-rule bg-card p-5">
-                <div className="flex items-baseline gap-2">
-                  <h3 className="font-sans text-[16px] font-semibold tracking-normal">{title}</h3>
-                  {m.pro && <span className="tag text-primary">Pro</span>}
+              <div key={m.id} data-reveal data-card className="feature-card group">
+                <div className="flex h-6 items-center justify-between">
+                  <Icon className="size-5 text-muted-foreground transition-colors group-hover:text-primary" />
+                  {m.pro && <span className="tag rounded-full border border-rule px-2 py-0.5 text-[11px] text-primary">Pro</span>}
                 </div>
-                <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">{body}</p>
-                <div className="mt-auto flex h-[72px] items-end pt-5"><Sketch id={m.id} /></div>
+                <h3 className="mt-5 font-sans text-[17px] font-semibold tracking-normal">{title}</h3>
+                <p className="mt-2 min-h-[44px] text-[14px] leading-relaxed text-muted-foreground">{body}</p>
+                <div className="stage mt-6">
+                  <span className="stage-hint">{t("移上来看看", "Hover to see it")}</span>
+                  <div className="stage-body"><Sketch id={m.id} /></div>
+                </div>
               </div>
             )
           })}
