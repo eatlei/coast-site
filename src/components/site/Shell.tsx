@@ -108,11 +108,11 @@ export function Footer() {
 }
 
 /** 子页面（隐私 / 日志 / 手册）的统一窄版容器 */
-export function DocPage({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+export function DocPage({ title, subtitle, children, wide = false }: { title: string; subtitle?: string; children: React.ReactNode; wide?: boolean }) {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-[720px] px-6 pb-24 pt-28">
+      <main className={`mx-auto w-full px-6 pb-24 pt-28 ${wide ? "max-w-[1040px]" : "max-w-[720px]"}`}>
         <h1 className="text-3xl font-semibold md:text-4xl">{title}</h1>
         {subtitle && <p className="mt-2 text-muted-foreground">{subtitle}</p>}
         <div className="prose-coast mt-10">{children}</div>

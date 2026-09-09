@@ -1,7 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/besley";
+@import "@fontsource/noto-serif-sc/600.css";
+@import "@fontsource/noto-sans-sc/400.css";
+@import "@fontsource/noto-sans-sc/500.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -130,8 +134,9 @@
 }
 /* ---------- Coast 品牌层：只改 token，不改组件 ---------- */
 @theme inline {
-    --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
-    --font-heading: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, "Times New Roman", serif;
+    /* 拉丁字形在前、中文字形在后：Inter / Besley 不含汉字，汉字自然落到后面的中文字体 */
+    --font-sans: "Inter Variable", -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --font-heading: "Besley Variable", "Noto Serif SC", "Songti SC", Georgia, serif;
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
 }
@@ -165,6 +170,11 @@
     --border: oklch(1 0 0 / 12%);
     --success: oklch(0.72 0.15 155);
 }
-h1, h2, h3, .font-heading { font-family: var(--font-heading); letter-spacing: -0.01em; }
+/* 放进 base 层：让 font-sans 这类工具类能覆盖标题的衬线（小节标签、亮点卡标题用无衬线） */
+@layer base {
+  h1, h2, h3 { font-family: var(--font-heading); letter-spacing: -0.01em; font-weight: 600; }
+  body { font-feature-settings: "cv11", "ss01"; }
+}
+.font-heading { font-family: var(--font-heading); letter-spacing: -0.01em; }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }

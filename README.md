@@ -21,7 +21,9 @@ npm run dev      # 本地开发
 npm run build    # 产物在 dist/
 ```
 
-- 品牌 token 只改 `src/index.css` 末尾那一段（主色 iOS 蓝、衬线标题字体），不改组件源码
+- 品牌 token 只改 `src/index.css` 末尾那一段（主色 iOS 蓝、字体），不改组件源码
+- 字体自托管（fontsource）：标题 Besley + Noto Serif SC 600，正文 Inter + 苹方 / Noto Sans SC；
+  中文字体按 unicode-range 切成 101 片，浏览器只下载用到的片，不依赖 Google Fonts
 - 中英切换在 `src/lib/i18n.tsx`，文案就地写 `t("中文", "English")`
 - 加组件：`npx shadcn@latest add <name>`
 
