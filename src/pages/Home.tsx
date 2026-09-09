@@ -624,7 +624,8 @@ function Closing() {
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const split = SplitText.create(".closing-q", { type: lang === "zh" ? "chars" : "words", autoSplit: true })
+      // charsClass 配合 CSS 把字改回 inline：SplitText 默认 inline-block 会让「。」丢掉行首禁则、单独换行
+      const split = SplitText.create(".closing-q", { type: lang === "zh" ? "chars" : "words", charsClass: "cq", wordsClass: "cq", autoSplit: true })
       gsap.from(split.chars.length ? split.chars : split.words, { opacity: 0.12, stagger: 0.02, ease: "none", scrollTrigger: { trigger: root.current, start: "top 75%", end: "top 30%", scrub: true } })
       return () => split.revert()
     })
@@ -638,7 +639,7 @@ function Closing() {
             {parts.map((x, i) => <span key={i}>{x.v}<span className="ml-1.5 font-sans text-base text-muted-foreground md:text-xl">{lang === "zh" ? x.zh : x.en}</span></span>)}
           </div>
         ) : <div className="mt-4 text-[28px] text-muted-foreground">{t("当前收支算不出自由日。", "No freedom date at this rate.")}</div>}
-        <p className="closing-q mt-14 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("一个 App 让你怎么分类，就是在告诉你它认为钱是什么。", "How an app asks you to categorize money is how it tells you what it thinks money is.")}</p>
+        <p className="closing-q mt-14 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("不问你这个月花了多少，只问你还要工作多久。", "It never asks what you spent this month. Only how much longer you have to work.")}</p>
         <div className="mt-10"><DownloadButton size="lg" full /></div>
       </div>
     </section>

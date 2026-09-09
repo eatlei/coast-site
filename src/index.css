@@ -265,3 +265,6 @@
 .dark .feature-card:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 30px 60px -28px rgba(0,0,0,.8); }
 .feature-card .stage { position: relative; height: 88px; border-radius: 10px; background: var(--muted); overflow: hidden; }
 .feature-card .stage-body { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 16px; }
+
+/* 结尾逐字浮现：字保持 inline，中文标点禁则才生效 */
+.closing-q .cq { display: inline; }
