@@ -404,17 +404,17 @@ function More() {
       <div className="mx-auto w-full max-w-[1200px]">
         <Tag>{t("还有这些", "And then some")}</Tag>
         <H2>{t("为一年只用两次的场景，也认真做了。", "Built carefully, even for things you'll do twice a year.")}</H2>
-        <div className="mt-12 grid gap-x-10 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {MORE.map((m) => {
             const [title, body] = lang === "zh" ? m.zh : m.en
             return (
-              <div key={m.id} data-reveal className="py-4">
+              <div key={m.id} data-reveal className="flex flex-col rounded-xl border border-rule bg-card p-5">
                 <div className="flex items-baseline gap-2">
                   <h3 className="font-sans text-[16px] font-semibold tracking-normal">{title}</h3>
                   {m.pro && <span className="tag text-primary">Pro</span>}
                 </div>
                 <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">{body}</p>
-                <Sketch id={m.id} />
+                <div className="mt-auto flex h-[72px] items-end pt-5"><Sketch id={m.id} /></div>
               </div>
             )
           })}

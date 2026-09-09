@@ -32,14 +32,14 @@ function useSketch(build: (tl: gsap.core.Timeline, q: gsap.utils.SelectorFunc) =
 function Scan() {
   const root = useSketch((tl, q) => {
     tl.set(q(".beam"), { x: 0, opacity: 1 }).set(q(".v"), { opacity: 0 })
-      .to(q(".beam"), { x: 128, duration: 0.9, ease: "power1.inOut" })
+      .to(q(".beam"), { x: 190, duration: 0.9, ease: "power1.inOut" })
       .to(q(".beam"), { opacity: 0, duration: 0.2 })
       .to(q(".v"), { opacity: 1, stagger: 0.12 }, "-=0.3")
   })
   return (
-    <div ref={root} className="relative h-11 w-36 overflow-hidden rounded-[3px] border border-rule">
-      <div className={`absolute left-2 top-2 ${mono} v text-muted-foreground`}>¥25.00</div>
-      <div className={`absolute left-2 bottom-2 ${mono} v text-muted-foreground`}>楼下牛肉面</div>
+    <div ref={root} className="relative h-11 w-full max-w-[200px] overflow-hidden rounded-[3px] border border-rule">
+      <div className={`absolute left-2.5 top-1.5 ${mono} v`}>楼下牛肉面</div>
+      <div className={`absolute right-2.5 bottom-1.5 ${mono} v text-muted-foreground`}>¥25.00</div>
       <div className="beam absolute inset-y-0 left-0 w-3 bg-primary/25" />
     </div>
   )
@@ -66,7 +66,7 @@ function Reconcile() {
       .to(q(".ok"), { opacity: 1, scale: 1, ease: "back.out(2)" })
   })
   return (
-    <div ref={root} className={`h-11 w-40 ${mono}`}>
+    <div ref={root} className={`h-11 w-full max-w-[220px] ${mono}`}>
       <div className="flex justify-between"><span className="text-muted-foreground">校准</span><span>¥12,340</span></div>
       <div className="stack flex justify-between text-muted-foreground"><span>+ 流水</span><span>+ ¥1,220</span></div>
       <div className="stack flex justify-between"><span>= 现在</span><span>¥13,560 <span className="ok text-success">✓</span></span></div>
@@ -81,7 +81,7 @@ function Recurring() {
       .to(q(".one"), { opacity: 1 }, "-=0.2")
   })
   return (
-    <div ref={root} className={`relative h-11 w-40 ${mono}`}>
+    <div ref={root} className={`relative h-11 w-full max-w-[220px] ${mono}`}>
       <div className="it flex justify-between"><span>Netflix</span><span className="text-muted-foreground">9/01</span></div>
       <div className="it flex justify-between"><span>Netflix</span><span className="text-muted-foreground">8/01</span></div>
       <div className="it flex justify-between"><span>Netflix</span><span className="text-muted-foreground">7/01</span></div>
@@ -98,7 +98,7 @@ function Rules() {
       .to(q(".ask"), { color: "var(--primary)" }, 1.1)
   })
   return (
-    <div ref={root} className={`h-11 w-44 ${mono}`}>
+    <div ref={root} className={`h-11 w-full max-w-[220px] ${mono}`}>
       <div className="flex gap-2"><span>美团外卖</span><span className="text-muted-foreground">→</span><span className="cat">弹性 · 外食</span></div>
       <div className="ask mt-1 text-muted-foreground">下次自动这样归类？ 记住</div>
     </div>
@@ -113,7 +113,7 @@ function Review() {
       .to(q(".say"), { opacity: 1 }, "-=0.2")
   })
   return (
-    <div ref={root} className="relative h-11 w-44">
+    <div ref={root} className="relative h-11 w-full max-w-[220px]">
       <div className="bar mt-1 h-1 w-3/4 bg-foreground/60" /><div className="bar mt-1.5 h-1 w-1/2 bg-foreground/60" /><div className="bar mt-1.5 h-1 w-2/3 bg-foreground/60" />
       <div className={`say absolute inset-x-0 top-0 ${mono}`}>外食比上月多了 ¥620，占了超支的大头。</div>
     </div>
@@ -128,7 +128,7 @@ function Repeat() {
       .to(q(".sum"), { opacity: 1 })
   })
   return (
-    <div ref={root} className={`h-11 w-44 ${mono}`}>
+    <div ref={root} className={`h-11 w-full max-w-[220px] ${mono}`}>
       <div className="flex justify-between"><span>Luckin</span><span>×<span className="n">0</span></span></div>
       <div className="sum flex justify-between text-muted-foreground"><span>一年</span><span>≈ ¥3,300</span></div>
     </div>
@@ -142,7 +142,7 @@ function Scenarios() {
       .from(q(".lbl"), { opacity: 0, stagger: 0.1 }, "-=0.3")
   })
   return (
-    <div ref={root} className="relative h-11 w-44">
+    <div ref={root} className="relative h-11 w-full max-w-[220px]">
       <svg viewBox="0 0 176 44" className="h-full w-full" fill="none" strokeWidth="1.5">
         <path className="a" d="M0 40 C 50 36, 90 26, 130 8" stroke="var(--primary)" />
         <path className="b" d="M0 40 C 60 38, 110 32, 170 18" stroke="var(--rule)" />
@@ -158,9 +158,9 @@ function Widgets() {
     tl.from(q(".w"), { scale: 0.6, opacity: 0, stagger: 0.08, ease: "back.out(1.6)" })
   })
   return (
-    <div ref={root} className={`grid h-11 w-44 grid-cols-3 gap-1.5 ${mono}`}>
+    <div ref={root} className={`grid h-11 w-full max-w-[240px] grid-cols-3 gap-1.5 ${mono}`}>
       <div className="w rounded-[3px] border border-rule px-1.5 py-1 leading-tight"><div className="text-[9px] text-muted-foreground">还能花</div>¥2,585</div>
-      <div className="w rounded-[3px] border border-rule px-1.5 py-1 leading-tight"><div className="text-[9px] text-muted-foreground">净资产</div>¥57.6万</div>
+      <div className="w rounded-[3px] border border-rule px-1.5 py-1 leading-tight"><div className="text-[9px] text-muted-foreground">净资产</div>57.6万</div>
       <div className="w rounded-[3px] border border-rule px-1.5 py-1 leading-tight"><div className="text-[9px] text-muted-foreground">自由日</div>8y 7m</div>
     </div>
   )
@@ -173,7 +173,7 @@ function Currency() {
       .from(q(".rate"), { opacity: 0 }, "-=0.2")
   })
   return (
-    <div ref={root} className={`h-11 w-44 ${mono}`}>
+    <div ref={root} className={`h-11 w-full max-w-[220px] ${mono}`}>
       <div className="flex gap-2"><span>$100.00</span><span className="text-muted-foreground">→</span><span className="to">¥712.40</span></div>
       <div className="rate text-muted-foreground">今日 7.124 · 自动</div>
     </div>
@@ -197,7 +197,7 @@ function Privacy() {
       .to(q(".real"), { opacity: 0 }, 0.5).to(q(".mask"), { opacity: 1 }, 0.5)
   })
   return (
-    <div ref={root} className={`relative h-11 w-44 ${mono}`}>
+    <div ref={root} className={`relative h-11 w-full max-w-[220px] ${mono}`}>
       <div className="real"><div className="flex justify-between"><span>本月支出</span><span>¥9,414.89</span></div><div className="flex justify-between text-muted-foreground"><span>净资产</span><span>¥574,907</span></div></div>
       <div className="mask absolute inset-0"><div className="flex justify-between"><span>本月支出</span><span>¥●,●●●.●●</span></div><div className="flex justify-between text-muted-foreground"><span>净资产</span><span>¥●●●,●●●</span></div></div>
     </div>
@@ -208,5 +208,5 @@ const MAP: Record<SketchId, React.ComponentType> = { scan: Scan, refund: Refund,
 
 export function Sketch({ id }: { id: SketchId }) {
   const C = MAP[id]
-  return <div className="mt-3 text-foreground"><C /></div>
+  return <div className="w-full text-foreground"><C /></div>
 }
