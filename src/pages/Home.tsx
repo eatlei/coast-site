@@ -31,12 +31,13 @@ function Hero() {
       if (ctx.conditions?.reduced) return
       const split = SplitText.create(".hero-h1", { type: "lines", mask: "lines", linesClass: "hl", autoSplit: true })
       const tl = gsap.timeline({ defaults: { ease: EASE } })
+      tl.addLabel("curve", 0.3)
       tl.from(split.lines, { yPercent: 120, duration: 1.1, stagger: 0.12 }, 0.1)
         .from(".hero-sub", { y: 18, opacity: 0, duration: 0.9 }, "-=0.6")
         .from(".hero-cta", { y: 12, opacity: 0, duration: 0.7 }, "-=0.6")
         .from(".hero-phone", { y: 48, opacity: 0, duration: 1.2 }, "-=1")
-        .fromTo(".hero-curve", { drawSVG: "0%" }, { drawSVG: "100%", duration: 1.8, ease: "power2.inOut" }, 0.3)
-        .from(".hero-dot", { scale: 0, transformOrigin: "50% 50%", duration: 0.4, ease: "back.out(2)" }, "-=0.2")
+        .fromTo(".hero-curve", { drawSVG: "0%" }, { drawSVG: "100%", duration: 1.8, ease: "power2.inOut" }, "curve")
+        .from(".hero-dot", { scale: 0, duration: 0.45, ease: "back.out(2.5)" }, "curve+=1.75")
       gsap.to(".hero-phone", { yPercent: -10, ease: "none", scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true } })
       return () => split.revert()
     })
@@ -44,10 +45,12 @@ function Hero() {
 
   return (
     <section ref={root} className="relative overflow-hidden px-6 pb-20 pt-32 md:px-10 md:pb-28 md:pt-40">
+      {/* 曲线按容器拉伸（preserveAspectRatio none），圆点不能画在 SVG 里（会被拉成椭圆），
+          所以用同一套坐标换算成百分比定位：SVG 占底部 70%，终点 (1150, 60) → left 95.8%，top 30% + 70% × 10% */}
       <svg className="pointer-events-none absolute inset-x-0 bottom-0 h-[70%] w-full" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
-        <path className="hero-curve" d="M0 585 C 320 575, 640 540, 860 420 S 1120 130, 1200 40" fill="none" stroke="var(--primary)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" opacity=".55" />
+        <path className="hero-curve" d="M0 585 C 320 575, 640 540, 860 420 S 1090 150, 1150 60" fill="none" stroke="var(--primary)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" opacity=".55" />
       </svg>
-      <svg className="pointer-events-none absolute right-6 top-[36%] md:right-10" width="10" height="10" aria-hidden="true"><circle className="hero-dot" cx="5" cy="5" r="4" fill="var(--primary)" /></svg>
+      <span className="hero-dot pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" style={{ left: "95.83%", top: "37%" }} aria-hidden="true" />
       <div className="relative mx-auto grid w-full max-w-[1200px] items-end gap-12 md:grid-cols-[minmax(0,1fr)_320px] md:gap-20">
         <div>
                     <h1 key={lang} className="hero-h1 max-w-[720px] text-[34px] font-semibold leading-[1.12] sm:text-[44px] md:text-[60px]">
