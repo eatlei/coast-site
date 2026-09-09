@@ -50,7 +50,7 @@ function Hero() {
       <svg className="pointer-events-none absolute right-6 top-[36%] md:right-10" width="10" height="10" aria-hidden="true"><circle className="hero-dot" cx="5" cy="5" r="4" fill="var(--primary)" /></svg>
       <div className="relative mx-auto grid w-full max-w-[1200px] items-end gap-12 md:grid-cols-[minmax(0,1fr)_320px] md:gap-20">
         <div>
-                    <h1 className="hero-h1 max-w-[720px] text-[34px] font-semibold leading-[1.12] sm:text-[44px] md:text-[60px]">
+                    <h1 key={lang} className="hero-h1 max-w-[720px] text-[34px] font-semibold leading-[1.12] sm:text-[44px] md:text-[60px]">
             {lang === "zh" ? <>所有记账都在讲过去，<br />只有它在讲<span className="text-primary">未来</span>。</>
               : <>Every money app talks about the past.<br />This one talks about <span className="text-primary">when you can stop</span>.</>}
           </h1>
@@ -457,7 +457,7 @@ function Closing() {
     <section ref={root} className="rule px-6 py-28 md:px-10 md:py-40">
       <div className="mx-auto w-full max-w-[1200px]">
         <div className="tag">{t("设计原则", "Principle")}</div>
-        <p className="closing-q mt-6 max-w-[900px] font-heading text-[28px] leading-[1.3] md:text-[44px]">{t("一个 App 让你怎么分类，就是在告诉你它认为钱是什么。", "How an app asks you to categorize money is how it tells you what it thinks money is.")}</p>
+        <p key={lang} className="closing-q mt-6 max-w-[900px] font-heading text-[28px] leading-[1.3] md:text-[44px]">{t("一个 App 让你怎么分类，就是在告诉你它认为钱是什么。", "How an app asks you to categorize money is how it tells you what it thinks money is.")}</p>
         <div className="mt-10"><DownloadButton size="lg" full /></div>
       </div>
     </section>
