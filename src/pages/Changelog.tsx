@@ -11,13 +11,12 @@ const VERSIONS: Version[] = [
     v: "1.0.2",
     date: ["2026 年 9 月", "Sep 2026"],
     intro: [
-      "一个补丁版，只做一件事：把永久买断修好。已经买过的不用再买一次。",
-      "A patch release with one job: fix the lifetime unlock. If you already bought it, you never need to buy it again.",
+      "修复 App Store 会员购买相关的问题。已经买过的不用再买一次。",
+      "Fixes for membership purchases on the App Store. If you already bought it, you never need to buy it again.",
     ],
     sections: [
       { title: ["修复", "Fixed"], items: [
-        ["永久买断可能认不回来", "商品在 App Store 上被建成了错误的类型，买断或兑换码解锁后，权益可能在重装或冷启动后消失。现已换成正确类型的新商品重新上架。", "Lifetime unlock could fail to restore", "The product had been created under the wrong type on the App Store, so a lifetime purchase or offer code could vanish after a reinstall or a cold start. It has been re-issued as a new product of the correct type."],
-        ["旧的买断永久认账", "此前买过或用兑换码解锁的，App 会继续认，不需要重新购买。如果排查期间重复付过一次款，可以按 Apple 的退款流程申请退回。", "Previous purchases honored forever", "Anything bought or redeemed before is still recognized — no need to buy again. If you were charged twice while this was being diagnosed, Apple's refund flow will return one of them."],
+        ["会员购买与恢复", "", "Membership purchase and restore", ""],
       ] },
     ],
   },
