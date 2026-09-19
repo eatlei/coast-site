@@ -8,6 +8,34 @@ type Version = { v: string; date: [string, string]; intro: [string, string]; sec
 
 const VERSIONS: Version[] = [
   {
+    v: "1.0.3",
+    date: ["2026 年 9 月", "Sep 2026"],
+    intro: [
+      "AA 分账上线，iPad 和 Mac 有了大屏版，全 App 再提一次速。",
+      "Split bills arrive, iPad and Mac get a big-screen layout, and the whole app gets faster again.",
+    ],
+    sections: [
+      { title: ["新增", "New"], items: [
+        ["AA 分账", "多人分摊一笔账，平均、按金额、按比例都行；我付了等别人还、别人付了我来还，两个方向都能记。分账中心按人列出待收待付，单笔或一键结清，账户余额自动同步。", "Split Bills", "Split an expense evenly, by amount or by percentage — whether you paid or someone else did. Split Center groups what you're owed and what you owe by person; settle one or all, and account balances update automatically."],
+        ["iPad 与 Mac", "支持 iPad，Mac 上窗口可自由缩放；大屏用侧边栏导航，数据页和 FIRE 页卡片分两列。", "iPad & Mac", "Now on iPad, with a resizable window on Mac; sidebar navigation and two-column cards on larger screens."],
+        ["长按加号", "直接选记一笔、用模板，或发起 AA。", "Long-press +", "Log an entry, use a template, or start a split."],
+      ] },
+      { title: ["改进", "Improved"], items: [
+        ["金额输入", "从 0 开始，输入多少显示多少，不再自动补 .00。", "Amount entry", "Starts at 0 and shows exactly what you type — no more automatic .00."],
+        ["设置入口统一", "四个页面右上角都能直接进设置。", "Settings, everywhere", "One tap from the top-right of every tab."],
+        ["更快更顺", "切换页面、滑动列表、打开记账面板都更快。", "Faster", "Quicker tab switching, smoother scrolling, a faster entry sheet."],
+        ["记账面板里的就地拆账改名为「快速 AA」", "", "The in-entry split is now called \"Quick Split\"", ""],
+        ["自动备份包含按月单独设置的预算", "", "Automatic backups now include budgets set for individual months", ""],
+      ] },
+      { title: ["修复", "Fixed"], items: [
+        ["备注只有空格时，账单标题显示为空白", "", "Blank entry titles when a note contained only spaces", ""],
+        ["小屏上记账金额「符号大、数字小」", "", "Large currency symbol with small digits on small screens", ""],
+        ["iOS 26 上长按加号没有反应", "", "Long-press on + not responding on iOS 26", ""],
+        ["Coast FIRE 提示里露出格式符号", "", "Formatting symbols showing in a Coast FIRE tip", ""],
+      ] },
+    ],
+  },
+  {
     v: "1.0.2",
     date: ["2026 年 9 月", "Sep 2026"],
     intro: [
