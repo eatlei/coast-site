@@ -771,3 +771,50 @@ export function DiffNumbers() {
     </Fig>
   )
 }
+
+// ---------- 概念词典 ----------
+
+/** 提取率 → 需要年支出的多少倍 */
+export function WithdrawalMultiples() {
+  const { t } = useLang()
+  const rows = [3, 3.5, 4, 4.5, 5].map((r) => ({ r, x: 100 / r }))
+  return (
+    <Fig caption={t("提取率越低越保守：3% 要攒约 33 倍年支出，5% 只要 20 倍。打算越早退休，退休期越长，越该往低了调。", "The lower the rate, the safer: 3% needs about 33× your annual spending, 5% only 20×. The earlier you plan to stop, the longer retirement lasts, and the lower you should go.")}>
+      <div className="space-y-2.5">
+        {rows.map((w) => (
+          <div key={w.r} className="grid grid-cols-[52px_1fr_64px] items-center gap-3 text-sm">
+            <span className="num text-muted-foreground">{w.r}%</span>
+            <div className="h-5 rounded-md bg-muted/60"><div className="h-full rounded-md" style={{ width: `${(w.x / 34) * 100}%`, background: w.r === 4 ? "var(--primary)" : "color-mix(in oklch, var(--primary) 35%, transparent)" }} /></div>
+            <span className={`num text-right ${w.r === 4 ? "font-medium text-primary" : ""}`}>{w.x.toFixed(1)}×</span>
+          </div>
+        ))}
+      </div>
+    </Fig>
+  )
+}
+
+/** 三档收益假设：同一本账，倒计时用中性，区间由悲观~乐观围成 */
+export function ReturnTiers() {
+  const { t, lang } = useLang(), zh = lang === "zh"
+  const tiers = [[t("悲观", "Pessimistic"), 0.03], [t("中性", "Neutral"), 0.05], [t("乐观", "Optimistic"), 0.07]] as const
+  const months = tiers.map(([, r]) => {
+    const rm = Math.pow(1 + r, 1 / 12) - 1, target = 12000 * 12 / SWR
+    let nw = 800000
+    for (let m = 0; m < 2400; m++) { if (nw >= target) return m; nw = nw * (1 + rm) + 8000 }
+    return 2400
+  })
+  const max = Math.max(...months)
+  return (
+    <Fig caption={t("演示账本：月支出 1.2 万、月储蓄 8000、净资产 80 万。倒计时显示中性档；点开数字下面那行，能看到悲观到乐观的年份区间。", "Demo ledger: ¥12k spending, ¥8k saved a month, ¥800k net worth. The countdown uses Neutral; tap the line under it for the pessimistic-to-optimistic range.")}>
+      <div className="space-y-2.5">
+        {tiers.map(([n, r], i) => (
+          <div key={n} className="grid grid-cols-[96px_1fr_92px] items-center gap-3 text-sm">
+            <span className="text-muted-foreground">{n} <span className="num">{Math.round(r * 100)}%</span></span>
+            <div className="h-5 rounded-md bg-muted/60"><div className="h-full rounded-md" style={{ width: `${(months[i] / max) * 100}%`, background: i === 1 ? "var(--primary)" : "color-mix(in oklch, var(--primary) 35%, transparent)" }} /></div>
+            <span className={`num text-right ${i === 1 ? "font-medium text-primary" : ""}`}>{ym(months[i], zh)}</span>
+          </div>
+        ))}
+      </div>
+    </Fig>
+  )
+}
