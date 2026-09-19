@@ -174,7 +174,7 @@ export function MergeEntries() {
     </div>
   )
   return (
-    <Fig caption={t("一个月的地铁和咖啡：花的钱一样，要记的次数差了 60 倍。", "A month of transit and coffee: same money, 60× fewer entries.")}>
+    <Fig caption={t("一个月的地铁和咖啡：花的钱一样，要记的次数从 66 次变成 2 次。", "A month of transit and coffee: same money, 66 entries down to 2.")}>
       <Compare beforeTitle={t("逐笔记", "Every time")} afterTitle={t("充值记一笔", "Log the top-up")}
         before={<><Row label={t("地铁 44 次", "Metro × 44")} n={44} amount="¥176" /><Row label={t("咖啡 22 杯", "Coffee × 22")} n={22} amount="¥330" /></>}
         after={<><Row label={t("交通卡充值", "Transit top-up")} n={1} amount="¥200" /><Row label={t("咖啡店储值", "Coffee card")} n={1} amount="¥300" /></>} />
