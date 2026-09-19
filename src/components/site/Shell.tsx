@@ -78,6 +78,28 @@ export function DownloadButton({ size = "default", className = "", full = false 
 export function Header() {
   const { t } = useLang()
   const [scrolled, setScrolled] = React.useState(false)
+  // 手机菜单要受控：导航里多是首页锚点（#features、#contact），点了只是页内滚动、不会换页，
+  // 不手动关的话侧栏一直盖在页面上
+  const [menuOpen, setMenuOpen] = React.useState(false)
+  const close = () => setMenuOpen(false)
+  /** 首页锚点：侧栏开着时页面被锁滚动，直接跳锚点会被吞掉（点了「联系我」页面不动）；
+   *  定时器也不行——侧栏收起时会把滚动位置恢复成打开前的样子，把刚滚过去的又拉回来。
+   *  所以先记下要去哪，等 onOpenChangeComplete(false)（收起动画结束、滚动已解锁）再滚。
+   *  别的页面上点这些链接照常换页 */
+  const pendingAnchor = React.useRef<string | null>(null)
+  const onNav = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    const [path, id] = href.split("#")
+    const onHome = window.location.pathname === path || window.location.pathname === `${path}index.html`
+    if (id && onHome) { e.preventDefault(); pendingAnchor.current = id }
+    close()
+  }
+  const onMenuSettled = (open: boolean) => {
+    const id = pendingAnchor.current
+    if (open || !id) return
+    pendingAnchor.current = null
+    history.replaceState(null, "", `#${id}`)
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
   React.useEffect(() => {
     const on = () => setScrolled(window.scrollY > 8)
     on(); window.addEventListener("scroll", on, { passive: true })
@@ -95,7 +117,7 @@ export function Header() {
         <LangMenu />
         <ThemeMenu />
         <DownloadButton size="sm" className="hidden sm:inline-flex" />
-        <Sheet>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen} onOpenChangeComplete={onMenuSettled}>
           <SheetTrigger render={<Button variant="outline" size="icon-sm" className="md:hidden" aria-label="Menu" />}>
             <Menu />
           </SheetTrigger>
@@ -103,11 +125,11 @@ export function Header() {
             <SheetHeader><SheetTitle className="font-heading">Coast</SheetTitle></SheetHeader>
             <nav className="flex flex-col gap-1 px-4">
               {NAV.map((n) => (
-                <a key={n.href} href={n.href} className="rounded-md px-2 py-2.5 text-base hover:bg-muted">{t(n.zh, n.en)}</a>
+                <a key={n.href} href={n.href} onClick={(e) => onNav(e, n.href)} className="rounded-md px-2 py-2.5 text-base hover:bg-muted">{t(n.zh, n.en)}</a>
               ))}
               <Separator className="my-3" />
-              <a href={`${BASE}privacy.html`} className="rounded-md px-2 py-2.5 text-sm text-muted-foreground hover:bg-muted">{t("隐私政策", "Privacy")}</a>
-              <div className="mt-3 px-2"><DownloadButton full className="w-full" /></div>
+              <a href={`${BASE}privacy.html`} onClick={close} className="rounded-md px-2 py-2.5 text-sm text-muted-foreground hover:bg-muted">{t("隐私政策", "Privacy")}</a>
+              <div className="mt-3 px-2" onClick={close}><DownloadButton full className="w-full" /></div>
             </nav>
           </SheetContent>
         </Sheet>
