@@ -43,3 +43,9 @@ export const asset = (name: string) => `${BASE}assets/${name}`
 export const screen = (name: string, lang: Lang) => `${BASE}assets/screen-${name}.${lang}.webp`
 export const APP_STORE = "https://apps.apple.com/cn/app/id6793885422"
 export const MAIL = "hi@thisleon.com"
+/** 联系方式：首页「联系我」和页脚共用这一份，改一处即可 */
+export const X_HANDLE = "thisleon12"
+export const X_URL = `https://x.com/${X_HANDLE}`
+/** 小红书个人主页链接要用内部 user id，小红书号本身拼不出链接，所以页面上给「复制小红书号」 */
+export const XHS_NAME = "ThisLeon"
+export const XHS_ID = "95993219565"

@@ -1,12 +1,12 @@
 import * as React from "react"
-import { Check, Cloud, CalendarDays, EyeOff, FileText, GitBranch, Globe, LayoutGrid, Palette, Repeat, Scale, ScanLine, ShoppingBag, Smartphone, Undo2, Upload, Wand2 } from "lucide-react"
+import { ArrowUpRight, Check, Cloud, Copy, Mail, CalendarDays, EyeOff, FileText, GitBranch, Globe, LayoutGrid, Palette, Repeat, Scale, ScanLine, ShoppingBag, Smartphone, Undo2, Upload, Wand2 } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import { Device, DownloadButton, Footer, Header } from "@/components/site/Shell"
 import { Sketch, type SketchId } from "@/components/site/Sketches"
-import { APP_STORE, MAIL, screen, useLang } from "@/lib/i18n"
+import { APP_STORE, MAIL, X_HANDLE, X_URL, XHS_ID, XHS_NAME, screen, useLang } from "@/lib/i18n"
 import { EASE, REDUCED, ScrollTrigger, SplitText, gsap, useGSAP } from "@/lib/gsap"
 
 /* ---------- 版式原语：整站只用这几样，不用卡片 ---------- */
@@ -604,6 +604,50 @@ function Faq() {
   )
 }
 
+/* ---------- 联系我 ---------- */
+function Contact() {
+  const { t } = useLang()
+  const [copied, setCopied] = React.useState(false)
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(XHS_ID); setCopied(true); setTimeout(() => setCopied(false), 1600) } catch { /* 剪贴板不可用时就让用户看着号手动输 */ }
+  }
+  const card = "flex flex-col rounded-2xl border border-rule bg-card p-6 transition-colors hover:border-primary/40"
+  return (
+    <Section id="contact">
+      <div className="mx-auto grid w-full max-w-[1200px] gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-20">
+        <div>
+          <Tag>Contact</Tag>
+          <H2>{t("联系我", "Get in touch")}</H2>
+          <Lead>{t("Coast 是我一个人做的。用着哪里不顺手、想要什么功能，或者只是想聊聊记账和 FIRE，都欢迎来找我。", "Coast is built by one person. If something feels off, there's a feature you want, or you just want to talk budgeting and FIRE, I'd love to hear from you.")}</Lead>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <a href={X_URL} rel="noopener" target="_blank" className={card}>
+            <div className="grid size-10 place-items-center rounded-xl bg-foreground text-lg font-semibold text-background">𝕏</div>
+            <div className="mt-5 text-sm text-muted-foreground">X</div>
+            <div className="mt-1 font-medium">@{X_HANDLE}</div>
+            <div className="mt-auto flex items-center gap-1 pt-5 text-sm text-primary">{t("去关注", "Follow")}<ArrowUpRight className="size-4" /></div>
+          </a>
+          <button type="button" onClick={copy} className={`${card} text-left`}>
+            <div className="grid size-10 place-items-center rounded-xl bg-[#FF2442] text-[11px] font-bold text-white">{t("小红书", "RED")}</div>
+            <div className="mt-5 text-sm text-muted-foreground">{t("小红书", "Xiaohongshu")}</div>
+            <div className="mt-1 font-medium">@{XHS_NAME}</div>
+            <div className="num mt-1 text-xs text-muted-foreground">{t("小红书号", "ID")} {XHS_ID}</div>
+            <div className="mt-auto flex items-center gap-1 pt-5 text-sm text-primary">
+              {copied ? <><Check className="size-4" />{t("已复制", "Copied")}</> : <><Copy className="size-4" />{t("复制小红书号", "Copy ID")}</>}
+            </div>
+          </button>
+          <a href={`mailto:${MAIL}`} className={card}>
+            <div className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground"><Mail className="size-5" /></div>
+            <div className="mt-5 text-sm text-muted-foreground">Email</div>
+            <div className="mt-1 break-all font-medium">{MAIL}</div>
+            <div className="mt-auto flex items-center gap-1 pt-5 text-sm text-primary">{t("写信", "Write")}<ArrowUpRight className="size-4" /></div>
+          </a>
+        </div>
+      </div>
+    </Section>
+  )
+}
+
 /* ---------- 收尾：倒计时 + 自由日凭证 + FI 进度标尺 + footer ---------- */
 function Closing() {
   const { t, lang } = useLang()
@@ -715,6 +759,7 @@ export default function Home() {
         <Privacy />
         <Pricing />
         <Faq />
+        <Contact />
         <Closing />
       </main>
     </SimContext.Provider>

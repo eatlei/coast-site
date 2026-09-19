@@ -5,15 +5,15 @@ import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { getTheme, setTheme, type Theme } from "@/lib/theme"
-import { APP_STORE, BASE, MAIL, asset, useLang, type Lang } from "@/lib/i18n"
+import { APP_STORE, BASE, MAIL, X_HANDLE, X_URL, XHS_ID, XHS_NAME, asset, useLang, type Lang } from "@/lib/i18n"
 
 const NAV = [
-  { href: `${BASE}#features`, zh: "功能", en: "Features", home: true },
-  { href: `${BASE}#try`, zh: "试算", en: "Try it", home: true },
-  { href: `${BASE}#pricing`, zh: "定价", en: "Pricing", home: true },
+  // 功能、试算、定价原来各占一格，合成一个入口：首页本来就是一路往下读的产品介绍
+  { href: `${BASE}#features`, zh: "产品介绍", en: "Product", home: true },
   { href: `${BASE}#faq`, zh: "常见问题", en: "FAQ", home: true },
   { href: `${BASE}guide.html`, zh: "使用手册", en: "Manual" },
   { href: `${BASE}changelog.html`, zh: "更新日志", en: "Changelog" },
+  { href: `${BASE}#contact`, zh: "联系我", en: "Contact", home: true },
 ]
 
 /** 右上角两个下拉：语言、亮暗模式。都是单选，选中项打勾 */
@@ -121,7 +121,7 @@ export function Footer() {
   return (
     <footer className="rule mx-auto flex w-full max-w-[1200px] flex-wrap items-center gap-x-7 gap-y-3 py-10 text-xs text-muted-foreground">
       <a href={BASE} className="flex items-center gap-2 font-heading text-base text-foreground"><img src={asset("icon.png")} alt="" className="size-6 rounded-md" />Coast</a>
-      <span>© 2026 Leon · <a href={`mailto:${MAIL}`} className="hover:text-foreground">{MAIL}</a></span>
+      <span>© 2026 Leon · <a href={`mailto:${MAIL}`} className="hover:text-foreground">{MAIL}</a> · <a href={X_URL} rel="noopener" className="hover:text-foreground">X @{X_HANDLE}</a> · <span title={t(`小红书号 ${XHS_ID}`, `Xiaohongshu ID ${XHS_ID}`)}>{t("小红书", "Xiaohongshu")} @{XHS_NAME}</span></span>
       <nav className="flex flex-wrap gap-5 md:ml-auto">
         <a href={`${BASE}guide.html`} className="hover:text-foreground">{t("使用手册", "Manual")}</a>
         <a href={`${BASE}privacy.html`} className="hover:text-foreground">{t("隐私政策", "Privacy")}</a>
