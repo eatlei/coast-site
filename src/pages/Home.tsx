@@ -2,8 +2,8 @@ import * as React from "react"
 import { ArrowUpRight, Check, Cloud, Copy, Mail, CalendarDays, EyeOff, FileText, GitBranch, Globe, LayoutGrid, Palette, Repeat, Scale, ScanLine, ShoppingBag, Smartphone, Undo2, Upload, Wand2 } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
+import { NumberInput } from "@/components/site/NumberInput"
 import { Device, DownloadButton, Footer, Header } from "@/components/site/Shell"
 import { Sketch, type SketchId } from "@/components/site/Sketches"
 import { APP_STORE, MAIL, X_HANDLE, X_URL, XHS_ID, XHS_NAME, screen, useLang } from "@/lib/i18n"
@@ -242,7 +242,7 @@ function Simulator() {
             <div className="mt-3 flex flex-wrap items-center gap-2 text-[15px]">
               <span>{t("每天一笔", "A daily")}</span>
               <span className="relative"><span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-sm text-muted-foreground">¥</span>
-                <Input type="number" inputMode="decimal" min={0} max={999} value={coffee} onChange={(e) => setCoffee(Math.max(0, Math.min(999, Number(e.target.value) || 0)))} className="h-9 w-24 pl-6 font-mono" aria-label={t("每天多花", "Daily spend")} /></span>
+                <NumberInput value={coffee} onValueChange={setCoffee} max={999} className="h-9 w-24 pl-6 font-mono" aria-label={t("每天多花", "Daily spend")} /></span>
               <span>{t("的咖啡，", "coffee")}</span>
             </div>
             <div className="mt-3 text-[15px]">

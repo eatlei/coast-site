@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Slider } from "@/components/ui/slider"
-import { Input } from "@/components/ui/input"
+import { NumberInput } from "@/components/site/NumberInput"
 import { useLang } from "@/lib/i18n"
 
 /**
@@ -335,7 +335,7 @@ export function EntryPrice() {
       <div className="flex flex-wrap items-center justify-center gap-2 text-[15px]">
         <span>{t("花掉", "Spend")}</span>
         <span className="relative"><span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-sm text-muted-foreground">¥</span>
-          <Input type="number" inputMode="decimal" min={0} max={999999} value={amount} onChange={(e) => setAmount(Math.max(0, Math.min(999999, Number(e.target.value) || 0)))} className="h-9 w-28 pl-6 font-mono" aria-label="amount" /></span>
+          <NumberInput value={amount} onValueChange={setAmount} max={999999} className="h-9 w-28 pl-6 font-mono" aria-label="amount" /></span>
         <span>{t("，自由日推迟", ", and freedom moves back")}</span>
         <b className="big-num text-3xl text-primary">{precise ?? "—"}</b>
         <span>{lang === "zh" ? "天" : "days"}</span>
