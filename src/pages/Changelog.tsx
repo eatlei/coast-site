@@ -1,5 +1,7 @@
+import * as React from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DocPage } from "@/components/site/Shell"
-import { useLang } from "@/lib/i18n"
+import { BASE, useLang } from "@/lib/i18n"
 
 /** [中文标题, 中文说明, 英文标题, 英文说明]；说明可为空 */
 type Item = [string, string, string, string]
@@ -161,20 +163,30 @@ const ROADMAP: { tier: "free" | "pro"; zh: [string, string]; en: [string, string
   { tier: "free", zh: ["AA 分账：拍照识别", "一张小票拍下来，菜品自动逐行认出，谁点了什么勾一下就分好——不用再手动敲每一项。识别在手机本地完成，不上传。"], en: ["Split bills from a photo", "Snap the receipt, every line item is recognised, tick who had what and the split is done — no more typing each item. Recognition runs on your phone; nothing is uploaded."] },
 ]
 
+/** 七张卡横向滑动，不平铺——平铺占了大半屏，更新日志本身反而被推到下面。
+ *  手机上手指滑，桌面上给两个箭头（触控板横滑也行，但不是每个人都知道） */
 function Roadmap() {
   const { t, lang } = useLang()
   const z = lang === "zh"
+  const rail = React.useRef<HTMLDivElement>(null)
+  const step = (dir: 1 | -1) => rail.current?.scrollBy({ left: dir * 316, behavior: "smooth" })
   return (
     <section id="roadmap" className="grid gap-6 py-12 first:pt-2 md:grid-cols-[200px_1fr] md:gap-12">
       <div className="md:sticky md:top-24 md:self-start">
         <div className="font-heading text-[44px] leading-none">{t("计划中", "Next")}</div>
         <div className="mt-2 text-sm text-muted-foreground">{t("接下来要做的大功能", "What's coming")}</div>
       </div>
-      <div>
-        <p className="max-w-[640px] leading-relaxed text-muted-foreground">{t("只列大功能和做它的理由。顺序不代表先后，做到哪一步会在这里更新。", "Only the big ones, and why. Order isn't priority; this list updates as each one lands.")}</p>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="min-w-0">
+        <div className="flex items-end justify-between gap-6">
+          <p className="max-w-[640px] leading-relaxed text-muted-foreground">{t("只列大功能和做它的理由。顺序不代表先后，做到哪一步会在这里更新。", "Only the big ones, and why. Order isn't priority; this list updates as each one lands.")}</p>
+          <div className="hidden shrink-0 gap-2 md:flex">
+            <button type="button" onClick={() => step(-1)} aria-label={t("上一张", "Previous")} className="grid size-9 place-items-center rounded-full border border-rule bg-card text-muted-foreground hover:text-foreground"><ChevronLeft className="size-4" /></button>
+            <button type="button" onClick={() => step(1)} aria-label={t("下一张", "Next")} className="grid size-9 place-items-center rounded-full border border-rule bg-card text-muted-foreground hover:text-foreground"><ChevronRight className="size-4" /></button>
+          </div>
+        </div>
+        <div ref={rail} className="-mx-6 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 [scrollbar-width:thin] md:mx-0 md:px-0">
           {ROADMAP.map((r) => (
-            <div key={r.zh[0]} className="rounded-2xl border border-rule bg-card p-6">
+            <div key={r.zh[0]} className="flex w-[300px] shrink-0 snap-start flex-col rounded-2xl border border-rule bg-card p-6">
               <div className="flex items-center justify-between gap-3">
                 <div className="font-medium">{z ? r.zh[0] : r.en[0]}</div>
                 <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-muted text-primary" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
@@ -183,6 +195,7 @@ function Roadmap() {
             </div>
           ))}
         </div>
+        <a href={`${BASE}contact.html`} className="tag mt-4 inline-block text-primary hover:underline">{t("还有想要的功能？告诉我 →", "Want something else? Tell me →")}</a>
       </div>
     </section>
   )
