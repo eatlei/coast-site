@@ -307,7 +307,22 @@
 .stamp-seal::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; border: 1px solid var(--primary); }
 .stamp-seal b { display: block; font-size: 22px; font-weight: 600; letter-spacing: 0; }
 
-/* 更新日志「计划中」：换一张时淡入上浮一点点；减弱动态效果时只淡入 */
-.roadmap-card { animation: roadmap-in .28s ease-out both; }
-@keyframes roadmap-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .roadmap-card { animation-name: roadmap-fade; } @keyframes roadmap-fade { from { opacity: 0; } to { opacity: 1; } } }
+/* 更新日志「计划中」的卡片 */
+.roadmap-stage { perspective: 1000px; }
+/* 描边：免费是普通细边，Pro 是一圈从主色淡出去的渐变（外层 1px 内边距做描边） */
+.roadmap-ring { background: var(--rule); }
+.roadmap-ring-pro { background: linear-gradient(135deg, color-mix(in oklch, var(--primary) 70%, transparent), var(--rule) 45%, color-mix(in oklch, var(--primary) 35%, transparent)); }
+/* 跟鼠标走的一束光：--mx/--my 由 onMouseMove 写入，触屏设备上停在中间偏上 */
+.roadmap-light { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .4s ease;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 30%), color-mix(in oklch, var(--primary) 14%, transparent), transparent 60%); }
+.roadmap-stage:hover .roadmap-light { opacity: 1; }
+/* 换卡：从右侧带一点 3D 翻进来 */
+.roadmap-card { animation: roadmap-in .42s cubic-bezier(.2,.7,.2,1) both; transform-origin: 50% 50%; }
+@keyframes roadmap-in { from { opacity: 0; transform: translateX(28px) rotateY(-12deg); } to { opacity: 1; transform: none; } }
+/* 骰子转半圈 */
+.roadmap-dice { animation: roadmap-dice .45s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes roadmap-dice { from { transform: rotate(-180deg); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .roadmap-card { animation-name: roadmap-fade; } @keyframes roadmap-fade { from { opacity: 0; } to { opacity: 1; } }
+  .roadmap-dice { animation: none; }
+}

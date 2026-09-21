@@ -2,6 +2,7 @@ import * as React from "react"
 import { Shuffle } from "lucide-react"
 import { DocPage } from "@/components/site/Shell"
 import { BASE, useLang } from "@/lib/i18n"
+import { REDUCED, gsap, useGSAP } from "@/lib/gsap"
 
 /** [中文标题, 中文说明, 英文标题, 英文说明]；说明可为空 */
 type Item = [string, string, string, string]
@@ -165,16 +166,37 @@ const ROADMAP: { tier: "free" | "pro"; zh: [string, string]; en: [string, string
 
 /** 一次只看一张：点「换一个」随机换到另一张（不会连着出同一张），下面的点能直接跳。
  *  平铺占大半屏、横滑又像在翻商品——这里想要的是「随手抽一张看看在做什么」。
- *  卡片给最小高度（按最长那张定）：不然换到短的那张，下面的按钮行会往上跳 */
+ *  七张叠在同一格里、只显示一张，高度自动取最高的那张——换到哪张下面都不跳。
+ *
+ *  「酷一点」的部分（都只在 hover 设备上、且尊重减弱动态效果）：
+ *  跟鼠标走的 3D 倾斜（同首页 TiltCard 的手法）、跟鼠标走的一束光、
+ *  Pro 卡带一圈渐变描边、右下角一个很淡的大序号、换卡时从侧面翻进来 */
 function Roadmap() {
   const { t, lang } = useLang()
   const z = lang === "zh"
   const n = ROADMAP.length
   const [i, setI] = React.useState(() => Math.floor(Math.random() * n))
-  const [tick, setTick] = React.useState(0)   // 每次切换 +1，让卡片重新淡入
-  const go = (next: number) => { setI(((next % n) + n) % n); setTick((x) => x + 1) }
-  const shuffle = () => { let next = i; while (next === i) next = Math.floor(Math.random() * n); go(next) }
-  const r = ROADMAP[i]
+  const [spin, setSpin] = React.useState(0)
+  const go = (next: number) => setI(((next % n) + n) % n)
+  const shuffle = () => { let next = i; while (next === i) next = Math.floor(Math.random() * n); go(next); setSpin((x) => x + 1) }
+
+  const stage = React.useRef<HTMLDivElement>(null)
+  const fx = React.useRef<{ rx: gsap.QuickToFunc; ry: gsap.QuickToFunc } | null>(null)
+  useGSAP(() => {
+    const el = stage.current!
+    gsap.set(el, { transformPerspective: 1000, transformOrigin: "50% 50%" })
+    const opt = { duration: 0.5, ease: "power3" }
+    fx.current = { rx: gsap.quickTo(el, "rotationX", opt), ry: gsap.quickTo(el, "rotationY", opt) }
+  }, { scope: stage })
+  const move = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget, r = el.getBoundingClientRect()
+    el.style.setProperty("--mx", `${((e.clientX - r.left) / r.width) * 100}%`)
+    el.style.setProperty("--my", `${((e.clientY - r.top) / r.height) * 100}%`)
+    const f = fx.current; if (!f || matchMedia("(hover: none)").matches || matchMedia(REDUCED).matches) return
+    f.ry(((e.clientX - r.left) / r.width - 0.5) * 10); f.rx(-((e.clientY - r.top) / r.height - 0.5) * 8)
+  }
+  const leave = () => { const f = fx.current; if (!f) return; f.rx(0); f.ry(0) }
+
   return (
     <section id="roadmap" className="grid gap-6 py-12 first:pt-2 md:grid-cols-[200px_1fr] md:gap-12">
       <div className="md:sticky md:top-24 md:self-start">
@@ -183,20 +205,30 @@ function Roadmap() {
       </div>
       <div className="min-w-0">
         <p className="max-w-[640px] leading-relaxed text-muted-foreground">{t("只列大功能和做它的理由。顺序不代表先后，做到哪一步会在这里更新。", "Only the big ones, and why. Order isn't priority; this list updates as each one lands.")}</p>
-        <div key={tick} className="roadmap-card mt-6 max-w-[640px] rounded-2xl border border-rule bg-card p-6 md:min-h-[176px] md:p-8">
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-lg font-medium">{z ? r.zh[0] : r.en[0]}</div>
-            <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-muted text-primary" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
+        <div className="roadmap-stage mt-6 max-w-[640px]">
+          <div ref={stage} onMouseMove={move} onMouseLeave={leave} className="grid">
+            {ROADMAP.map((r, k) => (
+              <div key={r.zh[0]} aria-hidden={k !== i} className={`col-start-1 row-start-1 rounded-2xl p-px ${r.tier === "pro" ? "roadmap-ring-pro" : "roadmap-ring"} ${k === i ? "roadmap-card" : "invisible"}`}>
+                <div className="roadmap-body relative h-full overflow-hidden rounded-[15px] bg-card p-6 md:p-8">
+                  <div className="roadmap-light" aria-hidden />
+                  <div className="num pointer-events-none absolute -bottom-3 right-4 select-none font-heading text-[96px] leading-none text-foreground/[.045]" aria-hidden>{String(k + 1).padStart(2, "0")}</div>
+                  <div className="relative flex items-center justify-between gap-3">
+                    <div className="text-lg font-medium">{z ? r.zh[0] : r.en[0]}</div>
+                    <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
+                  </div>
+                  <p className="relative mt-3 text-[15px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
+                </div>
+              </div>
+            ))}
           </div>
-          <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
         </div>
         <div className="mt-4 flex max-w-[640px] flex-wrap items-center gap-4">
-          <button type="button" onClick={shuffle} className="inline-flex h-9 items-center gap-2 rounded-full border border-rule bg-card px-4 text-sm font-medium hover:border-primary/40">
-            <Shuffle className="size-4" />{t("换一个", "Show me another")}
+          <button type="button" onClick={shuffle} className="inline-flex h-9 items-center gap-2 rounded-full border border-rule bg-card px-4 text-sm font-medium transition-colors hover:border-primary/40">
+            <Shuffle key={spin} className={`size-4 ${spin ? "roadmap-dice" : ""}`} />{t("换一个", "Show me another")}
           </button>
           <div className="flex items-center gap-1.5" aria-label={t("第几个", "Which one")}>
             {ROADMAP.map((x, k) => (
-              <button key={x.zh[0]} type="button" onClick={() => go(k)} aria-label={z ? x.zh[0] : x.en[0]} className={`size-2 rounded-full transition-colors ${k === i ? "bg-foreground" : "bg-border hover:bg-muted-foreground/60"}`} />
+              <button key={x.zh[0]} type="button" onClick={() => go(k)} aria-label={z ? x.zh[0] : x.en[0]} className={`h-2 rounded-full transition-all ${k === i ? "w-5 bg-foreground" : "w-2 bg-border hover:bg-muted-foreground/60"}`} />
             ))}
           </div>
           <span className="num text-xs text-muted-foreground">{i + 1} / {n}</span>
