@@ -8,6 +8,39 @@ type Version = { v: string; date: [string, string]; intro: [string, string]; sec
 
 const VERSIONS: Version[] = [
   {
+    v: "1.0.4",
+    date: ["2026 年 9 月", "Sep 2026"],
+    intro: [
+      "标签从「只能打」升级到「能改、能归档、能看花了多少」；多币种转为免费；图表和首页卡片统一了一遍。",
+      "Tags grow up: rename, archive, and see where each tag's money went. Multi-currency is now free. Charts and home cards got a consistency pass.",
+    ],
+    sections: [
+      { title: ["新增", "New"], items: [
+        ["标签详情", "点进一个标签，按月 / 年 / 全部看支出、笔数、笔均，跨月画柱图；「花在哪」按分类列出金额、占比、笔数，待报销也算进去（脚注注明）。", "Tag detail", "Open any tag to see spending, entry count and average by month, year or all time, with a bar chart across months. \"Where it went\" lists amount, share and count by category — pending reimbursements included, with a note."],
+        ["标签管理", "改名会连账单和模板一起改，重名先问再合并；能归档、能加图标；数据页新增标签排行卡。", "Tag management", "Renaming updates entries and templates; duplicate names merge after a prompt. Archive tags, give them icons, and see a tag ranking card on the Data tab."],
+        ["多币种转为免费", "多币种账户与每日汇率不再需要 Pro。", "Multi-currency is now free", "Multi-currency accounts and daily rates no longer require Pro."],
+        ["净资产卡补三个指标", "投资占比、月均支出、应急金能撑几个月；负债水位有了档位词（健康 / 稳健……）和「离下一档还有多远」。", "Three more net-worth metrics", "Investment share, average monthly spending, and how many months your emergency fund covers; debt level now has a named tier and how far to the next one."],
+        ["设置页官网入口", "使用指南、FAQ、更新日志一键直达。", "Website links in Settings", "Guide, FAQ and changelog, one tap away."],
+      ] },
+      { title: ["改进", "Improved"], items: [
+        ["图表统一", "实色柱、超阈值换色、真零基线、柱宽封顶、圆角按柱数分档；分类下钻的柱图横轴按时段铺满，不再挤成一坨。", "Charts, unified", "Solid bars, threshold colors, a true zero baseline, capped bar width, corner radius by bar count; drill-down charts span the full period instead of bunching up."],
+        ["首页两张主角卡", "本月支出与财富自由目标的数字同一字号、同一位置，展开后逐行对齐。", "Home hero cards", "Spending and Freedom Goal share one number size and position; expanded rows line up."],
+        ["资产页三页对齐", "净资产 / 资产变化 / 资产组成的数字、按钮、图表同一高度；资产变化图不再错位或被裁切。", "Assets pages aligned", "Net Worth, Change and Composition share one layout; the change chart no longer misaligns or clips."],
+        ["动效", "29 处动画曲线在跑 0.5 秒，改回统一档位；开启「减弱动态效果」后入场只淡入不位移。", "Motion", "29 animations were running at 0.5s; they now use the standard curves. With Reduce Motion on, cards fade in without moving."],
+        ["标签详情写出待报销", "两笔全额待报销不再显示成「2 笔 / ¥0.00」，而是「另有 ¥x 待报销，收回前不算消费」。", "Pending reimbursements, spelled out", "Two fully reimbursable entries no longer read \"2 entries / ¥0.00\" — the pending amount is shown with a note."],
+        ["记账截图不进备份", "", "Receipt screenshots are excluded from backups", ""],
+      ] },
+      { title: ["修复", "Fixed"], items: [
+        ["iCloud 同步会把已报销的 AA 账单清成未报销", "", "iCloud sync reset settled split bills to unsettled", ""],
+        ["自动备份漏了五张表和四处字段", "", "Automatic backups missed five tables and four fields", ""],
+        ["下滑关掉设置后，底部标签栏发灰", "", "Tab bar stayed dimmed after swiping the Settings sheet away", ""],
+        ["资产页数字先大后小；有的二级分类没有图表", "", "Numbers on Assets shrank after loading; some subcategories had no chart", ""],
+        ["英文界面里露出半句中文", "", "Stray Chinese text in the English interface", ""],
+        ["标签详情切换时段时高度跳动、翻页按钮被裁", "", "Tag detail jumped in height and clipped its paging buttons when switching periods", ""],
+      ] },
+    ],
+  },
+  {
     v: "1.0.3",
     date: ["2026 年 9 月", "Sep 2026"],
     intro: [

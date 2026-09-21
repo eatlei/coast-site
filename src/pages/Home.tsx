@@ -394,7 +394,7 @@ const MORE: { id: SketchId; pro?: boolean; zh: [string, string]; en: [string, st
   { id: "repeat", pro: true, zh: ["复购洞察", "哪家店去了多少次、花了多少，一年下来是什么数。"], en: ["Repeat-buy insights", "Which places you keep going back to, and what a year of that costs."] },
   { id: "scenarios", pro: true, zh: ["场景模拟", "换城市、涨薪、买房，几条路存下来并排比。"], en: ["Scenarios", "Move cities, get a raise, buy a home. Save paths, compare."] },
   { id: "widgets", zh: ["桌面小组件", "本月还能花、净资产、自由倒计时，不用打开 App。"], en: ["Widgets", "Left to spend, net worth, countdown. No app needed."] },
-  { id: "currency", pro: true, zh: ["多币种", "每日汇率自动拉，账户账单报销全程折算。"], en: ["Multi-currency", "Daily rates; accounts, entries and reimbursements all convert."] },
+  { id: "currency", zh: ["多币种", "每日汇率自动拉，账户账单报销全程折算。免费。"], en: ["Multi-currency", "Daily rates; accounts, entries and reimbursements all convert. Free."] },
   { id: "themes", pro: true, zh: ["主题与图标", "6 套主题、20 多个 App 图标，分类图标四种来源一键换套。"], en: ["Themes & icons", "6 themes, 20+ app icons, category icons from four sources."] },
   { id: "privacy", zh: ["隐私模式", "一个眼睛开关，全 App 金额一键打码。"], en: ["Privacy mode", "One toggle blurs every amount in the app."] },
 ]

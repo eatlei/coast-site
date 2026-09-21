@@ -606,11 +606,12 @@ export function ProTable() {
     [t("总预算、首页的消费节奏", "Total budget, Spending Pace on the home card"), Y, Y],
     [t("自由倒计时、试算滑块、FI 进度、储蓄率、被动收入覆盖率", "Freedom countdown, What-If sliders, FI Progress, Savings Rate, Passive Income Coverage"), Y, Y],
     [t("iCloud 同步、每日备份、iPad 与 Mac", "iCloud sync, daily backups, iPad & Mac"), Y, Y],
+    [t("多币种与每日汇率", "Multi-currency and daily rates"), Y, Y],
     [t("场景模拟、达成区间", "Scenarios, achievement range"), N, Y],
     [t("Coast FIRE、Barista FIRE、高级 FI 参数", "Coast FIRE, Barista FIRE, advanced FI parameters"), N, Y],
     [t("分类预算、预算页的配速推演", "Category budgets, pace projection on the budget page"), N, Y],
     [t("完整月度回顾、常买", "Full Monthly Review, Repeat Buys"), N, Y],
-    [t("多币种、主题配色与 App 图标", "Multi-currency, themes and app icons"), N, Y],
+    [t("主题配色与 App 图标", "Themes and app icons"), N, Y],
   ]
   return (
     <Fig>
