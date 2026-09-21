@@ -170,7 +170,7 @@ const ROADMAP: { tier: "free" | "pro"; zh: [string, string]; en: [string, string
  *
  *  「酷一点」的部分（都只在 hover 设备上、且尊重减弱动态效果）：
  *  跟鼠标走的 3D 倾斜（同首页 TiltCard 的手法）、跟鼠标走的一束光、
- *  Pro 卡主色描边加一圈淡光晕、换卡时从侧面翻进来。
+ *  Pro 卡是镭射卡：彩虹描边色相跟鼠标转、卡面一层跟鼠标走的虹彩，正文底色仍是实色保证可读；换卡时从侧面翻进来。
  *  （试过 1px 渐变描边 + 右下角大水印序号：描边在 3D 倾斜下边缘发虚、水印压住了正文——都撤了） */
 function Roadmap() {
   const { t, lang } = useLang()
@@ -191,8 +191,11 @@ function Roadmap() {
   }, { scope: stage })
   const move = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget, r = el.getBoundingClientRect()
-    el.style.setProperty("--mx", `${((e.clientX - r.left) / r.width) * 100}%`)
-    el.style.setProperty("--my", `${((e.clientY - r.top) / r.height) * 100}%`)
+    const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height
+    el.style.setProperty("--mx", `${px * 100}%`)
+    el.style.setProperty("--my", `${py * 100}%`)
+    // 镭射描边的色相跟着鼠标转一圈：横向走一遍 = 转 360°
+    el.style.setProperty("--angle", `${Math.round(px * 360)}deg`)
     const f = fx.current; if (!f || matchMedia("(hover: none)").matches || matchMedia(REDUCED).matches) return
     f.ry(((e.clientX - r.left) / r.width - 0.5) * 10); f.rx(-((e.clientY - r.top) / r.height - 0.5) * 8)
   }
@@ -209,14 +212,14 @@ function Roadmap() {
         <div className="roadmap-stage mt-6 max-w-[640px]">
           <div ref={stage} onMouseMove={move} onMouseLeave={leave} className="grid">
             {ROADMAP.map((r, k) => (
-              <div key={r.zh[0]} aria-hidden={k !== i} className={`col-start-1 row-start-1 relative overflow-hidden rounded-2xl border bg-card p-6 md:p-8 ${r.tier === "pro" ? "border-primary/40 shadow-[0_0_0_4px_color-mix(in_oklch,var(--primary)_10%,transparent)]" : "border-rule"} ${k === i ? "roadmap-card" : "invisible"}`}>
+              <div key={r.zh[0]} aria-hidden={k !== i} className={`col-start-1 row-start-1 relative overflow-hidden rounded-2xl p-6 md:p-8 ${r.tier === "pro" ? "roadmap-holo" : "border border-rule bg-card"} ${k === i ? "roadmap-card" : "invisible"}`}>
                 <div className="roadmap-light" aria-hidden />
                 <div className="relative flex items-center justify-between gap-3">
                   <div className="flex items-baseline gap-3">
                     <span className="num text-xs text-muted-foreground">{String(k + 1).padStart(2, "0")}</span>
                     <div className="text-lg font-medium">{z ? r.zh[0] : r.en[0]}</div>
                   </div>
-                  <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
+                  <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "roadmap-holo-pill" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
                 </div>
                 <p className="relative mt-3 text-[15px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
               </div>
