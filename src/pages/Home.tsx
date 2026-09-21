@@ -541,9 +541,9 @@ function Pricing() {
         <div className="receipt-slot">
           <div className="receipt font-mono text-[13px]">
             <div className="row"><span className="tag">Coast Pro</span><span className="tag">{t("会员", "Membership")}</span></div>
-            <div className="row mt-6"><span>{t("包年", "Yearly")}</span><span className="text-[15px]">¥30 <span className="text-muted-foreground">/ {t("年", "yr")}</span></span></div>
+            <div className="row mt-6"><span>{t("包年", "Yearly")}</span><span className="text-[15px]">{t("¥30", "$4.99")} <span className="text-muted-foreground">/ {t("年", "yr")}</span></span></div>
             <div className="mt-2 text-[12px] text-muted-foreground">{t("前 7 天免费试用，可随时取消", "7-day free trial, cancel anytime")}</div>
-            <div className="row mt-3"><span>{t("永久", "Lifetime")}</span><span className="text-[15px]">¥60</span></div>
+            <div className="row mt-3"><span>{t("永久", "Lifetime")}</span><span className="text-[15px]">{t("¥60", "$9.99")}</span></div>
             <div className="mt-2 text-[12px] text-muted-foreground">{t("一次付费，不转订阅", "One-time, never a subscription")}</div>
             <div className="dash my-5" />
             <div className="tag mb-3">{t("解锁", "Unlocks")}</div>

@@ -12,7 +12,7 @@ const FAQ = [
   ["如何在多台设备间同步？", "登录同一个 Apple 账户并开启 iCloud，数据会自动同步。", "How do I sync across devices?", "Sign in with the same Apple account with iCloud enabled, and your data syncs automatically."],
   ["能导入以前的账单吗？", "可以。支持 CSV / XLSX，UTF-8 和 GB18030 编码自动识别，常见记账 App 导出的文件可以直接导入。账户名会模糊匹配，自动去重，整批可撤销。", "Can I import my old records?", "Yes. CSV / XLSX with automatic UTF-8 and GB18030 detection; exports from most expense apps import directly. Account names are fuzzy-matched, duplicates skipped, and the whole batch can be undone."],
   ["免费版能用多久？", "永久。记账不限量，账户、预算、导入导出和 FI 倒计时都不收费。会员解锁的是达成区间、场景模拟这类「推演未来」的功能。", "How long does the free version last?", "Forever. Unlimited entries, accounts, budgets, import/export and the FI countdown are all free. Pro unlocks projection features like achievement range and scenarios."],
-  ["会员是订阅吗？", "两种都有。包年 ¥30，前 7 天免费试用；永久 ¥60 一次买断，不转订阅。订阅可随时在 App Store 账户设置里取消。", "Is Pro a subscription?", "Your choice. Yearly is ¥30 with a 7-day free trial; Lifetime is ¥60 once and never converts to a subscription. Cancel anytime in your App Store settings."],
+  ["会员是订阅吗？", "两种都有。包年 ¥30，前 7 天免费试用；永久 ¥60 一次买断，不转订阅。订阅可随时在 App Store 账户设置里取消。", "Is Pro a subscription?", "Your choice. Yearly is $4.99 with a 7-day free trial; Lifetime is $9.99 once and never converts to a subscription. Cancel anytime in your App Store settings."],
   ["如何恢复购买？", "在 Coast 会员页面底部点「恢复购买」。续费扣款遇到问题时，请在 App Store 账户里更新支付方式，期间功能不受影响。", "How do I restore purchases?", "Tap \"Restore Purchases\" at the bottom of the Coast Pro page. If a renewal fails, update your payment method in your App Store account; features stay on in the meantime."],
 ]
 export function Faq() {

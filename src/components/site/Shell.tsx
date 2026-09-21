@@ -147,6 +147,8 @@ export function Footer() {
       <span>© 2026 Leon · <a href={`mailto:${MAIL}`} className="hover:text-foreground">{MAIL}</a> · <a href={X_URL} rel="noopener" className="hover:text-foreground">X @{X_HANDLE}</a> · <span title={t(`小红书号 ${XHS_ID}`, `Xiaohongshu ID ${XHS_ID}`)}>{t("小红书", "Xiaohongshu")} @{XHS_NAME}</span></span>
       <nav className="flex flex-wrap gap-5 md:ml-auto">
         <a href={`${BASE}guide.html`} className="hover:text-foreground">{t("使用手册", "Manual")}</a>
+        <a href={`${BASE}faq.html`} className="hover:text-foreground">{t("常见问题", "FAQ")}</a>
+        <a href={`${BASE}contact.html`} className="hover:text-foreground">{t("联系我", "Contact")}</a>
         <a href={`${BASE}privacy.html`} className="hover:text-foreground">{t("隐私政策", "Privacy")}</a>
         <a href={`${BASE}changelog.html`} className="hover:text-foreground">{t("更新日志", "Changelog")}</a>
         <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" rel="noopener" className="hover:text-foreground">EULA</a>
