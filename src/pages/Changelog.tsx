@@ -149,12 +149,52 @@ const VERSIONS: Version[] = [
   },
 ]
 
+/** 开发计划：写在更新日志顶部。只写大功能和它的思路，不写修修补补；
+ *  免费 / 会员的划分是产品决定（2026-09-21 定案），不是按实现难度分的 */
+const ROADMAP: { tier: "free" | "pro"; zh: [string, string]; en: [string, string] }[] = [
+  { tier: "pro", zh: ["AI 分析", "不是把数字再念一遍，而是替你读懂它：「本月弹性支出比均值多 ¥2,400，自由日往后推了 11 天」；哪一笔偏离了你的习惯、哪个分类在悄悄长大，它先看见。想问什么就问：「去年在衣服上花了多少」，直接给答案，不用翻账。"], en: ["AI insights", "Not a recap of numbers — a read on what they mean: \"flexible spending ran ¥2,400 over your average this month; your freedom date moved 11 days.\" It spots the entry that broke your pattern and the category quietly growing. Ask anything — \"how much on clothes last year?\" — and get the answer, not a spreadsheet."] },
+  { tier: "free", zh: ["多维度分析", "分类、账户、标签、时段，任意两个维度交叉着看：出差标签下的餐饮，信用卡上的固定支出，今年 vs 去年同期。同一份账，想从哪个角度切都行——数据本来就是你的，怎么看也该由你定。"], en: ["Analysis in every dimension", "Cross any two of category, account, tag and period: dining under the Business Trip tag, fixed costs on the credit card, this year against last. One ledger, any angle — it's your data; how you look at it should be your call."] },
+  { tier: "pro", zh: ["投资持仓与收益", "FIRE 的分子是资产，可现在投资账户只是一个手填的余额。持仓、成本、收益率记进来，被动收入就有了真实来源——「被动收入覆盖率」不再是估的，自由日也跟着更准。"], en: ["Holdings and returns", "Assets are the numerator of FIRE, yet today an investment account is just a balance you type in. Track positions, cost and return, and passive income finally has a real source — coverage stops being an estimate, and so does your freedom date."] },
+  { tier: "pro", zh: ["家庭共享账本", "两个人一本账，一个自由日。各记各的，合起来看；谁付了什么、家里的净资产、离目标还有多远，两台手机上是同一个数——通过 iCloud 共享，数据仍然不经过任何服务器。"], en: ["Shared household ledger", "Two people, one ledger, one freedom date. Log separately, see it together: who paid what, the household's net worth, how far to go — the same numbers on both phones, shared through iCloud with no server in between."] },
+  { tier: "free", zh: ["储蓄目标", "自由日太远，中间得有里程碑：六个月的应急金、一笔首付、下一次旅行。每个目标一条进度、一个日期，和总目标用同一套算法——你会知道这个月的每一笔存款，具体在推动哪一个。"], en: ["Savings goals", "Freedom is far; you need milestones on the way: six months of emergency fund, a down payment, the next trip. Each goal gets its own progress and date, on the same math as the big one — so you know exactly which goal this month's savings just moved."] },
+  { tier: "free", zh: ["年度总结", "一年过去，一页说清：花了多少、存了多少、哪个月最克制、自由日往前挪了几天。做成可以分享的样子——给自己复盘，也给别人看看你走了多远。"], en: ["Year in review", "A year, on one page: what you spent, what you saved, your most disciplined month, how many days your freedom date moved. Made to share — a review for you, and proof of how far you've come."] },
+  { tier: "free", zh: ["AA 分账：拍照识别", "一张小票拍下来，菜品自动逐行认出，谁点了什么勾一下就分好——不用再手动敲每一项。识别在手机本地完成，不上传。"], en: ["Split bills from a photo", "Snap the receipt, every line item is recognised, tick who had what and the split is done — no more typing each item. Recognition runs on your phone; nothing is uploaded."] },
+]
+
+function Roadmap() {
+  const { t, lang } = useLang()
+  const z = lang === "zh"
+  return (
+    <section id="roadmap" className="grid gap-6 py-12 first:pt-2 md:grid-cols-[200px_1fr] md:gap-12">
+      <div className="md:sticky md:top-24 md:self-start">
+        <div className="font-heading text-[44px] leading-none">{t("计划中", "Next")}</div>
+        <div className="mt-2 text-sm text-muted-foreground">{t("接下来要做的大功能", "What's coming")}</div>
+      </div>
+      <div>
+        <p className="max-w-[640px] leading-relaxed text-muted-foreground">{t("只列大功能和做它的理由。顺序不代表先后，做到哪一步会在这里更新。", "Only the big ones, and why. Order isn't priority; this list updates as each one lands.")}</p>
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {ROADMAP.map((r) => (
+            <div key={r.zh[0]} className="rounded-2xl border border-rule bg-card p-6">
+              <div className="flex items-center justify-between gap-3">
+                <div className="font-medium">{z ? r.zh[0] : r.en[0]}</div>
+                <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-muted text-primary" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
+              </div>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function Changelog() {
   const { t, lang } = useLang()
   const z = lang === "zh"
   return (
     <DocPage wide title={t("更新日志", "Changelog")} subtitle={t("每一次更新，都离自由更近一步。", "Every update, one step closer to freedom.")}>
       <div className="divide-y divide-border">
+        <Roadmap />
         {VERSIONS.map((ver) => (
           <section key={ver.v} id={`v${ver.v}`} className="grid gap-6 py-12 first:pt-2 md:grid-cols-[200px_1fr] md:gap-12">
             <div className="md:sticky md:top-24 md:self-start">
