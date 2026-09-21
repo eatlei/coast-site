@@ -170,7 +170,8 @@ const ROADMAP: { tier: "free" | "pro"; zh: [string, string]; en: [string, string
  *
  *  「酷一点」的部分（都只在 hover 设备上、且尊重减弱动态效果）：
  *  跟鼠标走的 3D 倾斜（同首页 TiltCard 的手法）、跟鼠标走的一束光、
- *  Pro 卡带一圈渐变描边、右下角一个很淡的大序号、换卡时从侧面翻进来 */
+ *  Pro 卡主色描边加一圈淡光晕、换卡时从侧面翻进来。
+ *  （试过 1px 渐变描边 + 右下角大水印序号：描边在 3D 倾斜下边缘发虚、水印压住了正文——都撤了） */
 function Roadmap() {
   const { t, lang } = useLang()
   const z = lang === "zh"
@@ -208,16 +209,16 @@ function Roadmap() {
         <div className="roadmap-stage mt-6 max-w-[640px]">
           <div ref={stage} onMouseMove={move} onMouseLeave={leave} className="grid">
             {ROADMAP.map((r, k) => (
-              <div key={r.zh[0]} aria-hidden={k !== i} className={`col-start-1 row-start-1 rounded-2xl p-px ${r.tier === "pro" ? "roadmap-ring-pro" : "roadmap-ring"} ${k === i ? "roadmap-card" : "invisible"}`}>
-                <div className="roadmap-body relative h-full overflow-hidden rounded-[15px] bg-card p-6 md:p-8">
-                  <div className="roadmap-light" aria-hidden />
-                  <div className="num pointer-events-none absolute -bottom-3 right-4 select-none font-heading text-[96px] leading-none text-foreground/[.045]" aria-hidden>{String(k + 1).padStart(2, "0")}</div>
-                  <div className="relative flex items-center justify-between gap-3">
+              <div key={r.zh[0]} aria-hidden={k !== i} className={`col-start-1 row-start-1 relative overflow-hidden rounded-2xl border bg-card p-6 md:p-8 ${r.tier === "pro" ? "border-primary/40 shadow-[0_0_0_4px_color-mix(in_oklch,var(--primary)_10%,transparent)]" : "border-rule"} ${k === i ? "roadmap-card" : "invisible"}`}>
+                <div className="roadmap-light" aria-hidden />
+                <div className="relative flex items-center justify-between gap-3">
+                  <div className="flex items-baseline gap-3">
+                    <span className="num text-xs text-muted-foreground">{String(k + 1).padStart(2, "0")}</span>
                     <div className="text-lg font-medium">{z ? r.zh[0] : r.en[0]}</div>
-                    <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
                   </div>
-                  <p className="relative mt-3 text-[15px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
+                  <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
                 </div>
+                <p className="relative mt-3 text-[15px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
               </div>
             ))}
           </div>
