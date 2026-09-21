@@ -10,10 +10,11 @@ import { APP_STORE, BASE, MAIL, X_HANDLE, X_URL, XHS_ID, XHS_NAME, asset, useLan
 const NAV = [
   // 功能、试算、定价原来各占一格，合成一个入口：首页本来就是一路往下读的产品介绍
   { href: `${BASE}#features`, zh: "产品介绍", en: "Product", home: true },
-  { href: `${BASE}#faq`, zh: "常见问题", en: "FAQ", home: true },
+  // 常见问题、联系我各自是一页（faq.html / contact.html）；首页底部那两段还在，同一份内容
+  { href: `${BASE}faq.html`, zh: "常见问题", en: "FAQ" },
   { href: `${BASE}guide.html`, zh: "使用手册", en: "Manual" },
   { href: `${BASE}changelog.html`, zh: "更新日志", en: "Changelog" },
-  { href: `${BASE}#contact`, zh: "联系我", en: "Contact", home: true },
+  { href: `${BASE}contact.html`, zh: "联系我", en: "Contact" },
 ]
 
 /** 右上角两个下拉：语言、亮暗模式。都是单选，选中项打勾 */
@@ -78,7 +79,7 @@ export function DownloadButton({ size = "default", className = "", full = false 
 export function Header() {
   const { t } = useLang()
   const [scrolled, setScrolled] = React.useState(false)
-  // 手机菜单要受控：导航里多是首页锚点（#features、#contact），点了只是页内滚动、不会换页，
+  // 手机菜单要受控：导航里有首页锚点（#features），点了只是页内滚动、不会换页，
   // 不手动关的话侧栏一直盖在页面上
   const [menuOpen, setMenuOpen] = React.useState(false)
   const close = () => setMenuOpen(false)
