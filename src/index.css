@@ -306,3 +306,8 @@
 .stamp-seal { position: absolute; right: 22px; bottom: 22px; width: 92px; height: 92px; border-radius: 50%; border: 2px solid var(--primary); color: var(--primary); display: grid; place-items: center; transform: rotate(-12deg); opacity: .85; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-align: center; line-height: 1.3; }
 .stamp-seal::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; border: 1px solid var(--primary); }
 .stamp-seal b { display: block; font-size: 22px; font-weight: 600; letter-spacing: 0; }
+
+/* 更新日志「计划中」：换一张时淡入上浮一点点；减弱动态效果时只淡入 */
+.roadmap-card { animation: roadmap-in .28s ease-out both; }
+@keyframes roadmap-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .roadmap-card { animation-name: roadmap-fade; } @keyframes roadmap-fade { from { opacity: 0; } to { opacity: 1; } } }

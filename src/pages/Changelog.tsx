@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Shuffle } from "lucide-react"
 import { DocPage } from "@/components/site/Shell"
 import { BASE, useLang } from "@/lib/i18n"
 
@@ -163,13 +163,18 @@ const ROADMAP: { tier: "free" | "pro"; zh: [string, string]; en: [string, string
   { tier: "free", zh: ["AA 分账：拍照识别", "一张小票拍下来，菜品自动逐行认出，谁点了什么勾一下就分好——不用再手动敲每一项。识别在手机本地完成，不上传。"], en: ["Split bills from a photo", "Snap the receipt, every line item is recognised, tick who had what and the split is done — no more typing each item. Recognition runs on your phone; nothing is uploaded."] },
 ]
 
-/** 七张卡横向滑动，不平铺——平铺占了大半屏，更新日志本身反而被推到下面。
- *  手机上手指滑，桌面上给两个箭头（触控板横滑也行，但不是每个人都知道） */
+/** 一次只看一张：点「换一个」随机换到另一张（不会连着出同一张），下面的点能直接跳。
+ *  平铺占大半屏、横滑又像在翻商品——这里想要的是「随手抽一张看看在做什么」。
+ *  卡片给最小高度（按最长那张定）：不然换到短的那张，下面的按钮行会往上跳 */
 function Roadmap() {
   const { t, lang } = useLang()
   const z = lang === "zh"
-  const rail = React.useRef<HTMLDivElement>(null)
-  const step = (dir: 1 | -1) => rail.current?.scrollBy({ left: dir * 316, behavior: "smooth" })
+  const n = ROADMAP.length
+  const [i, setI] = React.useState(() => Math.floor(Math.random() * n))
+  const [tick, setTick] = React.useState(0)   // 每次切换 +1，让卡片重新淡入
+  const go = (next: number) => { setI(((next % n) + n) % n); setTick((x) => x + 1) }
+  const shuffle = () => { let next = i; while (next === i) next = Math.floor(Math.random() * n); go(next) }
+  const r = ROADMAP[i]
   return (
     <section id="roadmap" className="grid gap-6 py-12 first:pt-2 md:grid-cols-[200px_1fr] md:gap-12">
       <div className="md:sticky md:top-24 md:self-start">
@@ -177,25 +182,26 @@ function Roadmap() {
         <div className="mt-2 text-sm text-muted-foreground">{t("接下来要做的大功能", "What's coming")}</div>
       </div>
       <div className="min-w-0">
-        <div className="flex items-end justify-between gap-6">
-          <p className="max-w-[640px] leading-relaxed text-muted-foreground">{t("只列大功能和做它的理由。顺序不代表先后，做到哪一步会在这里更新。", "Only the big ones, and why. Order isn't priority; this list updates as each one lands.")}</p>
-          <div className="hidden shrink-0 gap-2 md:flex">
-            <button type="button" onClick={() => step(-1)} aria-label={t("上一张", "Previous")} className="grid size-9 place-items-center rounded-full border border-rule bg-card text-muted-foreground hover:text-foreground"><ChevronLeft className="size-4" /></button>
-            <button type="button" onClick={() => step(1)} aria-label={t("下一张", "Next")} className="grid size-9 place-items-center rounded-full border border-rule bg-card text-muted-foreground hover:text-foreground"><ChevronRight className="size-4" /></button>
+        <p className="max-w-[640px] leading-relaxed text-muted-foreground">{t("只列大功能和做它的理由。顺序不代表先后，做到哪一步会在这里更新。", "Only the big ones, and why. Order isn't priority; this list updates as each one lands.")}</p>
+        <div key={tick} className="roadmap-card mt-6 max-w-[640px] rounded-2xl border border-rule bg-card p-6 md:min-h-[176px] md:p-8">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-lg font-medium">{z ? r.zh[0] : r.en[0]}</div>
+            <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-muted text-primary" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
           </div>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
         </div>
-        <div ref={rail} className="-mx-6 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 [scrollbar-width:thin] md:mx-0 md:px-0">
-          {ROADMAP.map((r) => (
-            <div key={r.zh[0]} className="flex w-[300px] shrink-0 snap-start flex-col rounded-2xl border border-rule bg-card p-6">
-              <div className="flex items-center justify-between gap-3">
-                <div className="font-medium">{z ? r.zh[0] : r.en[0]}</div>
-                <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "bg-muted text-primary" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
-              </div>
-              <p className="mt-3 text-[14.5px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
-            </div>
-          ))}
+        <div className="mt-4 flex max-w-[640px] flex-wrap items-center gap-4">
+          <button type="button" onClick={shuffle} className="inline-flex h-9 items-center gap-2 rounded-full border border-rule bg-card px-4 text-sm font-medium hover:border-primary/40">
+            <Shuffle className="size-4" />{t("换一个", "Show me another")}
+          </button>
+          <div className="flex items-center gap-1.5" aria-label={t("第几个", "Which one")}>
+            {ROADMAP.map((x, k) => (
+              <button key={x.zh[0]} type="button" onClick={() => go(k)} aria-label={z ? x.zh[0] : x.en[0]} className={`size-2 rounded-full transition-colors ${k === i ? "bg-foreground" : "bg-border hover:bg-muted-foreground/60"}`} />
+            ))}
+          </div>
+          <span className="num text-xs text-muted-foreground">{i + 1} / {n}</span>
+          <a href={`${BASE}contact.html`} className="tag ml-auto text-primary hover:underline">{t("还有想要的功能？告诉我 →", "Want something else? Tell me →")}</a>
         </div>
-        <a href={`${BASE}contact.html`} className="tag mt-4 inline-block text-primary hover:underline">{t("还有想要的功能？告诉我 →", "Want something else? Tell me →")}</a>
       </div>
     </section>
   )
