@@ -362,8 +362,8 @@ const GROUPS: Group[] = [
           { img: "templates", cap: ["模板：把常记的条目存下来，长按「＋」一步选用", "Templates: save frequent entries and long-press + to use one"] },
           { list: [
             ["记账面板的金额一上来是 0，你按多少就显示多少，键盘自带加减乘除。", "The amount starts at 0 and shows exactly what you type; the keypad does arithmetic."],
-            ["截图记账在「设置 → 截图记账」里设置，支持支付宝、微信、云闪付的支付结果页，可以绑到操作按钮或控制中心。", "Set up Screenshot Capture in Settings → Screenshot Capture. It reads Alipay, WeChat Pay and UnionPay result pages and can live on the Action button or in Control Center."],
-            ["一笔钱里有别人的份，用「快速 AA」就地拆开；要报销的标成「待报销」，钱回来之后核销，净支出自动变小。", "Part of it someone else's? Split it in place with Quick Split. Work expense? Mark it To Claim and settle it when the money comes back."],
+            ["截图记账（识别支付宝、微信、云闪付的支付结果页）正在施工中，入口暂时关闭，回来时会在更新日志里说。", "Screenshot Capture (reading Alipay, WeChat Pay and UnionPay result pages) is under construction; the entry is temporarily off and will return with a changelog note."],
+            ["一笔钱里有别人的份，用「快速 AA」就地拆开；要报销的标成「待报销」，钱回来之后核销，净支出自动变小。不报了也能在报销中心一键「不报销」，几秒内可撤销。", "Part of it someone else's? Split it in place with Quick Split. Work expense? Mark it To Claim and settle it when the money comes back — or mark it Don't Reimburse in the Reimbursement Center, with a few seconds to undo."],
           ] },
           { fig: F.ExtrasLabel },
         ],
@@ -403,7 +403,7 @@ const GROUPS: Group[] = [
         lead: ["钱已经花了，但换算成「晚自由几天」，下一次花钱之前你会多想一秒。", "The money's spent, but seen as days of freedom, the next purchase gets a second thought."],
         blocks: [
           { fig: F.EntryPrice },
-          { img: "ledger", cap: ["账单页顶部的卡片左右滑：本月支出 ⇄ 财富自由目标", "Swipe the top card on Entries: spent this month ⇄ your freedom goal"] },
+          { img: "ledger", cap: ["账单页顶部的卡片左右滑：本月支出 ⇄ 财务自由目标", "Swipe the top card on Entries: spent this month ⇄ Financial Freedom Goal"] },
           { p: ["卡片下面的快速入口是「有就看一眼」的地方：待报销、AA 分账、计划、转账、退款，显示哪些、用卡片还是胶囊样式，都能在设置里改。", "Below it are shortcuts worth a glance: To Claim, Split Bills, Plans, Transfers, Refunds. Pick which show, and card or chip style, in Settings."] },
           { related: ["c-countdown"] },
         ],

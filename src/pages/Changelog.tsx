@@ -11,6 +11,35 @@ type Version = { v: string; date: [string, string]; intro: [string, string]; sec
 
 const VERSIONS: Version[] = [
   {
+    v: "1.0.5",
+    date: ["2026 年 9 月", "Sep 2026"],
+    intro: [
+      "报销终于能「后退」了；账单列表的标题和副标题由你定；触感反馈更讲究；冷启动和切页更稳。",
+      "Reimbursements can finally go back. You decide what each entry's title and subtitle show. Haptics got more deliberate, and launch and tab switching are steadier.",
+    ],
+    sections: [
+      { title: ["新增", "New"], items: [
+        ["报销能后退", "报销中心里可以对一笔或一批账单选「不报销」，误点几秒内能撤销；已报销的账单也能点进去修改或重新挂回待报销。只有一条规则：不报销只处理还没收回的部分，已到账的钱一分不动。", "Reimbursements can go back", "In the Reimbursement Center, mark one or many entries as Don't Reimburse and undo within seconds; reimbursed entries can be opened, edited or put back to pending. One rule: only the part not yet received is touched — money already in your account never changes."],
+        ["账单列表自定义", "标题显示备注还是二级分类，副标题里的备注、一级分类、二级分类各自开关，设置时实时预览。设置 → 记账偏好 → 账单列表显示。", "Customize the entry list", "Choose whether the title shows the note or the subcategory; toggle note, category and subcategory in the subtitle, with a live preview. Settings → Entry Preferences → List Display."],
+        ["方向感的触感", "FIRE 试算滑块按有利 / 不利方向给不同的震动和颜色；撤销、删除各有自己的反馈。", "Directional haptics", "The FIRE what-if sliders vibrate and color differently for favorable vs. unfavorable moves; undo and delete have their own feedback."],
+      ] },
+      { title: ["改进", "Improved"], items: [
+        ["冷启动和切页更稳", "首页、资产、数据三页不再「先画一版再跳一下」；顶部卡片出来就是最终数字；iCloud 同步期间的卡顿明显减少。", "Steadier launch and tab switching", "Home, Assets and Data no longer draw once and jump; the top card shows final numbers from the first frame; stutter during iCloud sync is much reduced."],
+        ["切换标签只震一次", "原来点一下会震两下，点「+」会震四下。", "Tab switches vibrate once", "They used to vibrate twice — four times on +."],
+        ["首页第二张卡改叫「财务自由目标」", "与 FIRE 页「距离财务自由」用词一致。", "Home card renamed \"Financial Freedom Goal\"", "Matches the wording on the FIRE tab."],
+        ["语言设置移到「通用」", "", "Language setting moved to General", ""],
+        ["模块与排序页的图标与卡片头一致", "", "Module icons now match the card headers", ""],
+      ] },
+      { title: ["修复", "Fixed"], items: [
+        ["AA 结清的账单被算成「剩余自付」", "", "Settled split bills counted as \"self-paid remainder\"", ""],
+        ["资产变化图的零线与柱脚错开", "", "Zero line on the asset-change chart misaligned with the bars", ""],
+        ["批量删除账单震动两次", "", "Batch delete vibrated twice", ""],
+        ["报销中心勾选后从面板取消标记，底栏残留", "", "Bottom bar lingered after unmarking a selected entry from its sheet", ""],
+        ["截图记账入口暂时下线，标为「施工中」", "", "Screenshot Capture is temporarily offline, marked Under Construction", ""],
+      ] },
+    ],
+  },
+  {
     v: "1.0.4",
     date: ["2026 年 9 月", "Sep 2026"],
     intro: [

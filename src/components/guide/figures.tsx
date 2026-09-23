@@ -254,7 +254,7 @@ export function EntryWays() {
   const ways = [
     { h: t("点「＋」", "Tap +"), s: t("约 5 秒", "~5 s"), d: t("选分类 → 输金额 → 完成。键盘自带加减乘除。", "Category → amount → done. The keypad does arithmetic."), w: 70 },
     { h: t("长按「＋」用模板", "Long-press + for a template"), s: t("约 2 秒", "~2 s"), d: t("房租、通勤、每天那杯咖啡，一步选用。", "Rent, commute, the daily coffee — one step."), w: 28 },
-    { h: t("截图记账", "Screenshot Capture"), s: t("约 1 秒", "~1 s"), d: t("支付完截个屏，金额、时间、分类、账户自动填好。", "Screenshot the payment; amount, time, category and account filled in."), w: 14 },
+    { h: t("截图记账（施工中）", "Screenshot Capture (under construction)"), s: t("约 1 秒", "~1 s"), d: t("支付完截个屏，金额、时间、分类、账户自动填好。入口暂时关闭。", "Screenshot the payment; amount, time, category and account filled in. Temporarily off."), w: 14 },
   ]
   return (
     <Fig caption={t("大致耗时，按常见操作估。越常见的账，越该用越快的方式记。", "Rough timings for typical use. The more often you log something, the faster the method should be.")}>

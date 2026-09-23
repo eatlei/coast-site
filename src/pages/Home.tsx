@@ -372,7 +372,7 @@ function Categories() {
 /* ---------- 更多亮点：三栏索引 + 小动画 ---------- */
 const ICONS: Record<SketchId, React.ComponentType<{ className?: string }>> = { scan: ScanLine, refund: Undo2, reconcile: Scale, recurring: Repeat, rules: Wand2, review: FileText, repeat: ShoppingBag, scenarios: GitBranch, widgets: LayoutGrid, currency: Globe, themes: Palette, privacy: EyeOff }
 const MORE: { id: SketchId; pro?: boolean; zh: [string, string]; en: [string, string] }[] = [
-  { id: "scan", zh: ["截图记账", "账单截图丢进来，金额商家在手机上识别，不发网。"], en: ["Receipt scan", "Drop in a screenshot; amount and merchant are read on device."] },
+  { id: "scan", zh: ["截图记账（施工中）", "账单截图丢进来，金额商家在手机上识别，不发网。入口暂时关闭，回来会写进更新日志。"], en: ["Receipt scan (under construction)", "Drop in a screenshot; amount and merchant are read on device. Temporarily off; it returns with a changelog note."] },
   { id: "refund", zh: ["分次退款", "1000 先退 500 到信用卡，再退 200 到储蓄卡，都记得住。"], en: ["Partial refunds", "¥500 back to the card, ¥200 to savings, later. It keeps track."] },
   { id: "reconcile", zh: ["余额校准", "核对一次真实余额，之后流水自动往上叠。"], en: ["Reconcile once", "Check your real balance once; entries stack on top."] },
   { id: "recurring", zh: ["周期账单识别", "同名、金额 ±15%、出现 3 次以上，才叫周期。"], en: ["Recurring detection", "Same name, ±15% amount, seen 3+ times. Then it counts."] },
