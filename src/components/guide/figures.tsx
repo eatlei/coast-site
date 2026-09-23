@@ -602,7 +602,7 @@ export function ProTable() {
   const { t } = useLang()
   const Y = <span className="text-success">●</span>, N = <span className="text-muted-foreground/40">—</span>
   const rows: [string, React.ReactNode, React.ReactNode][] = [
-    [t("记账、模板、截图记账、导入、AA 分账、报销、计划", "Logging, templates, Screenshot Capture, import, splits, claims, plans"), Y, Y],
+    [t("记账、模板、截图记账（施工中）、导入、AA 分账、报销、计划", "Logging, templates, Screenshot Capture (under construction), import, splits, claims, plans"), Y, Y],
     [t("总预算、首页的消费节奏", "Total budget, Spending Pace on the home card"), Y, Y],
     [t("自由倒计时、试算滑块、FI 进度、储蓄率、被动收入覆盖率", "Freedom countdown, What-If sliders, FI Progress, Savings Rate, Passive Income Coverage"), Y, Y],
     [t("iCloud 同步、每日备份、iPad 与 Mac", "iCloud sync, daily backups, iPad & Mac"), Y, Y],
