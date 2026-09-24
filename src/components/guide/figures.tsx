@@ -319,6 +319,32 @@ export function SplitDiagram() {
   )
 }
 
+/** 时薪换算：月入 1 万、每月 22 天 × 8 小时。数都是现算的，跟 App 同一个口径（月收入 ÷ 月工时） */
+export function WorkHoursPrice() {
+  const { t } = useLang()
+  const income = 10000, days = 22, perDay = 8
+  const wage = income / (days * perDay)
+  const fmt = (h: number) => {
+    if (h < 1) return t(`≈ ${Math.round(h * 60)} 分钟`, `≈ ${Math.round(h * 60)} min`)
+    if (h >= perDay) { const d = Math.round((h / perDay) * 10) / 10; return t(`≈ ${d} 个工作日`, `≈ ${d} workdays`) }
+    const r = Math.round(h * 10) / 10
+    return t(`≈ ${r} 小时`, `≈ ${r} hours`)
+  }
+  const items: [string, number][] = [[t("一杯咖啡", "A coffee"), 38], [t("一顿火锅", "Hotpot dinner"), 268], [t("降噪耳机", "Noise-cancelling headphones"), 1999], [t("一个月房租", "A month's rent"), 3500]]
+  return (
+    <Fig caption={t(`月入 ¥10,000、每月 ${days} 天 × ${perDay} 小时 → 时薪约 ¥${wage.toFixed(1)}。同一笔钱，换成时间来读。`, `¥10,000 a month, ${days} days × ${perDay} hours → about ¥${wage.toFixed(1)} an hour. The same money, read as time.`)}>
+      <div className="mx-auto max-w-[420px] divide-y divide-border rounded-xl bg-muted/60 px-4">
+        {items.map(([name, price]) => (
+          <div key={name} className="flex items-baseline justify-between gap-3 py-2.5 text-sm">
+            <span>{name}<span className="num ml-2 text-muted-foreground">¥{price.toLocaleString()}</span></span>
+            <span className="num font-medium text-primary">{fmt(price / wage)}</span>
+          </div>
+        ))}
+      </div>
+    </Fig>
+  )
+}
+
 // ---------- 看账 ----------
 
 /** 一笔钱换算成自由日推迟几天。演示账本：月支出 1.2 万、月收入 2 万、净资产 80 万 */
@@ -607,10 +633,12 @@ export function ProTable() {
     [t("自由倒计时、试算滑块、FI 进度、储蓄率、被动收入覆盖率", "Freedom countdown, What-If sliders, FI Progress, Savings Rate, Passive Income Coverage"), Y, Y],
     [t("iCloud 同步、每日备份、iPad 与 Mac", "iCloud sync, daily backups, iPad & Mac"), Y, Y],
     [t("多币种与每日汇率", "Multi-currency and daily rates"), Y, Y],
+    [t("时薪换算看板、账单详情里的工时", "Hours of Work card, hours on entry details"), Y, Y],
     [t("场景模拟、达成区间", "Scenarios, achievement range"), N, Y],
     [t("Coast FIRE、Barista FIRE、高级 FI 参数", "Coast FIRE, Barista FIRE, advanced FI parameters"), N, Y],
     [t("分类预算、预算页的配速推演", "Category budgets, pace projection on the budget page"), N, Y],
     [t("完整月度回顾、常买", "Full Monthly Review, Repeat Buys"), N, Y],
+    [t("想买的东西值几小时、记账时看工时", "Wish list in hours, hours while adding"), N, Y],
     [t("主题配色与 App 图标", "Themes and app icons"), N, Y],
   ]
   return (

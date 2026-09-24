@@ -510,8 +510,8 @@ function Privacy() {
 }
 
 /* ---------- 定价：一张会打印出来的收据 ---------- */
-const FREE = [["不限量记账，不按笔数收费", "Unlimited entries"], ["全部账户与账本工具", "Every account and ledger tool"], ["CSV / Excel 导入导出", "CSV / Excel import and export"], ["FI 进度与倒计时、总预算、小组件", "FI countdown, total budget, widgets"], ["多币种记账与每日汇率", "Multi-currency, daily rates"]]
-const PRO = [["达成区间", "Achievement range"], ["收支试算滑杆", "What-if sliders"], ["场景模拟器", "Scenario simulator"], ["Coast FIRE 与 Barista FIRE", "Coast & Barista FIRE"], ["高级 FI 参数", "Advanced FI parameters"], ["完整月报与复购洞察", "Full monthly report, repeat-buy"], ["分类预算与配速图", "Category budgets with pace"], ["配色主题与 App 图标", "Themes and app icons"]]
+const FREE = [["不限量记账，不按笔数收费", "Unlimited entries"], ["全部账户与账本工具", "Every account and ledger tool"], ["CSV / Excel 导入导出", "CSV / Excel import and export"], ["FI 进度与倒计时、总预算、小组件", "FI countdown, total budget, widgets"], ["多币种记账与每日汇率", "Multi-currency, daily rates"], ["时薪换算看板", "Hours of Work card"]]
+const PRO = [["达成区间", "Achievement range"], ["收支试算滑杆", "What-if sliders"], ["场景模拟器", "Scenario simulator"], ["Coast FIRE 与 Barista FIRE", "Coast & Barista FIRE"], ["高级 FI 参数", "Advanced FI parameters"], ["完整月报与复购洞察", "Full monthly report, repeat-buy"], ["分类预算与配速图", "Category budgets with pace"], ["想买的东西值几小时、记账时看工时", "Wish list in hours, hours while adding"], ["配色主题与 App 图标", "Themes and app icons"]]
 function Pricing() {
   const { t, lang } = useLang()
   const pick = (p: string[]) => (lang === "zh" ? p[0] : p[1])

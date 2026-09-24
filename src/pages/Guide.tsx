@@ -363,7 +363,9 @@ const GROUPS: Group[] = [
           { list: [
             ["记账面板的金额一上来是 0，你按多少就显示多少，键盘自带加减乘除。", "The amount starts at 0 and shows exactly what you type; the keypad does arithmetic."],
             ["截图记账（识别支付宝、微信、云闪付的支付结果页）正在施工中，入口暂时关闭，回来时会在更新日志里说。", "Screenshot Capture (reading Alipay, WeChat Pay and UnionPay result pages) is under construction; the entry is temporarily off and will return with a changelog note."],
-            ["一笔钱里有别人的份，用「快速 AA」就地拆开；要报销的标成「待报销」，钱回来之后核销，净支出自动变小。不报了也能在报销中心一键「不报销」，几秒内可撤销。", "Part of it someone else's? Split it in place with Quick Split. Work expense? Mark it To Claim and settle it when the money comes back — or mark it Don't Reimburse in the Reimbursement Center, with a few seconds to undo."],
+            ["金额下面那一行左右滑：账户、报销、AA 分账、分期、组合支付、小费、服务费……开着的会换成对号并写上状态（「AA·4人」「12 期」「小费 ¥15」），长按可以直接移除；最后的「自定义」决定显示哪些、什么顺序。", "Swipe the row under the amount: account, Reimburse, Split Bill, Installments, Combined Payment, tip, service charge… Active ones turn into a check with their status (\"Split · 4 people\", \"12 payments\", \"Tip ¥15\"); long-press to remove. Custom at the end picks which show and in what order."],
+            ["一笔钱里有别人的份，点「AA 分账」就地分；要报销的点「报销」标成待报销，钱回来之后核销，净支出自动变小。不报了也能在报销中心一键「不报销」，几秒内可撤销。", "Part of it someone else's? Tap Split Bill right there. Work expense? Tap Reimburse to mark it To Claim and settle it when the money comes back — or mark it Don't Reimburse in the Reimbursement Center, with a few seconds to undo."],
+            ["小费、服务费、税费有常用比例一点即得；组合支付只列用到的账户，差额一键补齐。金额框都能直接写算式，比如 88+45。", "Tip, service charge and tax have one-tap common percentages; Combined Payment lists only the accounts you use and fills the remainder in one tap. Every amount field takes arithmetic, like 88+45."],
           ] },
           { fig: F.ExtrasLabel },
         ],
@@ -385,8 +387,9 @@ const GROUPS: Group[] = [
         blocks: [
           { fig: F.SplitDiagram },
           { list: [
-            ["长按「＋」选「AA 分账」：平均分、按金额、按比例都行；你付了等别人还，或别人付了你来还，两个方向都能记。", "Long-press + and choose Split Bill: evenly, by amount or by percentage, whether you paid or someone else did."],
-            ["分账中心按人列出谁欠你、你欠谁，钱到了点一下结清，或一键全部结算，账户余额跟着变。", "The split center lists who owes you and whom you owe, by person. Settle one or Settle All; balances follow."],
+            ["记一笔时点功能行里的「AA 分账」（长按「＋」选 AA 也是打开同一个地方）：平均、各付各的、按百分比都行；你付了等别人还，或别人付了你来还，两个方向都能记。金额、币种、分类都跟着这一笔走，出国聚餐按外币记。", "While logging, tap Split Bill in the option row (long-press + → Split Bill opens the same place): evenly, by what each person had, or by percentage — whether you paid or someone else did. Amount, currency and category come from the entry, so dinners abroad stay in their currency."],
+            ["还不知道总额？直接每人填自己点了多少，合计自动填回金额；服务费、税费按各人点的多少比例摊进去，零头算你的。", "No total yet? Enter what each person had and the sum becomes the amount; service charge and tax are shared in proportion, and leftover cents go to you."],
+            ["分账中心按人列出谁欠你、你欠谁，钱到了点一下结清，或一键全部结算，账户余额跟着变。「已结清」里能回看，标错了可以只撤销那一个人。设一个默认收款账户，之后结算直接入账。", "The Split Bill center lists who owes you and whom you owe, by person. Settle one or all and balances follow. The Settled tab keeps the history, and you can undo just one person. Set a default receiving account and settlements go straight there."],
             ["常一起分账的人会被记住，下次直接选。", "People you split with are remembered for next time."],
           ] },
         ],
@@ -433,6 +436,24 @@ const GROUPS: Group[] = [
           ] },
           { p: ["「常买」会把同一样东西的历次价格收在一起：买了几次、通常多少钱、最低最高多少。", "Repeat Buys gathers every price you've paid for the same thing: how often, the usual price, the lowest and highest."] },
           { fig: F.RepeatBuyDots },
+        ],
+      },
+      {
+        slug: "work-hours",
+        title: ["时薪换算：它值我几个小时", "Hours of Work: what it costs in time"],
+        lead: ["钱花出去之后还能再挣，时间不行。把每笔花销换算成要上多久的班，下一次花钱之前你会多想一秒。", "Money can be earned again; time can't. See each expense as hours of work, and the next purchase gets a second thought."],
+        blocks: [
+          { fig: F.WorkHoursPrice },
+          { p: ["在数据页打开「时薪换算」，只需要告诉它你每月上几天班、每天几小时（也可以直接填每月总时长）。时薪不用自己算：按你记过的工资自动得出。", "Turn on Hours of Work on the Data tab and tell it your working days and hours (or a monthly total). No need to work out your rate — it comes from the pay you've recorded."] },
+          { list: [
+            ["时薪 = 近一年的工作收入按月平均 ÷ 每月工时。工作收入是固定收入 + 其他收入，利息、分红这类被动收入不算。", "Hourly rate = your average monthly work income over the past year ÷ monthly hours. Work income is fixed plus other income; passive income like interest and dividends doesn't count."],
+            ["用一年平均而不是当月：发年终奖那个月时薪会翻倍，外套不该突然「便宜一半」。逐月的起伏在看板的柱状图里看。本月还没过完，不算进平均。", "It's a yearly average, not this month's: a bonus month would double your rate and make everything look half-price. The monthly ups and downs are in the card's bar chart. The current month joins once it ends."],
+            ["账本里收入记得不全，或想按合同工资算？在设置里改成「自己填」每月到手收入。", "Income not fully recorded, or want to use your contract salary? Switch to Enter Manually in settings."],
+          ] },
+          { p: ["看板上会告诉你：这段时间的支出折合几个工作日、占了多少工作时间。每笔支出的详情页也会写「≈ 3.5 小时工作」；AA 的账只算你那份。", "The card shows how many workdays your spending took and its share of your working time. Every expense's detail page reads \"≈ 3.5 hours of work\" too — for splits, just your share."] },
+          { p: ["「想买的东西」清单和「记账时看工时」是 Pro：前者把想买的东西列进来，每样都标着要上多久的班；后者在记账面板的金额旁直接显示。", "The Wish List and Hours While Adding are Pro: the first lists things you're thinking of buying with the hours each costs; the second shows hours right next to the amount as you log."] },
+          { tip: ["想算「真实时薪」，把通勤、下班后回消息这些为工作花掉的时间也算进每月工时。算出来的数通常比你以为的低——这正是它有用的地方。", "For your real hourly rate, count commuting and after-hours messages as working time too. The number is usually lower than you'd think — which is exactly why it's useful."] },
+          { related: ["data", "c-savings-rate"] },
         ],
       },
       {

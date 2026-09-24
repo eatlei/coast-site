@@ -11,6 +11,38 @@ type Version = { v: string; date: [string, string]; intro: [string, string]; sec
 
 const VERSIONS: Version[] = [
   {
+    v: "1.0.6",
+    date: ["2026 年 9 月", "Sep 2026"],
+    intro: [
+      "新功能「时薪换算」：看看每笔花销要上多久的班；AA 分账合成一套，统一在记账面板里分；记账面板整体重新整理了一遍。",
+      "New: Hours of Work — see how long each expense takes to earn. Split bills are now one flow, right in the entry panel. And the entry panel got a full tidy-up.",
+    ],
+    sections: [
+      { title: ["新增", "New"], items: [
+        ["时薪换算", "按你记的工资（固定收入 + 其他收入，不含利息分红）自动算出时薪，只需填每月上几天班、每天几小时，也可以直接填每月总时长。时薪取近一年平均，发年终奖那个月不会让外套突然「变便宜」。数据页 → 时薪换算。", "Hours of Work", "Your hourly rate is worked out from the pay you record (fixed and other income, not interest or dividends) — just enter your working days and hours, or a monthly total. It uses a one-year average, so a bonus month doesn't make everything look cheaper. Data tab → Hours of Work."],
+        ["时薪看板", "这段时间的支出折合几个工作日、占了多少工作时间，外加近一年每月时薪的柱状图。账单详情里每笔支出也会显示「≈ 3.5 小时工作」。", "Hours card", "How many workdays your spending took, its share of your working time, and a year of monthly hourly rates. Every expense's detail page shows \"≈ 3.5 hours of work\" too."],
+        ["想买的东西值几小时（Pro）", "把想买的东西列进清单，每样都标着要上多久的班，可以改、可以删。", "Wish list in hours (Pro)", "List what you're thinking of buying; each item shows how many hours of work it costs. Edit or delete anytime."],
+        ["记账时看工时（Pro）", "记账面板里，金额旁边直接显示这笔要工作多久；设置里可以关掉。", "Hours while adding (Pro)", "See how long an expense takes to earn right next to the amount in the entry panel. Can be turned off in Settings."],
+        ["AA 逐人录入", "不知道总额也能分：每人填自己点了多少，合计自动填回金额；服务费、税费按各人点的多少比例摊进去，零头算你的。", "Split by what each person had", "No total yet? Enter what each person ordered and the sum becomes the amount. Service charge and tax are shared in proportion to what each person had; leftover cents go to you."],
+        ["分账中心能回看、能撤销", "新增「已结清」记录；标错了可以只撤销某一个人的结清；可以设默认收款账户，结算时不用每次选。", "Split Center: history and undo", "A new Settled tab; undo a single person's settlement; set a default receiving account so you don't pick one every time."],
+      ] },
+      { title: ["改进", "Improved"], items: [
+        ["AA 合成一套", "原来记账面板里的「快速 AA」和长按「＋」的 AA 分账是两套，待收还分在两个地方。现在只有一套，在记账面板里点「AA 分账」就能分，长按「＋」选 AA 也是打开记账面板。旧的快速 AA 账单会自动转成新版，已收回的钱一分不变。", "Split bills, unified", "The in-panel Quick Split and the long-press split used to be separate, with money owed tracked in two places. Now there's one: tap Split Bill in the entry panel (long-press + opens the same panel). Old Quick Split entries convert automatically, with money already received untouched."],
+        ["AA 支持外币", "分账跟着记账面板的币种走，出国聚餐不再被记成人民币。", "Splits in any currency", "Splits follow the entry panel's currency — dinners abroad are no longer recorded in CNY."],
+        ["记账面板功能行平铺", "账户、报销、AA、分期、组合支付、小费……全部平铺在一行，左右滑，最后是「自定义」；开着的功能统一显示对号和状态（如「AA·4人」「12 期」），不用再点「更多」。", "Entry options laid out flat", "Account, Reimburse, Split Bill, Installments, Combined Payment, Tip and more sit in one scrollable row, with Custom at the end. Active options all show a check and their status (\"Split · 4 people\", \"12 payments\") — no more \"More\" menu."],
+        ["账户选择更紧凑", "两列小方块，半屏就能看到十来个账户，点一下即选中。", "A more compact account picker", "Two columns of tiles — a dozen accounts at a glance, one tap to pick."],
+        ["组合支付更顺手", "只列用到的账户，可以添加、删除，一键补齐差额。", "Easier combined payments", "Only the accounts you use, add or remove them, and fill the remaining amount in one tap."],
+        ["小费、服务费、税费常用比例一点即得", "原来的滑杆换成常用比例按钮，也可以直接输金额。", "One-tap tip, service and tax", "Common percentages replace the slider; you can still type an amount."],
+        ["AA、分期、组合支付、附加项面板样式统一", "", "Consistent sheets for splits, installments, combined payments and extras", ""],
+      ] },
+      { title: ["修复", "Fixed"], items: [
+        ["组合支付金额、分期手续费、转账手续费输入算式（如 100+50）后被当成 0", "", "Combined-payment amounts and installment/transfer fees entered as arithmetic (e.g. 100+50) were saved as 0", ""],
+        ["编辑「别人付」的 AA 账单后，我的份额变成全额", "", "Editing a split someone else paid set your share to the full amount", ""],
+        ["AA 外币账单被按人民币记录", "", "Foreign-currency splits were recorded in CNY", ""],
+      ] },
+    ],
+  },
+  {
     v: "1.0.5",
     date: ["2026 年 9 月", "Sep 2026"],
     intro: [
