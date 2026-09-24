@@ -1,11 +1,12 @@
 import * as React from "react"
 import { gsap, useGSAP } from "@/lib/gsap"
+import { useLang } from "@/lib/i18n"
 
 /**
  * 亮点 12 条各配一个 44px 高的小动画。只用线和数字，不用插画。
  * 每个 Sketch 建一条暂停的 timeline：进入视口播一次，hover 再播一次。
  */
-export type SketchId = "scan" | "refund" | "reconcile" | "recurring" | "rules" | "review" | "repeat" | "scenarios" | "widgets" | "currency" | "themes" | "privacy"
+export type SketchId = "scan" | "refund" | "reconcile" | "recurring" | "rules" | "review" | "repeat" | "scenarios" | "widgets" | "currency" | "themes" | "privacy" | "hours"
 
 const mono = "font-mono text-[12px] tabular-nums"
 
@@ -210,7 +211,25 @@ function Privacy() {
   )
 }
 
-const MAP: Record<SketchId, React.ComponentType> = { scan: Scan, refund: Refund, reconcile: Reconcile, recurring: Recurring, rules: Rules, review: Review, repeat: Repeat, scenarios: Scenarios, widgets: Widgets, currency: Currency, themes: Themes, privacy: Privacy }
+/** 时薪换算：一副耳机的价格翻成「要上几天班」。月入 1 万、每月 22 天 × 8 小时，跟手册那张图同一个口径 */
+function Hours() {
+  const { t } = useLang()
+  const root = useSketch((tl, q) => {
+    const n = { v: 0 }
+    tl.set(q(".to"), { opacity: 0, y: 6 })
+      .to(q(".to"), { opacity: 1, y: 0 }, 0.3)
+      .to(n, { v: 35.2, duration: 0.8, ease: "power1.out", onUpdate: () => { const el = q(".h")[0]; if (el) el.textContent = n.v.toFixed(1) } }, 0.3)
+      .from(q(".day"), { opacity: 0 }, "-=0.2")
+  })
+  return (
+    <div ref={root} className={`h-11 w-full max-w-[220px] ${mono}`}>
+      <div className="flex gap-2"><span>¥1,999</span><span className="text-muted-foreground">→</span><span className="to"><span className="h">35.2</span>{t(" 小时", " hrs")}</span></div>
+      <div className="day text-muted-foreground">{t("≈ 4.4 个工作日 · 时薪 ¥56.8", "≈ 4.4 workdays · ¥56.8/hr")}</div>
+    </div>
+  )
+}
+
+const MAP: Record<SketchId, React.ComponentType> = { scan: Scan, refund: Refund, reconcile: Reconcile, recurring: Recurring, rules: Rules, review: Review, repeat: Repeat, scenarios: Scenarios, widgets: Widgets, currency: Currency, themes: Themes, privacy: Privacy, hours: Hours }
 
 export function Sketch({ id }: { id: SketchId }) {
   const C = MAP[id]
