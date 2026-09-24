@@ -289,7 +289,7 @@ export function ImportFlow() {
   return (
     <Fig>
       <Steps steps={[
-        [t("在旧 App 里导出", "Export from the old app"), t("iCost 用「导出账单」而不是「备份」；随手记、钱迹、Cookie 记账导出 Excel / CSV。", "In iCost use Export, not Backup; Suishouji, Qianji and Cookie export Excel / CSV.")],
+        [t("在原来的 App 或网银里导出", "Export from your old app or bank"), t("用「导出账单」而不是「备份」，CSV、Excel 都行；备份多是私有格式，读不出来。", "Use Export, not Backup — CSV or Excel both work; backups are usually a private format.")],
         [t("设置 → 导入账单", "Settings → Import Entries"), t("自动认表头和编码、跳过重复、识别转账。导错了能一键撤销。", "Headers and encoding detected, duplicates skipped, transfers recognized. One tap to undo.")],
         [t("资产 → ＋ → 批量对账", "Assets → + → Batch Reconcile"), t("导入只有流水、没有期初余额，填一遍真实余额，资产马上对齐。", "Imports have entries but no starting balances; enter real balances once and assets line up.")],
       ]} />

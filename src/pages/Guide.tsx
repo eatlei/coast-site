@@ -376,6 +376,14 @@ const GROUPS: Group[] = [
         lead: ["多年的旧账不用丢。三步搬过来，之后就在 Coast 里接着记。", "Keep your years of history. Three steps and you're recording in Coast."],
         blocks: [
           { fig: F.ImportFlow },
+          { p: ["大多数记账 App、银行和支付平台导出的 CSV / Excel 都能直接导入，中英文表头和编码自动识别。只要有「日期」和「金额」两列就行，有类型、分类、账户、备注会认得更准。", "CSV and Excel exports from most budgeting apps, banks and payment platforms import directly, with Chinese or English headers detected automatically. Date and Amount are all you need; Type, Category, Account and Note make it more accurate."] },
+          { p: ["格式对不上也不要紧。导入页里有一张「导入模板」，列出 Coast 一定认得的十列（日期、类型、金额、一级分类、二级分类、账户、转入账户、币种、备注、标签），可以存成文件自己照着填。", "If the format doesn't match, the import page has an Import Template listing the ten columns Coast always recognizes (date, type, amount, category, subcategory, account, transfer-in account, currency, note, tags). Save it as a file and fill it in."] },
+          { list: [
+            ["让 AI 帮你转：在导入页点「复制提示词」，把它和原始账单（PDF、截图、表格都行）一起发给你常用的 AI 助手。", "Let AI convert it: tap Copy Prompt on the import page and send it, along with your original statement (PDF, screenshot or spreadsheet), to the AI assistant you use."],
+            ["AI 会按模板的格式输出一份 CSV，存成 .csv 文件，回到导入页选择它。", "It returns CSV in the template's format — save it as a .csv file and choose it on the import page."],
+            ["导入前会先预览，分类和账户都要你确认一遍，AI 转错了也能在这一步发现。", "You'll preview everything and confirm categories and accounts before importing, so any AI mistakes show up here."],
+          ] },
+          { tip: ["账单会发给你选的 AI 服务，介意的话先删掉卡号这类敏感信息；Coast 自己不上传任何数据。", "Your statement goes to whichever AI service you choose — remove card numbers and other sensitive details first if you prefer. Coast itself uploads nothing."] },
           { tip: ["导入后顺手把碎账户合并一下，再把分类归到四个角色里，FIRE 页的数字就准了。", "After importing, merge scattered accounts and give categories their roles — then the FIRE numbers are right."] },
           { related: ["accounts", "c-roles"] },
         ],

@@ -24,6 +24,7 @@ const VERSIONS: Version[] = [
         ["想买的东西值几小时（Pro）", "把想买的东西列进清单，每样都标着要上多久的班，可以改、可以删。", "Wish list in hours (Pro)", "List what you're thinking of buying; each item shows how many hours of work it costs. Edit or delete anytime."],
         ["记账时看工时（Pro）", "记账面板里，金额旁边直接显示这笔要工作多久；设置里可以关掉。", "Hours while adding (Pro)", "See how long an expense takes to earn right next to the amount in the entry panel. Can be turned off in Settings."],
         ["AA 逐人录入", "不知道总额也能分：每人填自己点了多少，合计自动填回金额；服务费、税费按各人点的多少比例摊进去，零头算你的。", "Split by what each person had", "No total yet? Enter what each person ordered and the sum becomes the amount. Service charge and tax are shared in proportion to what each person had; leftover cents go to you."],
+        ["导入模板与 AI 转格式", "导入页新增一张 Coast 一定认得的模板表，可以存成文件；还有一段能一键复制的提示词：把它和原来的账单（PDF、截图、表格都行）一起发给 AI，拿回模板格式的 CSV 就能导入。", "Import template and AI conversion", "The import page now has a template Coast always recognizes, which you can save as a file, plus a one-tap prompt: send it to an AI along with your old statement (PDF, screenshot or spreadsheet) and import the CSV it returns."],
         ["分账中心能回看、能撤销", "新增「已结清」记录；标错了可以只撤销某一个人的结清；可以设默认收款账户，结算时不用每次选。", "Split Center: history and undo", "A new Settled tab; undo a single person's settlement; set a default receiving account so you don't pick one every time."],
       ] },
       { title: ["改进", "Improved"], items: [
