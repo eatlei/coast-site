@@ -11,6 +11,53 @@ type Version = { v: string; date: [string, string]; intro: [string, string]; sec
 
 const VERSIONS: Version[] = [
   {
+    v: "1.0.7",
+    date: ["2026 年 10 月", "Oct 2026"],
+    intro: [
+      "付完款不用打开 Coast 也能记一笔：截图记账回来了，iOS 27 起付款通知也能自动记；账单能批量改了；设置重新分了组、能搜；全部币种可选；分类图标还能换形状。",
+      "Record a payment without opening Coast: Screenshot Capture is back, and on iOS 27 payment notifications can record themselves. Batch-edit entries, a regrouped and searchable Settings, every currency to choose from — and new shapes for category icons.",
+    ],
+    sections: [
+      { title: ["新增", "New"], items: [
+        ["截图记账", "一键添加快捷指令，绑到轻点背面、操作按钮或控制中心。停在支付宝、微信、云闪付的付款成功页触发一下，金额、商户、付款卡自动认出来。识别全在手机本地，截图不上传。设置 → 快捷记账。", "Screenshot Capture", "Add the shortcut in one tap and bind it to Back Tap, the Action button or Control Center. Trigger it on a payment success screen in Alipay, WeChat or UnionPay and the amount, merchant and card are read automatically — all on your iPhone, nothing uploaded. Settings → Quick Capture."],
+        ["记之前选分类", "默认弹一个分类列表：猜的那个排第一，后面是你最近常用的，点哪个记哪个，不用事后再去改。也可以改成只确认、打开记账面板，或者直接记。", "Pick the category as you capture", "By default you get a short list — the best guess first, then your recent favorites — and tap to record. Or switch to confirm-only, open the entry panel, or record straight away."],
+        ["通知记账（iOS 27）", "支付宝、微信、银行的付款通知一到就自动记一笔，不用截屏。设置里有一步一步的搭建教程；验证码、快递、促销这些不是付款的通知会自动跳过。", "Notification Capture (iOS 27)", "Payment notifications from Alipay, WeChat or your bank record themselves — no screenshot needed. Settings has a step-by-step guide; verification codes, deliveries and promotions are skipped automatically."],
+        ["快捷记账按你的规则记", "默认记到哪个分类、按卡号尾号认哪个账户、给「零钱」这类叫法配匹配词；在快捷指令里还能单独指定方向、分类、账户、标签和备注，比如「公司卡」那条固定打上报销标签。", "Quick Capture, your way", "Set default categories, match accounts by card number or by names like \"Balance\", and in Shortcuts override direction, category, account, tags and note per shortcut — e.g. a Company Card shortcut that always tags Reimbursable."],
+        ["批量修改账单", "多选之后一次改分类、账户、标签、备注、日期或报销状态。不动钱的改动有几秒撤销；转账、AA 这类改不得的会跳过并告诉你为什么。", "Batch edit", "Select several entries and change category, account, tags, note, date or reimbursement in one go. Changes that don't move money can be undone for a few seconds; transfers, splits and others that can't be changed are skipped with a reason."],
+        ["设置能搜了", "设置重新分成记账、分类与币种、预算与目标、外观、通用、支持六组；顶部搜索框搜「汇率」「默认账户」「图标」都能直达。", "Search in Settings", "Settings is regrouped into six sections, with a search field on top — search \"exchange rate\", \"default account\" or \"icons\" and jump straight there."],
+        ["全部币种可选", "全部 ISO 币种都能搜到，南非兰特也有了；可以设自己的常用币种，选择器里排在最前面。", "Every currency", "Every ISO currency is searchable (South African rand included), and your frequent currencies sit at the top of the picker."],
+        ["AA 联系人自己管", "在 AA 联系人页就能新增、改名、改备注、归档，不用等到分账时才加人。", "Manage split contacts", "Add, rename, annotate and archive contacts right on the Split Contacts page."],
+        ["分类规则能编辑", "点一条规则就能改关键词和分类，「已自动归类 N 笔」的记录还在。", "Edit category rules", "Tap a rule to change its keyword or category; its match count is kept."],
+        ["分类图标换个形状", "记账面板里二级分类的图标底座可以换成圆形、圆角方形、叶片、水滴或花朵。设置 → 外观 → 图标。", "Category icon shapes", "Give subcategory icons in the entry panel a circle, rounded square, leaf, drop or flower backing. Settings → Appearance → Icons."],
+        ["我的图标一次传多张", "上传自定义图标时可以一次选多张（最多 30 张），按选的顺序加进来。", "Upload several icons at once", "Pick up to 30 images at once when adding your own icons; they're added in the order you chose."],
+        ["演示模式里体验会员功能", "用示例数据体验时，会员功能全部打开，并标着「会员」，先看看再决定。", "Try Pro in demo mode", "With sample data, every Pro feature is open and marked Pro, so you can see it before deciding."],
+      ] },
+      { title: ["改进", "Improved"], items: [
+        ["缺汇率不再瞎算", "原来缺汇率的外币按 1:1 当人民币算（1 美元当 1 元、100 万越南盾当 100 万元）。现在先不计入，并在首页、数据、FIRE、预算、资产页明说缺哪几种币、几笔没算进去，点一下就能补；新加的币种会立刻去拉汇率。", "No more guessing missing rates", "Currencies without an exchange rate used to count 1:1 as CNY ($1 as ¥1, ₫1,000,000 as ¥1,000,000). Now they're left out of totals, and Home, Data, FIRE, Budget and Assets say exactly which currencies and how many entries are missing, with one tap to fix it. New currencies fetch their rate right away."],
+        ["账单页搜索不再「一拉就跳」", "下拉先露出搜索框，点了再进搜索页。", "Gentler search on the entry list", "Pulling down reveals a search field; tap it to search."],
+        ["同类操作只有一种做法", "选分类、选账户、选币种、选日期、输金额，各处都是同一套弹层；分类、标签、规则、模板、AA 联系人这些管理页统一成右上角新增、左滑归档或删除、长按编辑。", "One way to do each thing", "Picking a category, account, currency or date, and entering an amount, now work the same everywhere; the category, tag, rule, template and contact pages all share add-at-top-right, swipe to archive or delete, and long-press to edit."],
+        ["记账面板功能行", "开着的功能（报销、AA、小费……）自动排到账户后面，不用滑到最后找；账户和功能标签一样高。", "Entry panel options", "Active options (Reimburse, Split, Tip…) move up next to the account so you don't have to scroll for them; all chips are the same height."],
+        ["导入更省心", "映射分类时能搜索、能直接新建；币种列写「RMB」「人民币」「¥」也认得。", "Smoother import", "Search or create categories while mapping, and \"RMB\", \"人民币\" and \"¥\" are recognized as CNY."],
+        ["首页快速入口排得更整齐", "三个以内平分整行、一样宽一样高，小屏也显示得全；多于三个时左右滑。", "Tidier shortcuts on Home", "Three or fewer share the row evenly at the same size, even on small screens; more than three scroll sideways."],
+        ["账单页记住列表还是日历", "切到日历，下次打开还是日历。", "Entry list remembers List or Calendar", "Switch to Calendar and it stays that way next time."],
+        ["一级分类那一排滑到屏幕边", "左右滑时不再在边上被切掉一截。", "Category row scrolls edge to edge", "It no longer looks cut off at the sides while scrolling."],
+        ["英文界面翻译修订", "", "English translations revised", ""],
+      ] },
+      { title: ["修复", "Fixed"], items: [
+        ["iCloud 同步出错时，打开 App 或连续记几笔会卡住好几秒", "", "The app could freeze for several seconds on launch or after adding entries when iCloud sync hit an error", ""],
+        ["桌面和锁屏小组件不更新", "", "Home and Lock Screen widgets didn't update", ""],
+        ["新建贷款点保存没反应（现在会说缺什么）", "", "Saving a new loan did nothing (it now says what's missing)", ""],
+        ["记账时切到「收入」，账户没用收入的默认账户", "", "Switching to Income didn't use your default income account", ""],
+        ["计划、预算、小组件、借贷里部分外币没按汇率换算", "", "Some foreign-currency amounts in plans, budgets, widgets and loans weren't converted", ""],
+        ["周期账单和分期不能选二级分类", "", "Recurring bills and installments couldn't use subcategories", ""],
+        ["编辑旧计划后币种被改成人民币", "", "Editing an older plan could switch its currency to CNY", ""],
+        ["删除二级分类时，同名的收入账单被改成支出；规则、模板、周期计划没跟着迁移", "", "Deleting a subcategory could turn same-named income into spending, and rules, templates and plans weren't moved along", ""],
+        ["导入 Excel 时日期认不出，整表失败", "", "Excel imports failed when dates were stored as serial numbers", ""],
+        ["折合金额改汇率后差几块钱", "", "Back-calculated exchange rates were off by a few units on large amounts", ""],
+      ] },
+    ],
+  },
+  {
     v: "1.0.6",
     date: ["2026 年 9 月", "Sep 2026"],
     intro: [

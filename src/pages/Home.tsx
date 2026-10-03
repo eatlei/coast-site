@@ -542,9 +542,9 @@ function Pricing() {
         <div className="receipt-slot">
           <div className="receipt font-mono text-[13px]">
             <div className="row"><span className="tag">Coast Pro</span><span className="tag">{t("会员", "Membership")}</span></div>
-            <div className="row mt-6"><span>{t("包年", "Yearly")}</span><span className="text-[15px]">{t("¥30", "$4.99")} <span className="text-muted-foreground">/ {t("年", "yr")}</span></span></div>
+            <div className="row mt-6"><span>{t("包年", "Yearly")}</span><span className="text-[15px]">$4.99 <span className="text-muted-foreground">/ {t("年（约 ¥36）", "yr")}</span></span></div>
             <div className="mt-2 text-[12px] text-muted-foreground">{t("前 7 天免费试用，可随时取消", "7-day free trial, cancel anytime")}</div>
-            <div className="row mt-3"><span>{t("永久", "Lifetime")}</span><span className="text-[15px]">{t("¥60", "$9.99")}</span></div>
+            <div className="row mt-3"><span>{t("永久", "Lifetime")}</span><span className="text-[15px]">$9.99{lang === "zh" && <span className="text-muted-foreground">（约 ¥71）</span>}</span></div>
             <div className="mt-2 text-[12px] text-muted-foreground">{t("一次付费，不转订阅", "One-time, never a subscription")}</div>
             <div className="dash my-5" />
             <div className="tag mb-3">{t("解锁", "Unlocks")}</div>
@@ -569,6 +569,9 @@ function Closing() {
   React.useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id) }, [])
   const target = React.useMemo(() => { if (p.mid === null) return null; const d = new Date(); d.setMonth(d.getMonth() + p.mid); d.setHours(9, 0, 0, 0); return d.getTime() }, [p.mid])
   let parts: { v: string; zh: string; en: string }[] = []
+            {/* 人民币价由 App Store 按价格档位定、会随汇率调整，写死 ¥30 / ¥60 跟实际对不上（用户 2026-10-03）——
+                统一标美元，中文附一个按汇率估的约数，实际以 App Store 为准 */}
+            <div className="mt-1 text-[12px] text-muted-foreground">{t("人民币为按汇率估算，实际价格以 App Store 显示为准", "Prices vary by region; App Store shows the final price")}</div>
   if (target) {
     const diff = Math.max(0, target - now)
     const days = Math.floor(diff / 86400000), y = Math.floor(days / 365), mo = Math.floor((days % 365) / 30.4), dd = Math.floor((days % 365) % 30.4)
