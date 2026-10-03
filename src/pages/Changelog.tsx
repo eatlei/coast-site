@@ -40,7 +40,8 @@ const VERSIONS: Version[] = [
         ["导入更省心", "映射分类时能搜索、能直接新建；币种列写「RMB」「人民币」「¥」也认得。", "Smoother import", "Search or create categories while mapping, and \"RMB\", \"人民币\" and \"¥\" are recognized as CNY."],
         ["首页快速入口排得更整齐", "三个以内平分整行、一样宽一样高，小屏也显示得全；多于三个时左右滑。", "Tidier shortcuts on Home", "Three or fewer share the row evenly at the same size, even on small screens; more than three scroll sideways."],
         ["账单页记住列表还是日历", "切到日历，下次打开还是日历。", "Entry list remembers List or Calendar", "Switch to Calendar and it stays that way next time."],
-        ["一级分类那一排滑到屏幕边", "左右滑时不再在边上被切掉一截。", "Category row scrolls edge to edge", "It no longer looks cut off at the sides while scrolling."],
+        ["一级分类那一排更干净", "左右滑到屏幕边，不再在边上被切掉一截；选中的那个也不再带一圈光晕。", "Cleaner category row", "It scrolls to the screen edge instead of being cut off, and the selected category no longer glows."],
+        ["「关于」里能找到我", "设置 → 关于 → 联系我：邮箱、X、小红书。", "Find me in About", "Settings → About → Get in Touch: email, X and Xiaohongshu."],
         ["英文界面翻译修订", "", "English translations revised", ""],
       ] },
       { title: ["修复", "Fixed"], items: [
