@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Check, Cloud, CalendarDays, EyeOff, FileText, GitBranch, Globe, Hourglass, LayoutGrid, Palette, Repeat, Scale, ScanLine, ShoppingBag, Smartphone, Undo2, Upload, Wand2 } from "lucide-react"
+import { ListChecks, Shapes } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { NumberInput } from "@/components/site/NumberInput"
@@ -370,9 +371,12 @@ function Categories() {
 }
 
 /* ---------- 更多亮点：三栏索引 + 小动画 ---------- */
-const ICONS: Record<SketchId, React.ComponentType<{ className?: string }>> = { hours: Hourglass, scan: ScanLine, refund: Undo2, reconcile: Scale, recurring: Repeat, rules: Wand2, review: FileText, repeat: ShoppingBag, scenarios: GitBranch, widgets: LayoutGrid, currency: Globe, themes: Palette, privacy: EyeOff }
-const MORE: { id: SketchId; pro?: boolean; zh: [string, string]; en: [string, string] }[] = [
-  // 截图记账入口暂时关闭，先让出位置给时薪换算（1.0.6）；回来时再放回亮点
+const ICONS: Record<SketchId, React.ComponentType<{ className?: string }>> = { batch: ListChecks, shapes: Shapes, hours: Hourglass, scan: ScanLine, refund: Undo2, reconcile: Scale, recurring: Repeat, rules: Wand2, review: FileText, repeat: ShoppingBag, scenarios: GitBranch, widgets: LayoutGrid, currency: Globe, themes: Palette, privacy: EyeOff }
+/** `isNew`：最近一个版本新上的，卡片右上挂「New」（下个版本发布时把旧的摘掉） */
+const MORE: { id: SketchId; pro?: boolean; isNew?: boolean; zh: [string, string]; en: [string, string] }[] = [
+  // 1.0.7：截图记账回来了（还多了通知记账），放回第一格
+  { id: "scan", isNew: true, zh: ["快捷记账", "付完款轻点背面，截图里的金额、商户、付款卡自动认出来；iOS 27 起付款通知一到就记。全在手机本地识别。"], en: ["Quick Capture", "Back-tap after paying and the amount, merchant and card are read from the screen; on iOS 27 payment notifications record themselves. All on-device."] },
+  { id: "batch", isNew: true, zh: ["批量修改", "多选几笔，一次改分类、账户、标签、备注或日期。"], en: ["Batch edit", "Select a few entries and change category, account, tags, note or date at once."] },
   { id: "hours", zh: ["时薪换算", "每笔花销折成要上多久的班。时薪按你记的工资自动算，只需填工作时间。"], en: ["Hours of work", "Every expense as hours of work, from the pay you already record — just add your hours."] },
   { id: "refund", zh: ["分次退款", "1000 先退 500 到信用卡，再退 200 到储蓄卡，都记得住。"], en: ["Partial refunds", "¥500 back to the card, ¥200 to savings, later. It keeps track."] },
   { id: "reconcile", zh: ["余额校准", "核对一次真实余额，之后流水自动往上叠。"], en: ["Reconcile once", "Check your real balance once; entries stack on top."] },
@@ -382,9 +386,10 @@ const MORE: { id: SketchId; pro?: boolean; zh: [string, string]; en: [string, st
   { id: "repeat", pro: true, zh: ["复购洞察", "哪家店去了多少次、花了多少，一年下来是什么数。"], en: ["Repeat-buy insights", "Which places you keep going back to, and what a year of that costs."] },
   { id: "scenarios", pro: true, zh: ["场景模拟", "换城市、涨薪、买房，几条路存下来并排比。"], en: ["Scenarios", "Move cities, get a raise, buy a home. Save paths, compare."] },
   { id: "widgets", zh: ["桌面小组件", "本月还能花、净资产、自由倒计时，不用打开 App。"], en: ["Widgets", "Left to spend, net worth, countdown. No app needed."] },
-  { id: "currency", zh: ["多币种", "每日汇率自动拉，账户账单报销全程折算。免费。"], en: ["Multi-currency", "Daily rates; accounts, entries and reimbursements all convert. Free."] },
+  { id: "currency", isNew: true, zh: ["多币种", "全部币种可选、常用的排前面；每日汇率自动拉，缺汇率时不瞎算，会提醒你补。免费。"], en: ["Multi-currency", "Every currency, favorites first; daily rates, and a missing rate is flagged instead of guessed. Free."] },
   { id: "themes", pro: true, zh: ["主题与图标", "6 套主题、20 多个 App 图标，分类图标四种来源一键换套。"], en: ["Themes & icons", "6 themes, 20+ app icons, category icons from four sources."] },
   { id: "privacy", zh: ["隐私模式", "一个眼睛开关，全 App 金额一键打码。"], en: ["Privacy mode", "One toggle blurs every amount in the app."] },
+  { id: "shapes", isNew: true, zh: ["分类图标换形状", "圆形、圆角方形、叶片、水滴、花朵，记账面板跟着换。"], en: ["Icon shapes", "Circle, rounded square, leaf, drop or flower behind your category icons."] },
 ]
 /** 跟随鼠标微倾的卡片：transform 全部交给 GSAP（CSS hover 的 transform 会和它打架），阴影走 CSS */
 function TiltCard({ children }: { children: React.ReactNode }) {
@@ -421,7 +426,10 @@ function More() {
               <TiltCard key={m.id}>
                 <div className="flex h-6 items-center justify-between">
                   <Icon className="size-5 text-muted-foreground transition-colors group-hover:text-primary" />
-                  {m.pro && <span className="tag rounded-full bg-muted px-2 py-0.5 text-[11px] text-primary">Pro</span>}
+                  <span className="flex gap-1.5">
+                    {m.isNew && <span className="tag rounded-full bg-primary px-2 py-0.5 text-[11px] text-primary-foreground">New</span>}
+                    {m.pro && <span className="tag rounded-full bg-muted px-2 py-0.5 text-[11px] text-primary">Pro</span>}
+                  </span>
                 </div>
                 <h3 className="mt-5 font-sans text-[17px] font-semibold tracking-normal">{title}</h3>
                 <p className="mt-2 min-h-[44px] text-[14px] leading-relaxed text-muted-foreground">{body}</p>

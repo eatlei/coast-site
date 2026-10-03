@@ -3,10 +3,10 @@ import { gsap, useGSAP } from "@/lib/gsap"
 import { useLang } from "@/lib/i18n"
 
 /**
- * 亮点 12 条各配一个 44px 高的小动画。只用线和数字，不用插画。文字一律中英双语（`t()`），英文站不再露中文。
+ * 亮点卡片各配一个 44px 高的小动画。只用线和数字，不用插画。文字一律中英双语（`t()`），英文站不再露中文。
  * 每个 Sketch 建一条暂停的 timeline：进入视口播一次，hover 再播一次。
  */
-export type SketchId = "scan" | "refund" | "reconcile" | "recurring" | "rules" | "review" | "repeat" | "scenarios" | "widgets" | "currency" | "themes" | "privacy" | "hours"
+export type SketchId = "scan" | "refund" | "reconcile" | "recurring" | "rules" | "review" | "repeat" | "scenarios" | "widgets" | "currency" | "themes" | "privacy" | "hours" | "batch" | "shapes"
 
 const mono = "font-mono text-[12px] tabular-nums"
 
@@ -240,7 +240,50 @@ function Hours() {
   )
 }
 
-const MAP: Record<SketchId, React.ComponentType> = { scan: Scan, refund: Refund, reconcile: Reconcile, recurring: Recurring, rules: Rules, review: Review, repeat: Repeat, scenarios: Scenarios, widgets: Widgets, currency: Currency, themes: Themes, privacy: Privacy, hours: Hours }
+/** 批量修改（1.0.7）：三笔勾上，分类一起改成同一个 */
+function Batch() {
+  const { t } = useLang()
+  const root = useSketch((tl, q) => {
+    tl.set(q(".ck"), { opacity: 0, scale: 0.5 }).set(q(".old"), { opacity: 1 }).set(q(".new"), { opacity: 0, x: -6 })
+      .to(q(".ck"), { opacity: 1, scale: 1, stagger: 0.12, duration: 0.25 })
+      .to(q(".old"), { opacity: 0, duration: 0.2 }, "+=0.15")
+      .to(q(".new"), { opacity: 1, x: 0, stagger: 0.08, duration: 0.3 }, "<")
+  })
+  const rows: [string, string][] = [[t("瑞幸", "Luckin"), "¥19.9"], [t("星巴克", "Starbucks"), "¥36"], [t("便利店", "7-Eleven"), "¥12"]]
+  return (
+    <div ref={root} className={`h-11 w-full max-w-[220px] text-[10px] leading-[14px] ${mono}`}>
+      {rows.map(([n, a]) => (
+        <div key={n} className="flex items-center gap-1.5">
+          <span className="ck inline-grid size-2.5 place-items-center rounded-full bg-primary text-[7px] text-white">✓</span>
+          <span className="w-14 truncate">{n}</span>
+          <span className="relative w-16 text-muted-foreground"><span className="old absolute">{t("其他", "Other")}</span><span className="new absolute text-primary">{t("咖啡饮品", "Coffee")}</span></span>
+          <span className="ml-auto">{a}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** 分类图标形状（1.0.7）：圆形、圆角方形、叶片、水滴、花朵依次换上 */
+function Shapes() {
+  const root = useSketch((tl, q) => {
+    tl.set(q(".s"), { opacity: 0.25, scale: 0.85 })
+      .to(q(".s"), { opacity: 1, scale: 1, stagger: 0.14, duration: 0.3 })
+  })
+  const flower = "M12 2 C15 2 16 5 18.5 5.5 C21.5 6 22 9.5 21 12 C22 14.5 21.5 18 18.5 18.5 C16 19 15 22 12 22 C9 22 8 19 5.5 18.5 C2.5 18 2 14.5 3 12 C2 9.5 2.5 6 5.5 5.5 C8 5 9 2 12 2 Z"
+  const box = "s size-6 bg-muted-foreground/25"
+  return (
+    <div ref={root} className="flex h-11 items-center gap-2.5">
+      <span className={`${box} rounded-full`} />
+      <span className={`${box} rounded-[7px]`} />
+      <span className={`${box}`} style={{ borderRadius: "12px 3px 12px 3px" }} />
+      <span className={`${box}`} style={{ borderRadius: "12px 4px 12px 12px" }} />
+      <svg className="s size-6" viewBox="0 0 24 24"><path d={flower} className="fill-primary/70" /></svg>
+    </div>
+  )
+}
+
+const MAP: Record<SketchId, React.ComponentType> = { scan: Scan, refund: Refund, reconcile: Reconcile, recurring: Recurring, rules: Rules, review: Review, repeat: Repeat, scenarios: Scenarios, widgets: Widgets, currency: Currency, themes: Themes, privacy: Privacy, hours: Hours, batch: Batch, shapes: Shapes }
 
 export function Sketch({ id }: { id: SketchId }) {
   const C = MAP[id]

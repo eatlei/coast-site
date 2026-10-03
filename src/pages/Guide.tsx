@@ -30,7 +30,8 @@ type Block =
   | { index: true }
   | { cardmap: [L, L, string][] }
 /** short / loc 只有概念页有：给「概念索引」那张表用 */
-type Page = { slug: string; title: L; lead: L; blocks: Block[]; short?: L; loc?: L }
+/** isNew：最近一个版本新上的功能，目录和标题旁挂「New」（下个版本发布时摘掉旧的） */
+type Page = { slug: string; title: L; lead: L; blocks: Block[]; short?: L; loc?: L; isNew?: boolean }
 type Group = { id: string; title: L; pages: Page[] }
 
 const MORE_INFO: L = ["FIRE 页每张卡片标题旁都有一个 ⓘ，点开是这个指标的完整解释：它是什么、为什么重要、怎么改善。", "Every card on the FIRE tab has an ⓘ next to its title — tap it for the full explanation: what it is, why it matters, how to improve it."]
@@ -362,12 +363,44 @@ const GROUPS: Group[] = [
           { img: "templates", cap: ["模板：把常记的条目存下来，长按「＋」一步选用", "Templates: save frequent entries and long-press + to use one"] },
           { list: [
             ["记账面板的金额一上来是 0，你按多少就显示多少，键盘自带加减乘除。", "The amount starts at 0 and shows exactly what you type; the keypad does arithmetic."],
-            ["截图记账（识别支付宝、微信、云闪付的支付结果页）正在施工中，入口暂时关闭，回来时会在更新日志里说。", "Screenshot Capture (reading Alipay, WeChat Pay and UnionPay result pages) is under construction; the entry is temporarily off and will return with a changelog note."],
+            ["付完款不想打开 App？用快捷记账：截一张付款成功页、或者让付款通知自己记（见「快捷记账」那一篇）。", "Don't want to open the app after paying? Use Quick Capture — a screenshot of the payment screen, or let the payment notification record itself (see Quick Capture)."],
             ["金额下面那一行左右滑：账户、报销、AA 分账、分期、组合支付、小费、服务费……开着的会换成对号并写上状态（「AA·4人」「12 期」「小费 ¥15」），长按可以直接移除；最后的「自定义」决定显示哪些、什么顺序。", "Swipe the row under the amount: account, Reimburse, Split Bill, Installments, Combined Payment, tip, service charge… Active ones turn into a check with their status (\"Split · 4 people\", \"12 payments\", \"Tip ¥15\"); long-press to remove. Custom at the end picks which show and in what order."],
             ["一笔钱里有别人的份，点「AA 分账」就地分；要报销的点「报销」标成待报销，钱回来之后核销，净支出自动变小。不报了也能在报销中心一键「不报销」，几秒内可撤销。", "Part of it someone else's? Tap Split Bill right there. Work expense? Tap Reimburse to mark it To Claim and settle it when the money comes back — or mark it Don't Reimburse in the Reimbursement Center, with a few seconds to undo."],
             ["小费、服务费、税费有常用比例一点即得；组合支付只列用到的账户，差额一键补齐。金额框都能直接写算式，比如 88+45。", "Tip, service charge and tax have one-tap common percentages; Combined Payment lists only the accounts you use and fills the remainder in one tap. Every amount field takes arithmetic, like 88+45."],
           ] },
           { fig: F.ExtrasLabel },
+        ],
+      },
+      {
+        slug: "quick-capture",
+        isNew: true,
+        title: ["快捷记账：付完款不打开 App", "Quick Capture: log without opening the app"],
+        lead: ["记账最难的一步是「打开 App」。这一篇把这一步拿掉。", "The hardest part of tracking is opening the app. This removes that step."],
+        blocks: [
+          { p: ["设置 → 快捷记账里有两种方式：截图记账（所有系统都能用）和通知记账（iOS 27 起）。两种记成什么样，都由同一页下面的设置决定。", "Settings → Quick Capture offers two ways: Screenshot Capture (any iOS version) and Notification Capture (iOS 27 and later). How entries are recorded is controlled by the same settings below them."] },
+          { list: [
+            ["截图记账：进「截图记账」，点最上面的按钮一键装好快捷指令；再到 设置 → 辅助功能 → 触控 → 轻点背面，选「Coast 截图记账」。以后停在支付宝、微信、云闪付的付款成功页，轻点两下背面就记好了。也可以绑到操作按钮或控制中心。", "Screenshot Capture: open Screenshot Capture and tap the button at the top to install the shortcut, then go to Settings → Accessibility → Touch → Back Tap and choose \"Coast Screenshot Capture\". From then on, double-tap the back of your phone on a payment success screen in Alipay, WeChat or UnionPay. The Action button or Control Center work too."],
+            ["通知记账（iOS 27）：付款通知一到就自动记一笔，不用截屏。「通知记账」里有 8 步搭建教程：在快捷指令里加「收到通知时」，选支付宝、微信、银行 App，接上 Coast 的「从文字记账」。", "Notification Capture (iOS 27): a payment notification records itself, no screenshot needed. Notification Capture has an 8-step guide: add the notification trigger in Shortcuts, pick Alipay, WeChat and your bank, then connect Coast's \"Record from Text\"."],
+            ["记之前选分类：默认弹一个分类列表，猜的那个排第一，后面是你最近常用的，点哪个记哪个。也可以改成只确认、打开记账面板，或者不问直接记。", "Pick the category as you capture: by default you get a short list — the best guess first, then your recent favorites. Or switch to confirm-only, open the entry panel, or record without asking."],
+            ["分类先按你教过的分类规则认商户（「瑞幸 = 咖啡饮品」这里也生效），认不出来记到你选的默认分类；账户按卡号尾号自动认，「零钱」「花呗」这类叫法在「账户匹配词」里补一个。", "Merchants are matched with your category rules first (\"Luckin = Coffee\" applies here too), otherwise your default category is used. Accounts are matched by card number; add words like \"Balance\" under Account Match Words."],
+          ] },
+          { tip: ["认不出金额时不会记——宁可漏一笔，也不悄悄记错一笔。验证码、快递、促销这些不是付款的通知会静默跳过；外币通知也跳过，请手记。识别全在手机本地完成，截图和通知内容不上传。", "If the amount can't be read, nothing is recorded — better to miss one than to quietly get one wrong. Verification codes, deliveries and promotions are skipped, and so are foreign-currency notifications (log those by hand). Recognition is entirely on your iPhone; nothing is uploaded."] },
+          { p: ["想折腾的话：在快捷指令里点开 Coast 的记账动作 →「显示更多」，可以给某一条快捷指令单独指定收支方向、分类、账户、标签和备注，比如「公司卡」那条固定记到公司卡、打上「报销」标签。", "For tinkerers: in Shortcuts, open Coast's capture action → Show More to set direction, category, account, tags and note for that one shortcut — say, a Company Card shortcut that always uses that card and tags it Reimbursable."] },
+        ],
+      },
+      {
+        slug: "batch",
+        isNew: true,
+        title: ["批量修改账单", "Batch edit"],
+        lead: ["导入完一看分类全乱了？多选，一次改完。", "Imported and the categories are a mess? Select them all and fix them at once."],
+        blocks: [
+          { list: [
+            ["账单页右上「⋯」→ 选择，勾上要改的几笔，底部可以一次改分类、账户、标签、备注、日期，或者标成待报销。", "On the entry list, tap ⋯ → Select, tick the entries, then change category, account, tags, note or date — or mark them to claim — in one go."],
+            ["不动钱的改动（分类、标签、备注、日期）几秒内可以撤销；改账户、改报销会先确认一次，因为它们会动到余额。", "Changes that don't move money (category, tags, note, date) can be undone for a few seconds; account and reimbursement changes ask first, since they affect balances."],
+            ["转账、AA、组合支付这类改不得的账单会自动跳过，并告诉你跳过了几笔、为什么。", "Transfers, splits and combined payments that can't be changed this way are skipped, and you're told how many and why."],
+          ] },
+          { tip: ["配合「从其他 App 搬过来」：先导入，再用批量修改把分类和账户一次理顺。", "Pairs well with importing: bring the data in, then batch-edit categories and accounts into shape."] },
+          { related: ["import", "accounts"] },
         ],
       },
       {
@@ -539,6 +572,35 @@ const GROUPS: Group[] = [
         ],
       },
       {
+        slug: "currency",
+        isNew: true,
+        title: ["多币种与汇率", "Currencies and exchange rates"],
+        lead: ["出国、外币账户、海外订阅，都按真实汇率折算，而且算不出来时会告诉你。", "Travel, foreign accounts, overseas subscriptions — all converted at real rates, and you're told when a rate is missing."],
+        blocks: [
+          { list: [
+            ["全部币种都能搜到。设置 → 多币种与汇率里加你的常用币种，选币种时它们排最前面。汇率每天自动更新，也可以手动填。", "Every currency is searchable. Add your frequent ones in Settings → Currencies & Exchange Rates and they appear first in pickers. Rates update daily, or set your own."],
+            ["每笔外币账单记下当时的汇率，之后汇率变了，这笔不跟着漂；点账单详情里的汇率可以改成你实际扣的金额。", "Each foreign entry keeps the rate from when it was recorded, so it doesn't drift later; tap the rate in its details to match what you were actually charged."],
+            ["新加的币种还没拉到汇率时，它的账单先不计入合计。首页、数据、FIRE、预算、资产页会写明缺哪几种币、几笔没算进去，点一下就能补。", "Until a new currency has a rate, its entries are left out of totals. Home, Data, FIRE, Budget and Assets say which currencies and how many entries are missing, with one tap to fix it."],
+          ] },
+          { tip: ["为什么不先按 1:1 算？因为那个数字看起来正常、没人会怀疑：100 万越南盾会被算成 100 万元。数字可以暂时不全，但不能错。", "Why not count it 1:1 meanwhile? Because the number would look normal and nobody would question it — ₫1,000,000 would count as ¥1,000,000. A total can be incomplete for a while; it can't be wrong."] },
+        ],
+      },
+      {
+        slug: "personalize",
+        isNew: true,
+        title: ["设置与个性化", "Settings and personalization"],
+        lead: ["设置找得到，App 也可以长成你喜欢的样子。", "Find any setting fast, and make the app look the way you like."],
+        blocks: [
+          { list: [
+            ["设置分成记账、分类与币种、预算与目标、外观、通用、支持六组，顶部有搜索框：搜「汇率」「默认账户」「图标」都能直达那一页。", "Settings is grouped into six sections with a search field on top — search \"exchange rate\", \"default account\" or \"icons\" to jump straight there."],
+            ["设置 → 外观 → 图标：分类图标的底座可以换成圆形、圆角方形、叶片、水滴或花朵；「我的图标」上传自己的图片，一次最多选 30 张。", "Settings → Appearance → Icons: give category icons a circle, rounded square, leaf, drop or flower backing; upload your own images under My Icons, up to 30 at a time."],
+            ["记账偏好里可以分别设支出、收入的默认账户；切到「收入」时，记账面板会换成收入的那个。", "In Entry Preferences, set separate default accounts for spending and income; switching to Income in the entry panel uses the income one."],
+            ["还没决定要不要会员？设置里「用示例数据体验」：演示账本里全部会员功能都打开，并标着「会员」，退出后你的真实数据不受影响。", "Not sure about Pro yet? Settings → Try with sample data: every Pro feature is open in the demo ledger, marked Pro, and your real data isn't touched."],
+            ["有问题或想要的功能：设置 → 关于 → 联系我，邮箱、X、小红书都在那里。", "Questions or feature ideas: Settings → About → Get in Touch has email, X and Xiaohongshu."],
+          ] },
+        ],
+      },
+      {
         slug: "pro",
         title: ["免费与 Pro", "Free and Pro"],
         lead: ["记账、看账、自由倒计时都免费。Pro 解锁的是更深一层的推演和个性化。", "Logging, reviewing and the freedom countdown are free. Pro adds deeper projections and personalization."],
@@ -577,6 +639,7 @@ function Nav({ current, open, toggle, onPick }: { current: string; open: Set<str
                       <a href={`#${p.slug}`} onClick={onPick}
                         className={`block rounded-md px-2.5 py-1.5 text-[14px] leading-snug ${active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"}`}>
                         {pick(p.title)}
+                        {p.isNew && <span className="ml-1.5 rounded-full bg-primary px-1.5 py-px align-middle text-[10px] font-semibold text-primary-foreground">New</span>}
                       </a>
                     </li>
                   )
@@ -737,7 +800,7 @@ export default function Guide() {
             </div>
 
             <div className="font-sans text-xs font-bold uppercase tracking-[.12em] text-primary">{pick(groupTitle)}</div>
-            <h1 className="mt-2 text-3xl font-semibold md:text-4xl">{pick(page.title)}</h1>
+            <h1 className="mt-2 text-3xl font-semibold md:text-4xl">{pick(page.title)}{page.isNew && <span className="ml-3 rounded-full bg-primary px-2.5 py-1 align-middle text-xs font-semibold text-primary-foreground">New</span>}</h1>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{pick(page.lead)}</p>
 
             <div className="mt-8 space-y-5">{page.blocks.map(renderBlock)}</div>
