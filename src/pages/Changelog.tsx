@@ -11,6 +11,43 @@ type Version = { v: string; date: [string, string]; intro: [string, string]; sec
 
 const VERSIONS: Version[] = [
   {
+    v: "1.0.8",
+    date: ["2026 年 10 月", "Oct 2026"],
+    intro: [
+      "iPad 终于用上了整块屏幕；快捷记账能当场选账户、写备注；跨币种转账记下实际到账；标签可以分组；资产页能排序、能把账户排除在净资产之外。大账本打开更快，导入也修了几个坑。",
+      "Coast finally uses the whole iPad screen. Quick Capture lets you pick the account and add a note on the spot. Cross-currency transfers keep the amount that actually arrived. Tags can be grouped, and accounts can be reordered or left out of net worth. Large ledgers open faster, and several import issues are fixed.",
+    ],
+    sections: [
+      { title: ["新增", "New"], items: [
+        ["iPad 铺满全屏", "左边一条窄图标栏；账单页左边是本月预算、财务自由、分类构成和快速入口，右边是账单流；资产页选一个账户，右边直接看它的详情；数据页、FIRE 页按屏幕宽度排成两列或三列。账单详情改成弹窗，不再摊满一整屏。", "Full-screen iPad", "A slim icon bar on the left. Entries shows this month's budget, freedom goal, category breakdown and shortcuts on the left with your entries on the right; on Assets, pick an account and its details open alongside; Data and FIRE lay out in two or three columns depending on width. Entry details open in a sheet instead of filling the screen."],
+        ["快捷记账当场改", "iOS 26 上确认时弹一张卡片：点常用分类、点账户、加备注，或者交给 Coast 打开记账面板改完再存。iOS 18 上选完分类可以接着选账户、加备注。", "Edit as you capture", "On iOS 26, confirming shows a card: tap a frequent category or an account, add a note, or hand it to Coast to finish in the entry panel. On iOS 18 you can pick the account and add a note after choosing the category."],
+        ["跨币种转账记实际到账", "人民币转进美元账户，转入那边可以填银行实际到的数（比如 $1,380），之后汇率怎么变，美元账户的历史余额都不跟着漂，跟银行流水对得上。不填就按当时的汇率算好记下来。", "Cross-currency transfers keep what arrived", "Moving CNY into a USD account? Enter the amount that actually landed (say $1,380), and that account's history no longer drifts with exchange rates — it matches your bank. Leave it blank and the rate at the time is used and saved."],
+        ["标签分组", "标签可以分组，选标签变成按组排的胶囊，最近用过的在最上面，还能搜索、就地新建。标签管理里点「编辑」就能新建分组、换组、调顺序。", "Tag groups", "Group your tags. The tag picker now shows them as chips by group, with recent ones on top, search, and create-on-the-spot. In Tag Management, tap Edit to create groups, move tags and reorder."],
+        ["账户排序与「不计入净资产」", "资产页「整理账户」：拖动调整账户顺序、调整资产类型的先后。某个账户（比如替家人管的卡）可以设成不计入净资产：余额照常显示，但不进净资产、走势和 FIRE。", "Account order and \"Exclude from net worth\"", "Organize Accounts on the Assets tab: drag accounts and reorder asset types. Mark an account — say, a card you manage for family — as excluded from net worth: its balance still shows, but it stays out of net worth, trends and FIRE."],
+        ["账户详情看来龙去脉", "每个账户都有近 12 个月的余额走势（按账户自己的币种）和每次校准的记录：校准前算出来多少、校准成多少、差了多少。", "Account history", "Every account now shows a 12-month balance trend in its own currency, plus each reconciliation: what was expected, what you set, and the difference."],
+        ["预算可以用外币设", "预算编辑器多了币种，比如每月 10 万日元——存的就是 10 万日元，汇率变了预算本身不变，用的时候再按当前汇率折算。", "Budgets in any currency", "Choose a currency in the budget editor — e.g. ¥100,000 JPY a month. The budget stays in that currency and is converted at the current rate when compared."],
+        ["选账户按资产分组", "记账、转账、报销时选账户，按现金、投资、应收、负债分段排，顺序跟资产页一样。", "Accounts grouped when picking", "When choosing an account for an entry, transfer or reimbursement, accounts are grouped by cash, investments, receivables and liabilities, in your Assets order."],
+        ["每天的展开收起记得住", "账单页收起的那几天，下次打开还是收起的（只存在这台设备上）。", "Collapsed days stay collapsed", "Days you collapse on the entry list stay that way next time (stored on this device only)."],
+      ] },
+      { title: ["改进", "Improved"], items: [
+        ["大账本打开更快", "启动时的整理工作挪到了后台，没改动的数据不再反复写入；几千笔账单的账本打开后不会再连续卡顿。", "Faster with large ledgers", "Startup housekeeping now runs in the background and unchanged data is no longer rewritten, so ledgers with thousands of entries no longer stutter after opening."],
+        ["通知记账认得更准", "「有一笔 42.00 元的支出」这种金额在前的写法也认得了，不会再去抓后面广告、积分里的数字。", "Smarter notification capture", "Amount-first wording like \"a ¥42.00 payment\" is now understood, and numbers from ads or reward points later in the message are ignored."],
+        ["数据页数字滚出来", "第一次打开数据页，收支统计的几个数从 0 滚到真实值。", "Numbers roll in on Data", "The first time you open Data, the income and spending figures roll up from zero."],
+        ["预算缺汇率不再显示「超支」", "外币预算还没拿到汇率时，不再当成 0 显示超支，而是写明缺哪种币的汇率。", "No false \"over budget\"", "A foreign-currency budget without an exchange rate no longer shows as over budget; it says which rate is missing."],
+        ["单笔报销缺汇率时说清楚", "跨币种报销缺汇率时，会说明缺哪种币，并提示可以手填冲销金额，不再默默变灰。", "Clearer reimbursements without a rate", "A cross-currency reimbursement missing a rate now says which currency, and lets you type the amount to offset instead of silently greying out."],
+        ["快速入口和选账户不再无故截断", "旁边明明有空，名字却显示成「招行储…」的问题修好了；小屏放不下时整排去掉图标，字号不缩。", "No more needless truncation", "Names like \"China Merchants…\" no longer cut off when there's room; on small screens shortcuts drop their icons together instead of shrinking the text."],
+        ["英文界面排版", "卡片标题、指标标签单行显示，长译文改短，账户页按钮等宽。", "English layout", "Card titles and metric labels stay on one line, long translations are shorter, and account buttons are equal width."],
+      ] },
+      { title: ["修复", "Fixed"], items: [
+        ["导入时提示「没有解析到有效账单行」（Windows / Excel 导出的表格）", "", "Imports from Windows / Excel files said \"no valid rows found\"", ""],
+        ["导入的收入被记成支出", "", "Imported income could be recorded as spending", ""],
+        ["导入两位数年份的表格后，一打开就闪退", "", "The app crashed on launch after importing dates with two-digit years", ""],
+        ["通知记账把 42 元记成 19.90 元、3 元", "", "Notification capture recorded ¥42 as ¥19.90 or ¥3", ""],
+        ["展开、收起某一天时，日期头先飘上去、不跟卡片走", "", "Day headers drifted instead of moving with the card when expanding or collapsing", ""],
+      ] },
+    ],
+  },
+  {
     v: "1.0.7",
     date: ["2026 年 10 月", "Oct 2026"],
     intro: [
