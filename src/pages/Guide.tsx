@@ -348,6 +348,23 @@ const GROUPS: Group[] = [
           { related: ["c-roles", "diff-categories"] },
         ],
       },
+      {
+        slug: "tags",
+        isNew: true,
+        title: ["标签与分组", "Tags and tag groups"],
+        lead: ["分类回答「钱花在什么上」，标签回答「为了什么事花的」。一笔账只有一个分类，但可以打好几个标签。", "Categories answer what the money went on; tags answer what it was for. An entry has one category but can carry several tags."],
+        blocks: [
+          { p: ["适合打标签的是跨分类的一件事：一次出差、一趟旅行、装修、孩子、某个副业。机票是交通、酒店是住宿、吃饭是餐饮，打上同一个「出差」标签，事后就能看这件事一共花了多少。", "Tags suit things that cut across categories: a business trip, a holiday, a renovation, a kid, a side project. Flights are transport, the hotel is lodging, meals are dining — tag them all Business Trip and you can see what the whole thing cost."] },
+          { list: [
+            ["标签多了就分组：设置 → 分类与标签 → 标签管理，点右上「编辑」，「＋」里选「新建分组」，起个名字、勾上要放进去的标签，一步完成。", "When tags pile up, group them: Settings → Categories & Tags → Manage Tags, tap Edit, then + → New group, name it and tick the tags to include."],
+            ["编辑状态下，每个标签右边写着它在哪个组，点一下就能换组；组名旁边的 ↑ ↓ 调整分组顺序，也能改名或解散分组。", "In edit mode, each tag shows its group on the right — tap to move it. Use ↑ ↓ next to a group name to reorder groups, or rename and dissolve them."],
+            ["记账时选标签：最上面是搜索和最近用过的，下面按组排成一个个小胶囊，点哪个选哪个。搜不到就地新建，顺手指定放进哪个组。", "Picking tags while logging: search and recent tags are on top, then chips by group — tap to select. If it doesn't exist, create it right there and choose its group."],
+            ["数据页的标签卡点进去，能看到一个标签在这段时间里花了多少、花在哪些分类上。", "On the Data tab, open a tag to see how much went to it over the period and across which categories."],
+          ] },
+          { tip: ["别把标签当第二套分类用。「餐饮」「交通」已经是分类了，再打一遍同名标签只会让记账变慢。", "Don't use tags as a second set of categories. Dining and Transport are already categories; tagging them again just slows you down."] },
+          { related: ["categories", "data"] },
+        ],
+      },
     ],
   },
   {
@@ -381,8 +398,9 @@ const GROUPS: Group[] = [
           { list: [
             ["截图记账：进「截图记账」，点最上面的按钮一键装好快捷指令；再到 设置 → 辅助功能 → 触控 → 轻点背面，选「Coast 截图记账」。以后停在支付宝、微信、云闪付的付款成功页，轻点两下背面就记好了。也可以绑到操作按钮或控制中心。", "Screenshot Capture: open Screenshot Capture and tap the button at the top to install the shortcut, then go to Settings → Accessibility → Touch → Back Tap and choose \"Coast Screenshot Capture\". From then on, double-tap the back of your phone on a payment success screen in Alipay, WeChat or UnionPay. The Action button or Control Center work too."],
             ["通知记账（iOS 27）：付款通知一到就自动记一笔，不用截屏。「通知记账」里有 8 步搭建教程：在快捷指令里加「收到通知时」，选支付宝、微信、银行 App，接上 Coast 的「从文字记账」。", "Notification Capture (iOS 27): a payment notification records itself, no screenshot needed. Notification Capture has an 8-step guide: add the notification trigger in Shortcuts, pick Alipay, WeChat and your bank, then connect Coast's \"Record from Text\"."],
-            ["记之前选分类：默认弹一个分类列表，猜的那个排第一，后面是你最近常用的，点哪个记哪个。也可以改成只确认、打开记账面板，或者不问直接记。", "Pick the category as you capture: by default you get a short list — the best guess first, then your recent favorites. Or switch to confirm-only, open the entry panel, or record without asking."],
-            ["分类先按你教过的分类规则认商户（「瑞幸 = 咖啡饮品」这里也生效），认不出来记到你选的默认分类；账户按卡号尾号自动认，「零钱」「花呗」这类叫法在「账户匹配词」里补一个。", "Merchants are matched with your category rules first (\"Luckin = Coffee\" applies here too), otherwise your default category is used. Accounts are matched by card number; add words like \"Balance\" under Account Match Words."],
+            ["记之前当场改：iOS 26 上会弹一张卡片，点常用分类、点账户、点「加备注」，确认无误点「添加」；要改日期、加标签，点「在 Coast 里改」交给记账面板，金额分类都已经填好。iOS 18 上先选分类，再选账户，最后选「直接记下」或「加备注再记…」。", "Adjust before it's saved: on iOS 26 a card appears — tap a frequent category, an account, or Add Note, then Add. To change the date or add tags, tap Edit in Coast and finish in the entry panel with everything prefilled. On iOS 18 you pick the category, then the account, then Save now or Add a note first…"],
+            ["不想每次都问？可以改成只确认金额、直接打开记账面板，或者不问直接记。", "Don't want to be asked every time? Switch to confirm-only, open the entry panel, or record without asking."],
+            ["分类先按你教过的分类规则认商户（「瑞幸 = 咖啡饮品」这里也生效），认不出来记到你选的默认分类；账户按卡号尾号自动认，「零钱」「花呗」这类叫法在「账户匹配词」里补一个，都认不出时用你在设置里固定的账户。卡片上的账户按最近用过的排，上一笔用的就在最前面。", "Merchants are matched with your category rules first (\"Luckin = Coffee\" applies here too), otherwise your default category is used. Accounts are matched by card number; add words like \"Balance\" under Account Match Words, and if nothing matches, the account you set in Settings is used. On the card, accounts are ordered by recent use, so the last one is first."],
           ] },
           { tip: ["认不出金额时不会记——宁可漏一笔，也不悄悄记错一笔。验证码、快递、促销这些不是付款的通知会静默跳过；外币通知也跳过，请手记。识别全在手机本地完成，截图和通知内容不上传。", "If the amount can't be read, nothing is recorded — better to miss one than to quietly get one wrong. Verification codes, deliveries and promotions are skipped, and so are foreign-currency notifications (log those by hand). Recognition is entirely on your iPhone; nothing is uploaded."] },
           { p: ["想折腾的话：在快捷指令里点开 Coast 的记账动作 →「显示更多」，可以给某一条快捷指令单独指定收支方向、分类、账户、标签和备注，比如「公司卡」那条固定记到公司卡、打上「报销」标签。", "For tinkerers: in Shortcuts, open Coast's capture action → Show More to set direction, category, account, tags and note for that one shortcut — say, a Company Card shortcut that always uses that card and tags it Reimbursable."] },
@@ -390,7 +408,6 @@ const GROUPS: Group[] = [
       },
       {
         slug: "batch",
-        isNew: true,
         title: ["批量修改账单", "Batch edit"],
         lead: ["导入完一看分类全乱了？多选，一次改完。", "Imported and the categories are a mess? Select them all and fix them at once."],
         blocks: [
@@ -508,6 +525,25 @@ const GROUPS: Group[] = [
           { related: ["c-net-worth", "diff-assets"] },
         ],
       },
+      {
+        slug: "account-detail",
+        isNew: true,
+        title: ["整理账户与账户详情", "Organizing and inspecting accounts"],
+        lead: ["账户多了要排个顺序；某个账户的余额不对，要能看出它是怎么变成现在这个数的。", "With more accounts you'll want them in order — and when a balance looks off, you'll want to see how it got there."],
+        blocks: [
+          { list: [
+            ["资产页右上角菜单 →「整理账户」：拖动调整同一类里账户的顺序，类型标题旁的 ↑ ↓ 调整现金、投资、不动产、应收、负债的先后。账户拖不出自己的类型——类型决定了它怎么算进净资产。", "Assets tab → menu at top right → Arrange Accounts: drag to reorder accounts within a type, and use ↑ ↓ on the type headers to reorder cash, investments, property, receivables and liabilities. Accounts stay within their type, since the type decides how they count toward net worth."],
+            ["记账时选账户也按这个顺序、按类型分段排，常用的放前面就好找。", "When you pick an account while logging, it follows the same order, grouped by type — put the ones you use most first."],
+            ["「不计入净资产」：编辑账户里打开这个开关，比如替家人管的卡、公司的备用金。余额照常显示、照常记账，但不进净资产、资产走势和 FIRE 的计算。钱在你手上，不等于是你的。", "Exclude from Net Worth: turn it on in Edit Account for things like a card you manage for family or petty cash from work. The balance still shows and you can still log to it, but it stays out of net worth, asset trends and FIRE. Money you hold isn't always money you own."],
+          ] },
+          { p: ["点进一个账户，详情页有两块新内容：", "Open an account and its details page now has two more sections:"] },
+          { list: [
+            ["余额走势：近 12 个月每月月底的余额，按账户自己的币种画，不折算——美元账户折成人民币，就会混进汇率的涨跌。", "Balance Trend: the month-end balance for the last 12 months, in the account's own currency — converting a USD account to CNY would mix in exchange-rate swings."],
+            ["校准记录：每次对账的日期、对账后的余额、对账前算出来的余额，以及差了多少。差得多的那几次，往往就是漏记的那几个月。长按可以删除一次校准（会改变余额，先确认）。", "Reconciliations: the date of each one, the balance you set, what Coast expected beforehand, and the difference. The big gaps usually mark the months you missed entries. Long-press to delete a reconciliation (it changes the balance, so you'll be asked first)."],
+          ] },
+          { related: ["assets", "accounts", "c-net-worth"] },
+        ],
+      },
     ],
   },
   {
@@ -566,9 +602,25 @@ const GROUPS: Group[] = [
         blocks: [
           { fig: F.PrivacyDiagram },
           { list: [
-            ["开启 iCloud 同步后，iPhone、iPad、Mac 之间自动同步。iPad 和 Mac 上是大屏布局，横屏时左边是侧边栏。", "With iCloud sync on, iPhone, iPad and Mac stay in step. iPad and Mac get a big-screen layout with a sidebar in landscape."],
+            ["开启 iCloud 同步后，iPhone、iPad、Mac 之间自动同步。iPad 和 Mac 上是铺满全屏的大屏布局，见「在 iPad 上用」。", "With iCloud sync on, iPhone, iPad and Mac stay in step. iPad and Mac use a full-screen layout — see Using Coast on iPad."],
             ["在别人面前打开 App？点眼睛图标隐藏金额；或者在设置里打开「后台模糊」，切到多任务界面时整屏糊掉。", "Around other people? Tap the eye to hide amounts, or turn on Blur in background so the app switcher shows nothing."],
           ] },
+        ],
+      },
+      {
+        slug: "ipad",
+        isNew: true,
+        title: ["在 iPad 上用", "Using Coast on iPad"],
+        lead: ["iPad 上 Coast 用满整块屏：左边一条窄图标栏，右边按页面分成两栏或几列。", "On iPad, Coast uses the whole screen: a slim icon bar on the left, and each tab split into panes or columns."],
+        blocks: [
+          { list: [
+            ["左边的图标栏切换账单、资产、数据、FIRE 四页，最下面的「＋」记一笔，点按和长按跟手机上那颗加号一样。", "The icon bar switches between Entries, Assets, Data and FIRE; the + at the bottom adds an entry, with the same tap and long-press as on iPhone."],
+            ["账单页：左边是本月预算、财务自由目标、分类构成和快速入口，右边是账单流。点一笔账单，详情弹出来看，不再铺满整屏。", "Entries: this month's budget, freedom goal, category breakdown and shortcuts on the left, your entries on the right. Tap an entry and its details open in a sheet instead of filling the screen."],
+            ["资产页：左边是净资产总览和账户列表，点一个账户，右边就是它的详情；没选的时候右边空着。", "Assets: the net-worth overview and account list on the left; tap an account to see its details on the right."],
+            ["数据页、FIRE 页：卡片按屏幕宽度排成两列或三列，iPad mini 竖屏两列、横屏三列；数据页的「月 / 年 / 全部」和时段翻页并成一行。", "Data and FIRE: cards flow into two or three columns depending on width — two on an iPad mini in portrait, three in landscape — and Data's Month / Year / All and period controls sit on one line."],
+          ] },
+          { tip: ["分屏或者把 Coast 拉成窄窗口时，会自动换回手机的单列布局。", "In Split View or a narrow window, Coast switches back to the single-column iPhone layout automatically."] },
+          { related: ["sync"] },
         ],
       },
       {
@@ -581,13 +633,14 @@ const GROUPS: Group[] = [
             ["全部币种都能搜到。设置 → 多币种与汇率里加你的常用币种，选币种时它们排最前面。汇率每天自动更新，也可以手动填。", "Every currency is searchable. Add your frequent ones in Settings → Currencies & Exchange Rates and they appear first in pickers. Rates update daily, or set your own."],
             ["每笔外币账单记下当时的汇率，之后汇率变了，这笔不跟着漂；点账单详情里的汇率可以改成你实际扣的金额。", "Each foreign entry keeps the rate from when it was recorded, so it doesn't drift later; tap the rate in its details to match what you were actually charged."],
             ["新加的币种还没拉到汇率时，它的账单先不计入合计。首页、数据、FIRE、预算、资产页会写明缺哪几种币、几笔没算进去，点一下就能补。", "Until a new currency has a rate, its entries are left out of totals. Home, Data, FIRE, Budget and Assets say which currencies and how many entries are missing, with one tap to fix it."],
+            ["跨币种转账（比如人民币转进美元账户）：记账面板的转入卡下面有「实际到账」，填银行实际到的数。以后汇率怎么变，转入账户的历史余额都不跟着漂，跟银行流水对得上；不填就按当时的汇率算好记下来。在美元账户里看这笔转账，金额写的是到账的美元，小字是转出的人民币。", "Cross-currency transfers (say CNY into a USD account): under the incoming card in the entry panel, fill in Actually received with what the bank shows. That account's history then never drifts with exchange rates and matches your statement; leave it blank and the rate at the time is used and saved. Seen from the USD account, the transfer shows the dollars received, with the CNY sent underneath."],
+            ["预算也可以用外币设：在预算编辑器里选币种，比如每月 10 万日元。存的就是日元，汇率变了预算本身不变，跟支出比较时再按当前汇率折算。", "Budgets can be set in another currency too: pick it in the budget editor — e.g. ¥100,000 JPY a month. The budget stays in yen and is converted at the current rate when compared with spending."],
           ] },
           { tip: ["为什么不先按 1:1 算？因为那个数字看起来正常、没人会怀疑：100 万越南盾会被算成 100 万元。数字可以暂时不全，但不能错。", "Why not count it 1:1 meanwhile? Because the number would look normal and nobody would question it — ₫1,000,000 would count as ¥1,000,000. A total can be incomplete for a while; it can't be wrong."] },
         ],
       },
       {
         slug: "personalize",
-        isNew: true,
         title: ["设置与个性化", "Settings and personalization"],
         lead: ["设置找得到，App 也可以长成你喜欢的样子。", "Find any setting fast, and make the app look the way you like."],
         blocks: [
