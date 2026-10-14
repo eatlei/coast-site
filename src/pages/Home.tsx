@@ -499,7 +499,7 @@ function Privacy() {
       <div className="mx-auto w-full max-w-[1200px]">
         <Tag>{t("数据", "Your data")}</Tag>
         <H2>{t("没有账号，没有服务器，没有地方能看。", "No account. No server. Nowhere for us to look.")}</H2>
-        <Lead>{t("唯一的联网请求是拉汇率，不上传任何东西。", "The only network request fetches exchange rates. Nothing is uploaded.")}</Lead>
+        <Lead>{t("账本数据从不上传。联网只为汇率、你点了才查的行情和图标，以及匿名的购买统计。", "Your ledger is never uploaded. The app goes online only for exchange rates, prices and icons you ask for, and anonymous purchase statistics.")}</Lead>
         <div className="mt-12 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-4">
           {PRIV.map((m) => {
             const [title, body] = lang === "zh" ? m.zh : m.en
