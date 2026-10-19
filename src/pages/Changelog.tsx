@@ -11,6 +11,25 @@ type Version = { v: string; date: [string, string]; intro: [string, string]; sec
 
 const VERSIONS: Version[] = [
   {
+    v: "1.1.0",
+    date: ["2026 年 10 月", "Oct 2026"],
+    intro: ["看清每一笔，算好下一步。从账户资产，到财务自由，常用的每一步都更顺手。", "See every entry clearly and plan your next step. From accounts and assets to financial freedom, everyday tasks feel smoother."],
+    sections: [
+      { title: ["重点升级", "Highlights"], items: [
+        ["个人资产晴雨表", "从资产页查看财务状况，各项指标保留自己的数值与计算口径；数据不足时显示待评估。天气图标支持切换样式。", "Personal asset weather", "Review your financial health on Assets, with each metric's own value and calculation. Missing data is shown as unrated. Weather icons support different styles."],
+        ["账户与资产", "支持投资持仓、组合付款与余额校准，梳理账户里的钱和资产变化。", "Accounts and assets", "Investment holdings, combined payments and balance reconciliation help you keep track of your money and changes in your assets."],
+        ["FIRE 与模拟器", "FI、Coast、Barista FIRE 进度更清晰，结合场景与消费模拟比较不同选择。", "FIRE and simulators", "Clearer FI, Coast and Barista FIRE progress, with scenario and spending simulations to compare your choices."],
+        ["资产晴雨表小组件", "新增资产晴雨表小组件，改进桌面与锁屏组件的显示。", "Asset weather widgets", "New asset weather widgets, with improved Home Screen and Lock Screen displays."],
+      ] },
+      { title: ["日常体验", "Everyday improvements"], items: [
+        ["转账更清楚", "显示转出账户可用余额，支持全部选择；手续费与跨币种实际到账信息更清楚。", "Clearer transfers", "See the available balance and select the full amount. Fees and the actual amount received across currencies are clearer."],
+        ["截图与通知记账", "改进金额、收支方向与账户识别。", "Screenshot and notification capture", "Improved recognition of amounts, income versus expenses, and accounts."],
+        ["账单管理", "分类切换、归档标签调整更顺手，支持 AA、退款与报销。", "Entry management", "Smoother category switching and archived-tag handling, with splits, refunds and reimbursements."],
+        ["新版引导与更新介绍", "新用户通过连续演示了解 Coast；老用户首次打开新版可查看更新介绍，也能在设置中重看。", "Onboarding and release notes", "A continuous walkthrough introduces Coast to new users. Returning users can view what's new on first launch and revisit it in Settings."],
+      ] },
+    ],
+  },
+  {
     v: "1.0.9",
     date: ["2026 年 10 月", "Oct 2026"],
     intro: [
@@ -358,7 +377,6 @@ const VERSIONS: Version[] = [
 const ROADMAP: { tier: "free" | "pro"; zh: [string, string]; en: [string, string] }[] = [
   { tier: "pro", zh: ["AI 分析", "不是把数字再念一遍，而是替你读懂它：「本月弹性支出比均值多 ¥2,400，自由日往后推了 11 天」；哪一笔偏离了你的习惯、哪个分类在悄悄长大，它先看见。想问什么就问：「去年在衣服上花了多少」，直接给答案，不用翻账。"], en: ["AI insights", "Not a recap of numbers — a read on what they mean: \"flexible spending ran ¥2,400 over your average this month; your freedom date moved 11 days.\" It spots the entry that broke your pattern and the category quietly growing. Ask anything — \"how much on clothes last year?\" — and get the answer, not a spreadsheet."] },
   { tier: "free", zh: ["多维度分析", "分类、账户、标签、时段，任意两个维度交叉着看：出差标签下的餐饮，信用卡上的固定支出，今年 vs 去年同期。同一份账，想从哪个角度切都行——数据本来就是你的，怎么看也该由你定。"], en: ["Analysis in every dimension", "Cross any two of category, account, tag and period: dining under the Business Trip tag, fixed costs on the credit card, this year against last. One ledger, any angle — it's your data; how you look at it should be your call."] },
-  { tier: "pro", zh: ["投资持仓与收益", "FIRE 的分子是资产，可现在投资账户只是一个手填的余额。持仓、成本、收益率记进来，被动收入就有了真实来源——「被动收入覆盖率」不再是估的，自由日也跟着更准。"], en: ["Holdings and returns", "Assets are the numerator of FIRE, yet today an investment account is just a balance you type in. Track positions, cost and return, and passive income finally has a real source — coverage stops being an estimate, and so does your freedom date."] },
   { tier: "pro", zh: ["家庭共享账本", "两个人一本账，一个自由日。各记各的，合起来看；谁付了什么、家里的净资产、离目标还有多远，两台手机上是同一个数——通过 iCloud 共享，数据仍然不经过任何服务器。"], en: ["Shared household ledger", "Two people, one ledger, one freedom date. Log separately, see it together: who paid what, the household's net worth, how far to go — the same numbers on both phones, shared through iCloud with no server in between."] },
   { tier: "free", zh: ["储蓄目标", "自由日太远，中间得有里程碑：六个月的应急金、一笔首付、下一次旅行。每个目标一条进度、一个日期，和总目标用同一套算法——你会知道这个月的每一笔存款，具体在推动哪一个。"], en: ["Savings goals", "Freedom is far; you need milestones on the way: six months of emergency fund, a down payment, the next trip. Each goal gets its own progress and date, on the same math as the big one — so you know exactly which goal this month's savings just moved."] },
   { tier: "free", zh: ["年度总结", "一年过去，一页说清：花了多少、存了多少、哪个月最克制、自由日往前挪了几天。做成可以分享的样子——给自己复盘，也给别人看看你走了多远。"], en: ["Year in review", "A year, on one page: what you spent, what you saved, your most disciplined month, how many days your freedom date moved. Made to share — a review for you, and proof of how far you've come."] },

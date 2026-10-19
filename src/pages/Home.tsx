@@ -107,6 +107,7 @@ function Hero() {
             {t("Coast 把「今天花了多少」和「哪一年可以不上班」连起来。记账是输入，输出是一个日期。",
               "Coast connects what you spent today to the year you can stop working. Tracking is the input. The output is a date.")}
           </p>
+          <a href="changelog.html" className="mt-5 inline-flex rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90">{t("v1.1 · 资产晴雨表与账户升级 →", "v1.1 · Asset weather & account upgrades →")}</a>
           <div className="hero-cta mt-9 flex flex-wrap items-center gap-5">
             <DownloadButton size="lg" full />
             <span className="tag">{t("iOS 18+ · 无账号 · 无服务器", "iOS 18+ · No account · No server")}</span>
@@ -122,7 +123,7 @@ function Hero() {
 const FEATURES = [
   { img: "fire-pro", zh: ["自由倒计时", "首页最大的数字不是余额，是「还有 14 年 11 个月」。拖动试算滑杆，它实时重算。"], en: ["Freedom countdown", "The biggest number isn't a balance. It's \"14 years, 11 months to go,\" and it moves as you drag the sliders."] },
   { img: "ledger", zh: ["复杂的钱也记得清", "AA、报销、分次退款、组合支付、分期、周期账单，都有自己的位置。"], en: ["The messy stuff, handled", "Splits, reimbursements, partial refunds, installments, recurring bills. Each has a place."] },
-  { img: "assets", zh: ["资产看趋势", "现金、投资、不动产、负债分开算。校准一次，之后的流水自动往上叠。"], en: ["Net worth as a trend", "Cash, investments, property, debt. Reconcile once; everything after stacks on top."] },
+  { img: "assets", zh: ["资产看趋势", "现金、投资、不动产、负债分开算。新增资产晴雨表，结合持仓、组合付款与余额校准，看清财务状况。"], en: ["Net worth as a trend", "Cash, investments, property and debt, with asset weather, holdings, combined payments and balance reconciliation."] },
   { img: "budget", zh: ["预算看节奏", "月中就知道会不会超。建议额度按你真实花过的来，不是拍脑袋。"], en: ["Budget by pace", "Know mid-month if you'll go over. Limits from what you actually spent, not a guess."] },
 ]
 function Features() {
@@ -385,7 +386,7 @@ const MORE: { id: SketchId; pro?: boolean; isNew?: boolean; zh: [string, string]
   { id: "review", pro: true, zh: ["月度回顾", "输出结论不是数字堆，按重要性把数字翻译成人话。"], en: ["Month in review", "Conclusions, not a pile of numbers, ranked by what matters."] },
   { id: "repeat", pro: true, zh: ["复购洞察", "哪家店去了多少次、花了多少，一年下来是什么数。"], en: ["Repeat-buy insights", "Which places you keep going back to, and what a year of that costs."] },
   { id: "scenarios", pro: true, zh: ["场景模拟", "换城市、涨薪、买房，几条路存下来并排比。"], en: ["Scenarios", "Move cities, get a raise, buy a home. Save paths, compare."] },
-  { id: "widgets", isNew: true, zh: ["桌面小组件", "今日支出、预算、净资产、自由倒计时、财务总览，记完账就刷新，锁屏也能放。"], en: ["Widgets", "Today, budget, net worth, countdown and an overview. They refresh as you log, Lock Screen too."] },
+  { id: "widgets", isNew: true, zh: ["桌面小组件", "新增资产晴雨表小组件。今日支出、预算、净资产、自由倒计时、财务总览，桌面与锁屏都能看。"], en: ["Widgets", "New asset weather widgets, alongside spending, budget, net worth, countdown and overview widgets for Home and Lock Screens."] },
   { id: "currency", isNew: true, zh: ["多币种", "全部币种可选、常用的排前面；每日汇率自动拉，缺汇率时不瞎算，会提醒你补。免费。"], en: ["Multi-currency", "Every currency, favorites first; daily rates, and a missing rate is flagged instead of guessed. Free."] },
   { id: "themes", pro: true, zh: ["主题与图标", "6 套主题、20 多个 App 图标，分类图标四种来源一键换套。"], en: ["Themes & icons", "6 themes, 20+ app icons, category icons from four sources."] },
   { id: "privacy", zh: ["隐私模式", "一个眼睛开关，全 App 金额一键打码。"], en: ["Privacy mode", "One toggle blurs every amount in the app."] },
@@ -393,6 +394,7 @@ const MORE: { id: SketchId; pro?: boolean; isNew?: boolean; zh: [string, string]
 ]
 /** 跟随鼠标微倾的卡片：transform 全部交给 GSAP（CSS hover 的 transform 会和它打架），阴影走 CSS */
 function TiltCard({ children }: { children: React.ReactNode }) {
+  const { t } = useLang()
   const ref = React.useRef<HTMLDivElement>(null)
   const fx = React.useRef<{ rx: gsap.QuickToFunc; ry: gsap.QuickToFunc; y: gsap.QuickToFunc } | null>(null)
   useGSAP(() => {
@@ -402,13 +404,13 @@ function TiltCard({ children }: { children: React.ReactNode }) {
     fx.current = { rx: gsap.quickTo(el, "rotationX", opt), ry: gsap.quickTo(el, "rotationY", opt), y: gsap.quickTo(el, "y", opt) }
   }, { scope: ref })
   const move = (e: React.MouseEvent<HTMLDivElement>) => {
-    const f = fx.current; if (!f || matchMedia("(hover: none)").matches) return
+    const f = fx.current; if (!f || matchMedia("(hover: none), (prefers-reduced-motion: reduce)").matches) return
     const r = e.currentTarget.getBoundingClientRect()
     const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5
     f.ry(px * 8); f.rx(-py * 6); f.y(-4)
   }
   const leave = () => { const f = fx.current; if (!f) return; f.rx(0); f.ry(0); f.y(0) }
-  return <div ref={ref} data-reveal data-card className="feature-card group" onMouseMove={move} onMouseLeave={leave}>{children}</div>
+  return <div ref={ref} data-reveal data-card tabIndex={0} role="button" aria-label={t("重播功能演示", "Replay feature demo")} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.click() } }} className="feature-card group" onMouseMove={move} onMouseLeave={leave}>{children}</div>
 }
 
 function More() {
@@ -519,8 +521,8 @@ function Privacy() {
 }
 
 /* ---------- 定价：一张会打印出来的收据 ---------- */
-const FREE = [["不限量记账，不按笔数收费", "Unlimited entries"], ["全部账户与账本工具", "Every account and ledger tool"], ["CSV / Excel 导入导出", "CSV / Excel import and export"], ["FI 进度与倒计时、总预算、小组件", "FI countdown, total budget, widgets"], ["多币种记账与每日汇率", "Multi-currency, daily rates"], ["时薪换算看板", "Hours of Work card"]]
-const PRO = [["达成区间", "Achievement range"], ["收支试算滑杆", "What-if sliders"], ["场景模拟器", "Scenario simulator"], ["Coast FIRE 与 Barista FIRE", "Coast & Barista FIRE"], ["高级 FI 参数", "Advanced FI parameters"], ["完整月报与复购洞察", "Full monthly report, repeat-buy"], ["分类预算与配速图", "Category budgets with pace"], ["想买的东西值几小时、记账时看工时", "Wish list in hours, hours while adding"], ["配色主题与 App 图标", "Themes and app icons"]]
+const FREE = [["不限量记账，不按笔数收费", "Unlimited entries"], ["基础账户与账本工具、资产晴雨表", "Core accounts, ledger tools and asset weather"], ["CSV / Excel 导入导出", "CSV / Excel import and export"], ["FI 进度与倒计时、总预算、小组件", "FI countdown, total budget, widgets"], ["多币种记账与每日汇率", "Multi-currency, daily rates"], ["时薪换算看板", "Hours of Work card"]]
+const PRO = [["投资持仓与收益", "Investment holdings and returns"], ["达成区间", "Achievement range"], ["收支试算滑杆", "What-if sliders"], ["场景模拟器", "Scenario simulator"], ["Coast FIRE 与 Barista FIRE", "Coast & Barista FIRE"], ["高级 FI 参数", "Advanced FI parameters"], ["完整月报与复购洞察", "Full monthly report, repeat-buy"], ["分类预算与配速图", "Category budgets with pace"], ["想买的东西值几小时、记账时看工时", "Wish list in hours, hours while adding"], ["配色主题与 App 图标", "Themes and app icons"]]
 function Pricing() {
   const { t, lang } = useLang()
   const pick = (p: string[]) => (lang === "zh" ? p[0] : p[1])

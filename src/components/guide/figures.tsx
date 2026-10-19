@@ -634,6 +634,7 @@ export function ProTable() {
     [t("iCloud 同步、每日备份、iPad 与 Mac", "iCloud sync, daily backups, iPad & Mac"), Y, Y],
     [t("多币种与每日汇率", "Multi-currency and daily rates"), Y, Y],
     [t("时薪换算看板、账单详情里的工时", "Hours of Work card, hours on entry details"), Y, Y],
+    [t("投资持仓（按份额记、查最新价）", "Investment holdings (units and latest prices)"), N, Y],
     [t("场景模拟、达成区间", "Scenarios, achievement range"), N, Y],
     [t("Coast FIRE、Barista FIRE、高级 FI 参数", "Coast FIRE, Barista FIRE, advanced FI parameters"), N, Y],
     [t("分类预算、预算页的配速推演", "Category budgets, pace projection on the budget page"), N, Y],

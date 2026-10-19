@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Check } from "lucide-react"
 import { gsap, useGSAP } from "@/lib/gsap"
 import { useLang } from "@/lib/i18n"
 
@@ -19,20 +20,22 @@ function useSketch(build: (tl: gsap.core.Timeline, q: gsap.utils.SelectorFunc) =
     build(tl, q)
     tl.progress(1) // 默认停在结束画面，hover 再从头播
     tlRef.current = tl
-    const play = contextSafe!(() => { tl.restart() }) as () => void
+    const play = contextSafe!(() => { if (!matchMedia("(prefers-reduced-motion: reduce)").matches) tl.restart() }) as () => void
     const el = root.current!
     // 触发源是整张卡片（[data-card]），不是舞台本身：舞台默认是藏着的
     const card = (el.closest("[data-card]") as HTMLElement | null) ?? el
     card.addEventListener("mouseenter", play)
+    card.addEventListener("click", play)
+    card.addEventListener("focusin", play)
     // 触屏没有 hover：进入视口时播一次
     let io: IntersectionObserver | null = null
-    if (matchMedia("(hover: none)").matches) {
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
       io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { play(); io?.disconnect() } }, { threshold: 0.6 })
       io.observe(el)
     }
-    return () => { card.removeEventListener("mouseenter", play); io?.disconnect() }
+    return () => { card.removeEventListener("mouseenter", play); card.removeEventListener("click", play); card.removeEventListener("focusin", play); io?.disconnect() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, { scope: root, dependencies: deps })
+  }, { scope: root, dependencies: deps, revertOnUpdate: true })
   return root
 }
 
@@ -254,7 +257,7 @@ function Batch() {
     <div ref={root} className={`h-11 w-full max-w-[220px] text-[10px] leading-[14px] ${mono}`}>
       {rows.map(([n, a]) => (
         <div key={n} className="flex items-center gap-1.5">
-          <span className="ck inline-grid size-2.5 place-items-center rounded-full bg-primary text-[7px] text-white">✓</span>
+          <span className="ck inline-grid size-2.5 place-items-center shrink-0 rounded-full bg-primary text-primary-foreground"><Check className="size-2" strokeWidth={3} aria-hidden="true" /></span>
           <span className="w-14 truncate">{n}</span>
           <span className="relative w-16 text-muted-foreground"><span className="old absolute">{t("其他", "Other")}</span><span className="new absolute text-primary">{t("咖啡饮品", "Coffee")}</span></span>
           <span className="ml-auto">{a}</span>
