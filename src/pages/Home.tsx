@@ -8,6 +8,7 @@ import { Device, DownloadButton, Footer, Header } from "@/components/site/Shell"
 import { H2, Lead, Section, Tag } from "@/components/site/Blocks"
 import { Contact, Faq } from "@/components/site/FaqContact"
 import { Sketch, type SketchId } from "@/components/site/Sketches"
+import { FREE_FEATURES as FREE, PRO_FEATURES as PRO, V11_HIGHLIGHTS } from "@/content/product"
 import { APP_STORE, screen, useLang } from "@/lib/i18n"
 import { EASE, REDUCED, ScrollTrigger, SplitText, gsap, useGSAP } from "@/lib/gsap"
 
@@ -371,26 +372,50 @@ function Categories() {
   )
 }
 
+function VersionHighlights() {
+  const { t, lang } = useLang()
+  const pick = (copy: [string, string]) => copy[lang === "zh" ? 0 : 1]
+  return (
+    <Section id="new-in-1-1">
+      <div className="mx-auto w-full max-w-[1200px]">
+        <Tag>Coast · v1.1</Tag>
+        <H2>{t("v1.1，新功能与升级。", "What's new in Coast 1.1.")}</H2>
+        <Lead>{t("账户、分类、花钱前的试算，以及每天记账的细节，都有了新能力。点开每项可看具体用法和免费 / Pro 边界。", "New account tools, categories, spending decisions and everyday capture. Open any feature for instructions and its Free / Pro limits.")}</Lead>
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {V11_HIGHLIGHTS.map((feature) => (
+            <a key={feature.href} href={`guide.html?lang=${lang}#${feature.href}`} className="rounded-2xl border border-rule bg-card p-6 transition-colors hover:border-primary/50 focus-visible:outline-2 focus-visible:outline-primary">
+              <div className="mb-4 text-xs font-medium text-primary">{feature.pro ? "Pro" : feature.href === "spending" ? t("免费 + Pro", "Free + Pro") : t("免费", "Free")}</div>
+              <h3 className="font-sans text-lg tracking-normal">{pick(feature.title)}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{pick(feature.body)}</p>
+              <span className="mt-5 inline-block text-sm font-medium text-primary">{t("查看用法 →", "How it works →")}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </Section>
+  )
+}
+
 /* ---------- 更多亮点：三栏索引 + 小动画 ---------- */
 const ICONS: Record<SketchId, React.ComponentType<{ className?: string }>> = { batch: ListChecks, shapes: Shapes, hours: Hourglass, scan: ScanLine, refund: Undo2, reconcile: Scale, recurring: Repeat, rules: Wand2, review: FileText, repeat: ShoppingBag, scenarios: GitBranch, widgets: LayoutGrid, currency: Globe, themes: Palette, privacy: EyeOff }
 /** `isNew`：最近一个版本新上的，卡片右上挂「New」（下个版本发布时把旧的摘掉） */
 const MORE: { id: SketchId; pro?: boolean; isNew?: boolean; zh: [string, string]; en: [string, string] }[] = [
   // 1.0.7：截图记账回来了（还多了通知记账），放回第一格
   { id: "scan", isNew: true, zh: ["快捷记账", "付完款轻点背面，截图里的金额、商户、付款卡自动认出来；iOS 27 起付款通知一到就记。全在手机本地识别。"], en: ["Quick Capture", "Back-tap after paying and the amount, merchant and card are read from the screen; on iOS 27 payment notifications record themselves. All on-device."] },
-  { id: "batch", isNew: true, zh: ["批量修改", "多选几笔，一次改分类、账户、标签、备注或日期。"], en: ["Batch edit", "Select a few entries and change category, account, tags, note or date at once."] },
+  { id: "batch", zh: ["批量修改", "多选几笔，一次改分类、账户、标签、备注或日期。"], en: ["Batch edit", "Select a few entries and change category, account, tags, note or date at once."] },
   { id: "hours", zh: ["时薪换算", "每笔花销折成要上多久的班。时薪按你记的工资自动算，只需填工作时间。"], en: ["Hours of work", "Every expense as hours of work, from the pay you already record — just add your hours."] },
   { id: "refund", zh: ["分次退款", "1000 先退 500 到信用卡，再退 200 到储蓄卡，都记得住。"], en: ["Partial refunds", "¥500 back to the card, ¥200 to savings, later. It keeps track."] },
   { id: "reconcile", zh: ["余额校准", "核对一次真实余额，之后流水自动往上叠。"], en: ["Reconcile once", "Check your real balance once; entries stack on top."] },
   { id: "recurring", zh: ["周期账单识别", "同名、金额 ±15%、出现 3 次以上，才叫周期。"], en: ["Recurring detection", "Same name, ±15% amount, seen 3+ times. Then it counts."] },
   { id: "rules", zh: ["分类规则学习", "改一次分类，问你要不要记住，之后自动归类。"], en: ["Rules that learn", "Change a category once, it offers to remember."] },
-  { id: "review", pro: true, zh: ["月度回顾", "输出结论不是数字堆，按重要性把数字翻译成人话。"], en: ["Month in review", "Conclusions, not a pile of numbers, ranked by what matters."] },
+  { id: "review", pro: true, zh: ["月度回顾", "免费版给一句话摘要，Pro 查看完整收支回顾与自由日变化。"], en: ["Month in review", "A one-line summary is free; Pro adds the full spending review and freedom-date impact."] },
   { id: "repeat", pro: true, zh: ["复购洞察", "哪家店去了多少次、花了多少，一年下来是什么数。"], en: ["Repeat-buy insights", "Which places you keep going back to, and what a year of that costs."] },
   { id: "scenarios", pro: true, zh: ["场景模拟", "换城市、涨薪、买房，几条路存下来并排比。"], en: ["Scenarios", "Move cities, get a raise, buy a home. Save paths, compare."] },
   { id: "widgets", isNew: true, zh: ["桌面小组件", "新增资产晴雨表小组件。今日支出、预算、净资产、自由倒计时、财务总览，桌面与锁屏都能看。"], en: ["Widgets", "New asset weather widgets, alongside spending, budget, net worth, countdown and overview widgets for Home and Lock Screens."] },
-  { id: "currency", isNew: true, zh: ["多币种", "全部币种可选、常用的排前面；每日汇率自动拉，缺汇率时不瞎算，会提醒你补。免费。"], en: ["Multi-currency", "Every currency, favorites first; daily rates, and a missing rate is flagged instead of guessed. Free."] },
-  { id: "themes", pro: true, zh: ["主题与图标", "6 套主题、20 多个 App 图标，分类图标四种来源一键换套。"], en: ["Themes & icons", "6 themes, 20+ app icons, category icons from four sources."] },
+  { id: "currency", zh: ["多币种", "全部币种可选、常用的排前面；每日汇率自动拉，缺汇率时不瞎算，会提醒你补。免费。"], en: ["Multi-currency", "Every currency, favorites first; daily rates, and a missing rate is flagged instead of guessed. Free."] },
+  { id: "themes", pro: true, zh: ["主题与图标", "蔚蓝、霓彩、极简黑三套主题，另有多款 App 图标；分类图标导入和账户 App 图标搜索免费。"], en: ["Themes & icons", "Three themes: Azure, Bloom and Mono, plus alternate app icons. Category-icon imports and account app-icon search are free."] },
   { id: "privacy", zh: ["隐私模式", "一个眼睛开关，全 App 金额一键打码。"], en: ["Privacy mode", "One toggle blurs every amount in the app."] },
-  { id: "shapes", isNew: true, zh: ["分类图标换形状", "圆形、圆角方形、叶片、水滴、花朵，记账面板跟着换。"], en: ["Icon shapes", "Circle, rounded square, leaf, drop or flower behind your category icons."] },
+  { id: "shapes", zh: ["分类图标换形状", "圆形、圆角方形、叶片、水滴、花朵，记账面板跟着换。"], en: ["Icon shapes", "Circle, rounded square, leaf, drop or flower behind your category icons."] },
 ]
 /** 跟随鼠标微倾的卡片：transform 全部交给 GSAP（CSS hover 的 transform 会和它打架），阴影走 CSS */
 function TiltCard({ children }: { children: React.ReactNode }) {
@@ -490,7 +515,7 @@ function Shots() {
 /* ---------- 数据 ---------- */
 const PRIV = [
   { icon: Cloud, zh: ["iCloud 私有库同步", "同一 Apple 账户多设备同步，开发者也看不到。"], en: ["Private iCloud sync", "Your devices sync; the developer can't see it."] },
-  { icon: CalendarDays, zh: ["每日快照备份", "JSON 存进 iCloud Drive，可恢复到任意一天。"], en: ["Daily snapshots", "JSON into iCloud Drive, restorable to any day."] },
+  { icon: CalendarDays, zh: ["每日快照备份", "JSON 存进 iCloud Drive，可从保留的最近 10 份备份恢复。"], en: ["Daily snapshots", "JSON backups in iCloud Drive; restore from the latest 10 kept."] },
   { icon: Upload, zh: ["导入导出不设墙", "CSV / Excel 随时导出，想走就走。"], en: ["Export never paywalled", "CSV / Excel anytime. Leave when you like."] },
   { icon: Smartphone, zh: ["识别在手机上完成", "账单截图不离开手机。"], en: ["On-device recognition", "Receipt images never leave your phone."] },
 ]
@@ -500,8 +525,8 @@ function Privacy() {
     <Section>
       <div className="mx-auto w-full max-w-[1200px]">
         <Tag>{t("数据", "Your data")}</Tag>
-        <H2>{t("没有账号，没有服务器，没有地方能看。", "No account. No server. Nowhere for us to look.")}</H2>
-        <Lead>{t("账本数据从不上传。联网只为汇率、你点了才查的行情和图标，以及匿名的购买统计。", "Your ledger is never uploaded. The app goes online only for exchange rates, prices and icons you ask for, and anonymous purchase statistics.")}</Lead>
+        <H2>{t("账本在你的设备和私人 iCloud 中。", "Your ledger stays on device and in private iCloud.")}</H2>
+        <Lead>{t("账单不发送给开发者。开启 iCloud 可同步账本；汇率、主动查询的行情和图标，以及购买验证与匿名购买统计会联网。", "Entries are not sent to the developer. Enable iCloud to sync your ledger. Rates, requested price and icon lookups, purchase validation and anonymous purchase statistics use the network.")}</Lead>
         <div className="mt-12 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-4">
           {PRIV.map((m) => {
             const [title, body] = lang === "zh" ? m.zh : m.en
@@ -521,8 +546,6 @@ function Privacy() {
 }
 
 /* ---------- 定价：一张会打印出来的收据 ---------- */
-const FREE = [["不限量记账，不按笔数收费", "Unlimited entries"], ["基础账户与账本工具、资产晴雨表", "Core accounts, ledger tools and asset weather"], ["CSV / Excel 导入导出", "CSV / Excel import and export"], ["FI 进度与倒计时、总预算、小组件", "FI countdown, total budget, widgets"], ["多币种记账与每日汇率", "Multi-currency, daily rates"], ["时薪换算看板", "Hours of Work card"]]
-const PRO = [["投资持仓与收益", "Investment holdings and returns"], ["达成区间", "Achievement range"], ["收支试算滑杆", "What-if sliders"], ["场景模拟器", "Scenario simulator"], ["Coast FIRE 与 Barista FIRE", "Coast & Barista FIRE"], ["高级 FI 参数", "Advanced FI parameters"], ["完整月报与复购洞察", "Full monthly report, repeat-buy"], ["分类预算与配速图", "Category budgets with pace"], ["想买的东西值几小时、记账时看工时", "Wish list in hours, hours while adding"], ["配色主题与 App 图标", "Themes and app icons"]]
 function Pricing() {
   const { t, lang } = useLang()
   const pick = (p: string[]) => (lang === "zh" ? p[0] : p[1])
@@ -543,22 +566,24 @@ function Pricing() {
       <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,1fr)_400px] md:gap-24">
         <div>
           <Tag>{t("定价", "Pricing")}</Tag>
-          <H2>{t("记录永久免费。会员解锁的是推演未来。", "Recording is free forever. Pro unlocks the future.")}</H2>
+          <H2>{t("日常记账免费，进阶分析与个性化用 Pro。", "Everyday tracking is free. Pro adds deeper analysis and personalization.")}</H2>
           <div className="mt-10 max-w-[480px]">
             <div className="tag mb-2">{t("免费版包含", "Free includes")}</div>
-            {FREE.map((f) => <div key={f[0]} className="flex items-center gap-3 py-2 text-[15px]"><Check className="size-4 text-success" />{pick(f)}</div>)}
+            {FREE.map((f) => <div key={f[0]} className="flex items-start gap-3 py-2 text-[15px]"><Check className="mt-1 size-4 shrink-0 text-success" />{pick(f)}</div>)}
+            <a href={`guide.html?lang=${lang}#pro`} className="mt-5 inline-block text-sm font-medium text-primary">{t("查看完整免费 / Pro 对比 →", "Full Free / Pro comparison →")}</a>
           </div>
         </div>
         <div className="receipt-slot">
           <div className="receipt font-mono text-[13px]">
             <div className="row"><span className="tag">Coast Pro</span><span className="tag">{t("会员", "Membership")}</span></div>
             <div className="row mt-6"><span>{t("包年", "Yearly")}</span><span className="text-[15px]">$4.99 <span className="text-muted-foreground">/ {t("年（约 ¥36）", "yr")}</span></span></div>
-            <div className="mt-2 text-[12px] text-muted-foreground">{t("前 7 天免费试用，可随时取消", "7-day free trial, cancel anytime")}</div>
+            <div className="mt-2 text-[12px] text-muted-foreground">{t("符合条件可试用 7 天；订阅可在 App Store 取消", "7-day trial if eligible; cancel in App Store")}</div>
             <div className="row mt-3"><span>{t("永久", "Lifetime")}</span><span className="text-[15px]">$9.99{lang === "zh" && <span className="text-muted-foreground">（约 ¥71）</span>}</span></div>
             <div className="mt-2 text-[12px] text-muted-foreground">{t("一次付费，不转订阅", "One-time, never a subscription")}</div>
             <div className="dash my-5" />
             <div className="tag mb-3">{t("解锁", "Unlocks")}</div>
-            {PRO.map((f) => <div key={f[0]} className="row py-[3px]"><span>{pick(f)}</span><span className="text-muted-foreground">✓</span></div>)}
+            {PRO.map((f) => <div key={f[0]} className="row items-start gap-3 py-[3px]"><span>{pick(f)}</span><span className="text-muted-foreground">✓</span></div>)}
+            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{t("标示美元参考价；各地区价格及试用资格以 App Store 购买页为准。", "USD reference prices; regional prices and trial eligibility are shown in the App Store purchase sheet.")}</p>
             <div className="dash my-5" />
             <div className="row text-[12px] text-muted-foreground"><span>{t("App 内购买 · Apple 处理支付", "In-app purchase · Apple handles payment")}</span></div>
             <div className="barcode mt-5 h-8 w-full opacity-80" style={{ background: "repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 9px, currentColor 9px 12px, transparent 12px 14px)" }} aria-hidden="true" />
@@ -579,9 +604,6 @@ function Closing() {
   React.useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id) }, [])
   const target = React.useMemo(() => { if (p.mid === null) return null; const d = new Date(); d.setMonth(d.getMonth() + p.mid); d.setHours(9, 0, 0, 0); return d.getTime() }, [p.mid])
   let parts: { v: string; zh: string; en: string }[] = []
-            {/* 人民币价由 App Store 按价格档位定、会随汇率调整，写死 ¥30 / ¥60 跟实际对不上（用户 2026-10-03）——
-                统一标美元，中文附一个按汇率估的约数，实际以 App Store 为准 */}
-            <div className="mt-1 text-[12px] text-muted-foreground">{t("人民币为按汇率估算，实际价格以 App Store 显示为准", "Prices vary by region; App Store shows the final price")}</div>
   if (target) {
     const diff = Math.max(0, target - now)
     const days = Math.floor(diff / 86400000), y = Math.floor(days / 365), mo = Math.floor((days % 365) / 30.4), dd = Math.floor((days % 365) % 30.4)
@@ -677,6 +699,7 @@ export default function Home() {
       <main ref={root}>
         <Hero />
         <Features />
+        <VersionHighlights />
         <Simulator />
         <Categories />
         <More />

@@ -34,9 +34,290 @@ type Block =
 type Page = { slug: string; title: L; lead: L; blocks: Block[]; short?: L; loc?: L; isNew?: boolean }
 type Group = { id: string; title: L; pages: Page[] }
 
-const MORE_INFO: L = ["FIRE 页每张卡片标题旁都有一个 ⓘ，点开是这个指标的完整解释：它是什么、为什么重要、怎么改善。", "Every card on the FIRE tab has an ⓘ next to its title — tap it for the full explanation: what it is, why it matters, how to improve it."]
+const MORE_INFO: L = ["点开 FIRE 页的指标卡片，可看完整解释：它是什么、为什么重要、怎么改善。", "Open a card on the FIRE tab for the full explanation: what it is, why it matters, how to improve it."]
 
 const GROUPS: Group[] = [
+{
+  "id": "v1-1",
+  "title": [
+    "v1.1 新功能",
+    "New in v1.1"
+  ],
+  "pages": [
+    {
+      "slug": "asset-weather",
+      "isNew": true,
+      "title": [
+        "个人资产晴雨表",
+        "Personal asset weather"
+      ],
+      "lead": [
+        "五个指标分别看，不用一个总分代替你的财务状况。",
+        "Five separate metrics, rather than one score for your finances."
+      ],
+      "blocks": [
+        {
+          "img": "assets",
+          "cap": [
+            "资产概览下方的个人资产晴雨表",
+            "Personal asset weather below the asset overview"
+          ]
+        },
+        {
+          "list": [
+            [
+              "资产页查看应急金、负债率、月供比、储蓄率和投资占比；点开任一项，查看计算公式、数据范围和判断区间。",
+              "On Assets, review runway, debt ratio, debt payments, savings rate and invested share. Open a metric for its formula, data scope and bands."
+            ],
+            [
+              "缺少相关账单、汇率、还款期表或有效分母时，该项显示待评估；其他资料齐全的指标仍独立计算。",
+              "A metric is Unrated when its entries, rates, repayment schedule or denominator are missing. Other metrics with complete inputs are still calculated separately."
+            ],
+            [
+              "投资占比是投资账户的配置观察，不等于稳定被动收入。点卡头右侧的样式按钮，可选默认天气、小火人、3D、Emoji、Solar 或自定义图标。",
+              "Invested share describes investment-account allocation, not stable passive income. The header style button offers default weather, Flame, 3D, Emoji, Solar or your own icons."
+            ]
+          ]
+        },
+        {
+          "tip": [
+            "资产晴雨表及样式切换免费。中、大尺寸桌面小组件可以显示晴雨表；锁屏应急金显示的是应急金月数，不是综合天气评分。",
+            "Asset weather and style choices are free. Medium / large Home Screen widgets show asset weather; Lock Screen runway shows reserve months, not an overall weather score."
+          ]
+        },
+        {
+          "related": [
+            "assets",
+            "widgets",
+            "pro"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "holdings",
+      "isNew": true,
+      "title": [
+        "投资持仓与收益（Pro）",
+        "Holdings and returns (Pro)"
+      ],
+      "lead": [
+        "按份额和单价记投资，再核对你投了多少、当前值多少。",
+        "Track units and price, then compare contributions with current value."
+      ],
+      "blocks": [
+        {
+          "list": [
+            [
+              "打开投资账户详情，在持仓卡填写名称、代码、份额、单价和币种。份额与单价保留小数精度，不按普通记账金额强制截成两位。",
+              "Open an investment account and fill in the holding name, symbol, units, price and currency. Units and prices retain decimal precision rather than being limited to two decimal places."
+            ],
+            [
+              "填了支持的代码后，可查询并主动更新价格；也可以手动改份额或单价。检查价格日期和币种后再保存。",
+              "With a supported symbol, look up and refresh the price, or edit units / price manually. Check the price date and currency before saving."
+            ],
+            [
+              "在账户的「概览」查看投入本金与收益；持仓、查价和投资收益属于 Pro。普通投资账户记账、余额走势和每月进出仍免费。",
+              "Use the account Overview for contributions and returns. Holdings, price lookup and investment returns require Pro. Ordinary account entries, balance history and monthly flows remain free."
+            ]
+          ]
+        },
+        {
+          "tip": [
+            "这是手动维护的账户与价格查询工具，不是券商连接或交易执行服务。查价不会自动导入你的券商全部持仓，也不保证报价实时。",
+            "These are manually maintained accounts with price lookup, not brokerage connectivity or trade execution. Price lookup does not import all brokerage holdings or guarantee real-time quotes."
+          ]
+        },
+        {
+          "related": [
+            "account-detail",
+            "assets",
+            "pro"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "custom-categories",
+      "isNew": true,
+      "title": [
+        "自定义一级分类（Pro）",
+        "Custom top-level categories (Pro)"
+      ],
+      "lead": [
+        "显示可以按你的习惯分，FIRE 仍按分类角色计算。",
+        "Organize the display your way; FI roles still drive the calculations."
+      ],
+      "blocks": [
+        {
+          "list": [
+            [
+              "设置 → 分类与标签，在顶部切换「按 FI 分组（默认）」与「我的分组」。FI 分类免费；自定义一级分类需要 Pro。",
+              "In Settings → Categories & Tags, switch between FI categories and My Groups at the top. FI categories are free; custom top-level categories require Pro."
+            ],
+            [
+              "在自定义模式里新建一级分类，把二级分类归进去；可以批量归组，尚未分配的二级保留在未分组中。记账面板和数据页可按你的分类显示。",
+              "Create top-level categories in custom mode and assign subcategories, including in batches. Unassigned subcategories stay in Ungrouped. Entry and Data views can follow your categories."
+            ],
+            [
+              "一级显示分组和 FI 角色是两件事。每个分类仍保留原有 FI 角色，决定怎样进入支出、储蓄率和 FIRE；改分组不会把所有账单改成同一种 FI 性质。",
+              "Display groups and FI roles are separate. Each category keeps the role that determines its treatment in spending, savings rate and FIRE. Regrouping does not give every entry the same FI role."
+            ]
+          ]
+        },
+        {
+          "tip": [
+            "账户的「我的分组」免费，分类的自定义一级分组属于 Pro；两处同名但作用不同。",
+            "Custom account groups are free; custom top-level entry categories require Pro. Similar names serve different purposes."
+          ]
+        },
+        {
+          "related": [
+            "categories",
+            "account-detail",
+            "pro"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "spending",
+      "isNew": true,
+      "title": [
+        "消费模拟：花之前先算一笔",
+        "Spending simulator: before you buy"
+      ],
+      "lead": [
+        "一次买入还是每月都付，先看对自由日和工作时间的影响。",
+        "A one-off purchase or monthly payment: see its impact on your freedom date and work time."
+      ],
+      "blocks": [
+        {
+          "list": [
+            [
+              "从 FIRE 页的「消费模拟」进入，新增想买的东西，填写金额、币种、分类，并选一次性或每月支出。调整试算价格，下面的结果随之变化。",
+              "Open Spending Simulation from FIRE. Add an item, amount, currency and category, and choose a one-off or monthly cost. Adjust the trial price to update the results."
+            ],
+            [
+              "免费可看自由日推迟多久、要工作多久。Pro 继续看预算、储蓄率、资产等完整影响，并设置冷静期提醒。",
+              "Free shows the freedom-date delay and work hours. Pro adds full budget, savings-rate and asset impacts, plus a cooling-off reminder."
+            ],
+            [
+              "Pro 的三张清单是「冷静期」「忍住了」「入手了」。决定后保存当时的分析；入手时如需记账，按面板确认，不会因反复点入手重复记账。",
+              "The Pro lists are Cooling Off, Skipped and Bought. A decision keeps the analysis from that moment. If recording a purchase, confirm through the panel; marking it Bought again does not duplicate the entry."
+            ],
+            [
+              "模拟需要足够的历史收支资料。尚不能推演自由日时会说明原因，不把缺数据显示成零影响。",
+              "Simulation needs sufficient income and spending history. If a freedom date cannot be projected, Coast explains why rather than showing zero impact."
+            ]
+          ]
+        },
+        {
+          "related": [
+            "scenarios",
+            "work-hours",
+            "pro"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "receipts-transfers",
+      "isNew": true,
+      "title": [
+        "到账、转账与组合付款",
+        "Receipts, transfers and combined payments"
+      ],
+      "lead": [
+        "分清原来的消费、钱回来的日子，以及账户之间的流转。",
+        "Keep the original purchase, the received date and account transfers distinct."
+      ],
+      "blocks": [
+        {
+          "list": [
+            [
+              "退款和报销在实际到账当天也显示一行，可在账单、日历、搜索和收款账户里找到。批量报销可合并显示，点开核对明细；这些到账行不是重复收入。",
+              "Refunds and reimbursements also appear on the received date in Entries, Calendar, Search and the receiving account. Batch reimbursements can be shown together with inspectable details; these rows are not duplicate income."
+            ],
+            [
+              "报销登记可以填写实际到账日期。账单仍关联原消费和退款 / 报销记录，核对支出与余额时注意各自的日期和账户。",
+              "Set the actual received date when registering a reimbursement. The original purchase remains linked to its refund / claim records; check dates and accounts when reconciling spending and balances."
+            ],
+            [
+              "记一笔可以不选账户；它仍是账单，但不会改变任何账户余额。组合付款则把同一笔实际付款分配给多个账户，小票详情显示分配和合计。",
+              "An entry can have no account: it remains an entry without changing any account balance. Combined payments allocate one purchase across accounts, with allocations and totals in the receipt details."
+            ],
+            [
+              "转账先确认转出、转入账户。可用余额旁的「全部」按手续费和币种精度带入可转金额；跨币种时核对实际到账，不把它当成新增收入或支出。",
+              "For transfers, confirm source and destination. All fills the transferable balance with fees and currency precision taken into account. Check the actual received amount for cross-currency transfers; transfers are not new income or spending."
+            ]
+          ]
+        },
+        {
+          "tip": [
+            "以上日常记账功能免费。校准余额时，差额记账开关决定是否另记差额账单，保存前先确认。",
+            "These everyday logging tools are free. When reconciling a balance, check the adjustment-entry switch before saving to choose whether the difference becomes an entry."
+          ]
+        },
+        {
+          "related": [
+            "entry",
+            "assets",
+            "currency",
+            "pro"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "widgets",
+      "isNew": true,
+      "title": [
+        "桌面与锁屏小组件",
+        "Home and Lock Screen widgets"
+      ],
+      "lead": [
+        "用真实账本快照看支出、预算、资产和 FIRE。",
+        "See spending, budgets, assets and FIRE from your ledger snapshot."
+      ],
+      "blocks": [
+        {
+          "list": [
+            [
+              "桌面可添加今日支出、预算、净资产、FIRE 倒计时、财务总览，以及 v1.1 的资产晴雨表。晴雨表提供中、大尺寸，大尺寸补充各指标的计算数据。",
+              "Home Screen choices include spending, budget, net worth, FIRE countdown, overview and v1.1 asset weather. Asset weather has medium / large sizes, with calculation data in the large layout."
+            ],
+            [
+              "锁屏可放应急金和记一笔入口。应急金显示真实月数；记一笔只打开记账面板，等确认后才保存。",
+              "Lock Screen choices include runway and quick entry. Runway shows actual reserve months; quick entry opens the panel and saves only after confirmation."
+            ],
+            [
+              "App 在数据变化后生成新快照，并处理跨天和跨月；系统决定何时实际刷新小组件，因此不能保证每笔记完都立即更新。",
+              "Coast generates new snapshots after data changes and handles day / month changes. The system schedules actual widget refreshes, so an instant refresh after every entry is not guaranteed."
+            ],
+            [
+              "金额遵循对应的隐私设置。缺数据、缺汇率或尚未评估时展示占位与原因，不拿演示值当你的真实数据。",
+              "Amounts follow the relevant privacy settings. Missing data, rates or an unrated metric use placeholders / explanations rather than demo values."
+            ]
+          ]
+        },
+        {
+          "tip": [
+            "小组件免费；支持的尺寸和锁屏样式受设备与系统版本限制。",
+            "Widgets are free; available sizes and Lock Screen styles depend on device and OS version."
+          ]
+        },
+        {
+          "related": [
+            "asset-weather",
+            "sync",
+            "pro"
+          ]
+        }
+      ]
+    }
+  ]
+},
   {
     id: "idea",
     title: ["理念", "The idea"],
@@ -250,8 +531,6 @@ const GROUPS: Group[] = [
         lead: ["所有 FIRE 数字的分子。它准不准，决定了倒计时可不可信。", "The numerator of every FIRE number. Its accuracy decides whether the countdown means anything."],
         blocks: [
           { def: ["各账户余额加起来减去负债，再加上借出未收回、减去借入未还。余额以你最近一次对账为锚，叠加之后的全部流水；对账时的差额自动记为一笔「校准」。", "Account balances minus liabilities, plus money lent and not yet repaid, minus money borrowed. Balances start from your last reconcile and add every entry after it; any gap at reconcile time is recorded as a calibration."] },
-          { p: ["v1.1 新增个人资产晴雨表：在资产页查看各项财务指标，点开了解数值与计算依据。数据不足会显示待评估，不会当成风险结果；卡头可切换天气样式。也可以把晴雨表放到桌面小组件。", "v1.1 adds Personal Asset Weather: review financial metrics on Assets and open them for values and calculation details. Missing data is shown as unrated rather than a risk result. Change weather styles from the card header, or add an asset weather widget to your Home Screen."] },
-          { p: ["转账时先看转出账户的可用余额，点「全部」带入金额；有手续费或跨币种转账时，核对手续费与实际到账金额后再保存。组合付款可以把同一笔账分配给多个账户。", "When transferring, check the source account's available balance and tap All to fill the amount. Check fees and the actual amount received for cross-currency transfers before saving. Combined payments allocate one entry across multiple accounts."] },
           { fig: F.ReconcileFlow },
           { where: [[["资产页顶部", "Top of the Assets tab"], ["净资产与走势，点开查看资产变化和组成", "Net worth and trend; open for changes and breakdown"]], [["资产 → 右上角账户菜单 → 批量对账", "Assets → account menu at top right → Batch Reconcile"], ["一次填完所有账户的真实余额", "Enter all real balances at once"]], [["FIRE 页 · FI 进度卡", "FIRE tab · FI Progress"], ["「FI 本金」就是这个数，两页同源", "\"FI principal\" is the same number"]]] },
           { related: ["diff-assets", "assets", "c-countdown"] },
@@ -346,13 +625,12 @@ const GROUPS: Group[] = [
         blocks: [
           { fig: F.CategoryEvolution },
           { p: ["所以「吃饭」和「聚餐」要分开，「交通」和「打车」要分开，因为后一个是可以选择不花的。在 Coast 里，这体现为每个分类的「角色」。", "So keep meals apart from eating out and transit apart from taxis — the second of each is optional. In Coast, that's each category's role."] },
-          { tip: ["某一块花得多、想单独盯着（比如旅行、学习），就拆成独立的一级分类，角色仍然选「弹性」。", "If one area deserves its own trend line (travel, learning), make it a top-level category and keep its role as Flexible."] },
+          { tip: ["想按旅行、学习等自己的分法看账，可以使用 Pro 的自定义一级分类；FI 角色仍保留原有性质。", "For your own grouping, such as travel or learning, use Pro custom top-level categories; keep the original FI roles."] },
           { related: ["c-roles", "diff-categories"] },
         ],
       },
       {
         slug: "tags",
-        isNew: true,
         title: ["标签与分组", "Tags and tag groups"],
         lead: ["分类回答「钱花在什么上」，标签回答「为了什么事花的」。一笔账只有一个分类，但可以打好几个标签。", "Categories answer what the money went on; tags answer what it was for. An entry has one category but can carry several tags."],
         blocks: [
@@ -406,7 +684,11 @@ const GROUPS: Group[] = [
             ["不想每次都问？可以改成只确认金额、直接打开记账面板，或者不问直接记。", "Don't want to be asked every time? Switch to confirm-only, open the entry panel, or record without asking."],
             ["分类先按你教过的分类规则认商户（「瑞幸 = 咖啡饮品」这里也生效），认不出来记到你选的默认分类；账户按卡号尾号自动认，「零钱」「花呗」这类叫法在「账户匹配词」里补一个，都认不出时用你在设置里固定的账户。卡片上的账户按最近用过的排，上一笔用的就在最前面。", "Merchants are matched with your category rules first (\"Luckin = Coffee\" applies here too), otherwise your default category is used. Accounts are matched by card number; add words like \"Balance\" under Account Match Words, and if nothing matches, the account you set in Settings is used. On the card, accounts are ordered by recent use, so the last one is first."],
           ] },
-          { tip: ["认不出金额时不会记——宁可漏一笔，也不悄悄记错一笔。验证码、快递、促销这些不是付款的通知会静默跳过；外币通知也跳过，请手记。识别全在手机本地完成，截图和通知内容不上传。", "If the amount can't be read, nothing is recorded — better to miss one than to quietly get one wrong. Verification codes, deliveries and promotions are skipped, and so are foreign-currency notifications (log those by hand). Recognition is entirely on your iPhone; nothing is uploaded."] },
+          { tip: ["认不出金额时不会记——宁可漏一笔，也不悄悄记错一笔。验证码、快递、促销这些不是付款的通知会静默跳过；识别出的币种按原币保留，金额、币种或账户不确定时请先核对。识别全在手机本地完成，截图和通知内容不上传。", "If the amount can't be read, nothing is recorded — better to miss one than to quietly get one wrong. Verification codes, deliveries and promotions are skipped, recognized currencies are preserved, and uncertain amounts, currencies or accounts should be checked before saving. Recognition is entirely on your iPhone; nothing is uploaded."] },
+          { list: [
+            ["v1.1 快捷指令支持转账：分别确认转出和转入账户，跨币种时核对到账金额。截图识别到提现会打开面板确认双方账户，不直接当支出保存。", "v1.1 Shortcuts support transfers: confirm source and destination, and check the received amount across currencies. A recognized withdrawal opens the panel to confirm both accounts rather than saving it as spending."],
+            ["识别出的优惠作为附加项保留，实付金额仍是账单金额；余额、未完成付款、营销数字不会直接当作消费金额。原币金额也会传到确认流程中。", "Recognized discounts are kept as extras while the paid amount remains the entry amount. Balances, incomplete payments and promotional figures are not used directly as purchase amounts. Original currencies are carried into confirmation."],
+          ] },
           { p: ["想折腾的话：在快捷指令里点开 Coast 的记账动作 →「显示更多」，可以给某一条快捷指令单独指定收支方向、分类、账户、标签和备注，比如「公司卡」那条固定记到公司卡、打上「报销」标签。", "For tinkerers: in Shortcuts, open Coast's capture action → Show More to set direction, category, account, tags and note for that one shortcut — say, a Company Card shortcut that always uses that card and tags it Reimbursable."] },
         ],
       },
@@ -516,7 +798,7 @@ const GROUPS: Group[] = [
             ["账本里收入记得不全，或想按合同工资算？在设置里改成「自己填」每月到手收入。", "Income not fully recorded, or want to use your contract salary? Switch to Enter Manually in settings."],
           ] },
           { p: ["看板上会告诉你：这段时间的支出折合几个工作日、占了多少工作时间。每笔支出的详情页也会写「≈ 3.5 小时工作」；AA 的账只算你那份。", "The card shows how many workdays your spending took and its share of your working time. Every expense's detail page reads \"≈ 3.5 hours of work\" too — for splits, just your share."] },
-          { p: ["「想买的东西」清单和「记账时看工时」是 Pro：前者把想买的东西列进来，每样都标着要上多久的班；后者在记账面板的金额旁直接显示。", "The Wish List and Hours While Adding are Pro: the first lists things you're thinking of buying with the hours each costs; the second shows hours right next to the amount as you log."] },
+          { p: ["消费模拟器的自由日和工时试算免费；完整分析、冷静期与「忍住了 / 入手了」清单属于 Pro。「记账时看工时」也属于 Pro，时薪看板和账单详情里的工时仍免费。", "The spending simulator shows freedom-date impact and work hours for free. Full analysis, cooling-off periods and Skipped / Bought lists require Pro. Hours While Adding also requires Pro; the hourly-rate dashboard and hours on entry details remain free."] },
           { tip: ["想算「真实时薪」，把通勤、下班后回消息这些为工作花掉的时间也算进每月工时。算出来的数通常比你以为的低——这正是它有用的地方。", "For your real hourly rate, count commuting and after-hours messages as working time too. The number is usually lower than you'd think — which is exactly why it's useful."] },
           { related: ["data", "c-savings-rate"] },
         ],
@@ -545,7 +827,12 @@ const GROUPS: Group[] = [
             ["记账时选账户也按这个顺序、按类型分段排，常用的放前面就好找。", "When you pick an account while logging, it follows the same order, grouped by type — put the ones you use most first."],
             ["「不计入净资产」：编辑账户里打开这个开关，比如替家人管的卡、公司的备用金。余额照常显示、照常记账，但不进净资产、资产走势和 FIRE 的计算。钱在你手上，不等于是你的。", "Exclude from Net Worth: turn it on in Edit Account for things like a card you manage for family or petty cash from work. The balance still shows and you can still log to it, but it stays out of net worth, asset trends and FIRE. Money you hold isn't always money you own."],
           ] },
-          { p: ["点进一个账户，详情页有两块新内容：", "Open an account and its details page now has two more sections:"] },
+          { list: [
+            ["账户分组免费：在 FI 分组（默认）和我的分组间切换，进入账户分组管理可新建、归组和排序。显示分组不改变账户的 FI 属性。", "Account groups are free: switch between FI groups (default) and My Groups, then create, assign and order groups in account-group management. Display groups do not change FI account properties."],
+            ["信用卡概览免费：设置额度、账单日和还款日，查看可用额度、本期已刷与还款相关信息；这不是银行自动扣款或自动还款。", "Credit-card overviews are free: set a limit, statement day and due day, then review available credit, cycle spending and repayment information. This does not initiate bank payments or automatic repayment."],
+            ["投资账户的持仓、查价、本金与收益需要 Pro；普通账户的每月进出、余额走势和备注免费。", "Holdings, price lookup, contributions and investment returns require Pro; monthly account flows, balance history and notes are free."],
+          ] },
+          { p: ["点进一个账户，下面分「账单 / 概览 / 备注」三个页签；概览按账户类型提供信息：", "An account has Entries / Overview / Notes tabs, with an overview tailored to its type:"] },
           { list: [
             ["余额走势：近 12 个月每月月底的余额，按账户自己的币种画，不折算——美元账户折成人民币，就会混进汇率的涨跌。", "Balance Trend: the month-end balance for the last 12 months, in the account's own currency — converting a USD account to CNY would mix in exchange-rate swings."],
             ["校准记录：每次对账的日期、对账后的余额、对账前算出来的余额，以及差了多少。差得多的那几次，往往就是漏记的那几个月。长按可以删除一次校准（会改变余额，先确认）。", "Reconciliations: the date of each one, the balance you set, what Coast expected beforehand, and the difference. The big gaps usually mark the months you missed entries. Long-press to delete a reconciliation (it changes the balance, so you'll be asked first)."],
@@ -566,16 +853,16 @@ const GROUPS: Group[] = [
         blocks: [
           { img: "fire", cap: ["FIRE 页：距离财务自由（标准 FI）", "The FIRE tab: time to financial independence (standard FI)"] },
           { cardmap: [
-            [["自由倒计时", "Freedom countdown"], ["还要多久？下面一行是悲观到乐观的区间", "How long? The range sits underneath"], "c-countdown"],
-            [["试算", "What-If"], ["少花多少、多赚多少，自由日怎么动", "What if you spent less or earned more?"], "countdown"],
+            [["自由倒计时", "Freedom countdown"], ["免费显示中性倒计时；三档区间属于 Pro", "Neutral countdown is free; forecast ranges require Pro"], "c-countdown"],
+            [["试算", "What-If"], ["少花多少、多赚多少，自由日怎么动（Pro）", "What if you spent less or earned more? (Pro)"], "countdown"],
             [["FI 进度", "FI Progress"], ["Lean FI 和标准 FI 两条线，已经走了多远", "How far along the Lean and Standard lines"], "c-lean"],
             [["Coast FIRE 线", "Coast FIRE line"], ["还需不需要为退休继续存钱（Pro）", "Do you still need to save for retirement? (Pro)"], "c-coast"],
             [["Barista FIRE 目标", "Barista FIRE Goal"], ["有兼职托底时要攒多少（Pro）", "How much with a part-time job (Pro)"], "c-barista"],
             [["场景模拟", "Scenarios"], ["大决定并排比一比（Pro）", "Compare big decisions side by side (Pro)"], "scenarios"],
-            [["本月储蓄率", "Savings Rate"], ["这个月留下了多少", "How much you kept this month"], "c-savings-rate"],
+            [["本月储蓄率", "Savings Rate"], ["近 12 月平均储蓄率与本月值", "Trailing 12-month average and current-month value"], "c-savings-rate"],
             [["被动收入覆盖率", "Passive Income Coverage"], ["不上班，钱还在不在进来", "Is money coming in without work?"], "c-passive"],
           ] },
-          { tip: ["卡片的顺序和显示与否可以在「设置 → FIRE 页模块」里调；每张卡标题旁的 ⓘ 是它的完整解释。", "Reorder or hide cards in Settings → FIRE Tab Modules; the ⓘ next to each title has the full explanation."] },
+          { tip: ["卡片的顺序和显示与否可以在「设置 → FIRE 页模块」里调；点开卡片可看完整指标、计算依据与图解。", "Reorder or hide cards in Settings → FIRE Tab Modules; open a card for full metrics, calculations and diagrams."] },
         ],
       },
       {
@@ -583,19 +870,21 @@ const GROUPS: Group[] = [
         title: ["倒计时与试算", "Countdown and What-If"],
         lead: ["最大的数字不是余额，是「还有几年几个月」。更好玩的是：它会跟着你的手指动。", "The biggest number isn't a balance; it's years and months to go. Better still, it moves under your finger."],
         blocks: [
+          { p: ["App 的收支试算滑杆属于 Pro，中性倒计时免费。以下网页演示用于理解影响方向，不会修改你的账本。", "In the app, What-If sliders require Pro; the neutral countdown is free. The web demo below explains the effect without changing your ledger."] },
           { p: ["拖一拖「试算」的两个滑块：每月少花 1000 能提前多久？收入涨两成呢？", "Drag the two What-If sliders: how much sooner if you spend ¥1,000 less a month? What about a 20% raise?"] },
           { fig: F.WhatIf },
           { tip: ["同样拖 10%，试试「少花」和「多赚」哪个让自由日提前得更多。", "Drag both by 10% and see which moves the date more — spending less or earning more."] },
-          { related: ["c-countdown", "c-savings-rate", "c-return"] },
+          { related: ["c-countdown", "c-savings-rate", "c-return", "pro"] },
         ],
       },
       {
         slug: "scenarios",
-        title: ["场景模拟：给大决定一个冷静期", "Scenarios: a cooling-off period for big decisions"],
+        title: ["场景模拟：把不同方案并排比", "Scenarios: compare different paths"],
         lead: ["买车、换城市、跳槽、买房——把它们加成场景，和现状并排比一比。", "A car, a move, a new job, a home — add them as scenarios and compare side by side."],
         blocks: [
           { fig: F.ScenarioCompare },
-          { p: ["想买的东西先放进来，看看它换算成自由日的代价，过几天再决定。很多「非买不可」，过几天就没那么想要了。", "Put the thing you want in first, see its price in time, decide in a few days. Plenty of must-haves stop feeling that way after a week."] },
+          { related: ["spending", "pro"] },
+          { p: ["场景模拟属于 Pro：填写具体的收入、支出和资产变动金额，保存方案并排比较。单件商品或每月订阅的试算与冷静期清单，请使用独立的消费模拟器。", "Scenario simulation requires Pro: enter actual income, spending and asset changes, then save and compare scenarios. Use the separate spending simulator for purchases, monthly subscriptions and cooling-off lists."] },
         ],
       },
     ],
@@ -607,18 +896,17 @@ const GROUPS: Group[] = [
       {
         slug: "sync",
         title: ["同步、备份与隐私", "Sync, backups and privacy"],
-        lead: ["没有账号、没有服务器、没有追踪。你的账只在你自己手里。", "No account, no server, no tracking. Your books stay yours."],
+        lead: ["无需另建 Coast 账号，账本在设备与私人 iCloud 中。公开数据查询和购买验证的联网范围见隐私政策。", "No separate Coast account. Your ledger stays on device and in private iCloud; see the Privacy Policy for public-data requests and purchase validation."],
         blocks: [
           { fig: F.PrivacyDiagram },
           { list: [
-            ["开启 iCloud 同步后，iPhone、iPad、Mac 之间自动同步，另一台设备上记的账几秒内就到，不用重开 App（设置 → iCloud 同步详情里能看到「实时推送」是否已开启）。iPad 和 Mac 上是铺满全屏的大屏布局，见「在 iPad 上用」。", "With iCloud sync on, iPhone, iPad and Mac stay in step — entries from another device arrive within seconds, no relaunch needed (Settings → iCloud Sync Details shows whether Live Push is on). iPad and Mac use a full-screen layout — see Using Coast on iPad."],
+            ["开启 iCloud 同步后，iPhone、iPad、Mac 之间自动同步，数据会自动同步，无需靠重启触发；具体到达时间受网络、iCloud 和系统调度影响（设置 → iCloud 同步详情里能看到「实时推送」是否已开启）。iPad 和 Mac 上是铺满全屏的大屏布局，见「在 iPad 上用」。", "With iCloud sync on, iPhone, iPad and Mac stay in step — entries sync without relaunching; timing depends on the network, iCloud and system scheduling (Settings → iCloud Sync Details shows whether Live Push is on). iPad and Mac use a full-screen layout — see Using Coast on iPad."],
             ["在别人面前打开 App？点眼睛图标隐藏金额；或者在设置里打开「后台模糊」，切到多任务界面时整屏糊掉。", "Around other people? Tap the eye to hide amounts, or turn on Blur in background so the app switcher shows nothing."],
           ] },
         ],
       },
       {
         slug: "ipad",
-        isNew: true,
         title: ["在 iPad 上用", "Using Coast on iPad"],
         lead: ["iPad 上 Coast 用满整块屏：左边一条窄图标栏，右边按页面分成两栏或几列。", "On iPad, Coast uses the whole screen: a slim icon bar on the left, and each tab split into panes or columns."],
         blocks: [
@@ -634,7 +922,6 @@ const GROUPS: Group[] = [
       },
       {
         slug: "currency",
-        isNew: true,
         title: ["多币种与汇率", "Currencies and exchange rates"],
         lead: ["出国、外币账户、海外订阅，都按真实汇率折算，而且算不出来时会告诉你。", "Travel, foreign accounts, overseas subscriptions — all converted at real rates, and you're told when a rate is missing."],
         blocks: [
@@ -654,6 +941,8 @@ const GROUPS: Group[] = [
         lead: ["设置找得到，App 也可以长成你喜欢的样子。", "Find any setting fast, and make the app look the way you like."],
         blocks: [
           { list: [
+            ["v1.1 可在 App 内调字号，并在主导航设置里调整账单、资产、数据、FIRE 的顺序。账户图标可搜索 App 图标，这些功能免费。", "v1.1 adds in-app text sizing, ordering of Entries / Assets / Data / FIRE in navigation settings, and app-icon search for account icons. These are free."],
+            ["FIRE 进度和空状态新增小火人反馈；首次引导展示记账、资产与 FIRE 的关系。老用户升级可看到更新介绍，在设置里也能重看。", "New Flame feedback appears with FIRE progress and empty states. Onboarding connects entries, assets and FIRE; returning users can revisit the update introduction in Settings."],
             ["设置分成记账、分类与币种、预算与目标、外观、通用、支持六组，顶部有搜索框：搜「汇率」「默认账户」「图标」都能直达那一页。", "Settings is grouped into six sections with a search field on top — search \"exchange rate\", \"default account\" or \"icons\" to jump straight there."],
             ["设置 → 外观 → 图标：分类图标的底座可以换成圆形、圆角方形、叶片、水滴或花朵；「我的图标」上传自己的图片，相册里一次最多选 30 张；有整套图标就用「从文件夹导入」，文件名直接当图标名，一次最多 200 张。", "Settings → Appearance → Icons: give category icons a circle, rounded square, leaf, drop or flower backing; upload your own images under My Icons, up to 30 at a time from Photos — or use Import from Folder for a whole icon set, named after each file, up to 200 at a time."],
             ["记账偏好里可以分别设支出、收入的默认账户；切到「收入」时，记账面板会换成收入的那个。", "In Entry Preferences, set separate default accounts for spending and income; switching to Income in the entry panel uses the income one."],
@@ -676,7 +965,7 @@ const PAGES = GROUPS.flatMap((g) => g.pages.map((p) => ({ ...p, group: g.id })))
 const BY_SLUG = new Map(PAGES.map((p) => [p.slug, p]))
 const slugFromHash = () => {
   const h = decodeURIComponent(window.location.hash.slice(1))
-  return BY_SLUG.has(h) ? h : PAGES[0].slug
+  return BY_SLUG.has(h) ? h : "fire"
 }
 
 function Nav({ current, open, toggle, onPick }: { current: string; open: Set<string>; toggle: (id: string) => void; onPick?: () => void }) {

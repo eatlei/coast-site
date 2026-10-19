@@ -1,4 +1,5 @@
 import * as React from "react"
+import { V11_HIGHLIGHTS } from "@/content/product"
 import { Shuffle } from "lucide-react"
 import { DocPage } from "@/components/site/Shell"
 import { BASE, useLang } from "@/lib/i18n"
@@ -13,19 +14,16 @@ const VERSIONS: Version[] = [
   {
     v: "1.1.0",
     date: ["2026 年 10 月", "Oct 2026"],
-    intro: ["看清每一笔，算好下一步。从账户资产，到财务自由，常用的每一步都更顺手。", "See every entry clearly and plan your next step. From accounts and assets to financial freedom, everyday tasks feel smoother."],
+    intro: ["从账户管理到花钱前的决定：新增个人资产晴雨表、账户分组、信用卡概览、投资持仓、自定义分类和消费模拟器，补齐到账记录与锁屏入口。日常记账能力继续免费；投资持仓与收益、自定义一级分类属于 Pro，消费模拟器的基础结果免费、完整分析与冷静期属于 Pro。", "From account management to spending decisions: personal asset weather, account groups, credit-card overviews, holdings, custom categories, a spending simulator, received-payment records and new Lock Screen choices. Everyday logging remains free. Holdings / returns and custom top-level categories require Pro; basic spending-simulation results are free, while full analysis and cooling-off tools require Pro."],
     sections: [
-      { title: ["重点升级", "Highlights"], items: [
-        ["个人资产晴雨表", "从资产页查看财务状况，各项指标保留自己的数值与计算口径；数据不足时显示待评估。天气图标支持切换样式。", "Personal asset weather", "Review your financial health on Assets, with each metric's own value and calculation. Missing data is shown as unrated. Weather icons support different styles."],
-        ["账户与资产", "支持投资持仓、组合付款与余额校准，梳理账户里的钱和资产变化。", "Accounts and assets", "Investment holdings, combined payments and balance reconciliation help you keep track of your money and changes in your assets."],
-        ["FIRE 与模拟器", "FI、Coast、Barista FIRE 进度更清晰，结合场景与消费模拟比较不同选择。", "FIRE and simulators", "Clearer FI, Coast and Barista FIRE progress, with scenario and spending simulations to compare your choices."],
-        ["资产晴雨表小组件", "新增资产晴雨表小组件，改进桌面与锁屏组件的显示。", "Asset weather widgets", "New asset weather widgets, with improved Home Screen and Lock Screen displays."],
-      ] },
-      { title: ["日常体验", "Everyday improvements"], items: [
-        ["转账更清楚", "显示转出账户可用余额，支持全部选择；手续费与跨币种实际到账信息更清楚。", "Clearer transfers", "See the available balance and select the full amount. Fees and the actual amount received across currencies are clearer."],
-        ["截图与通知记账", "改进金额、收支方向与账户识别。", "Screenshot and notification capture", "Improved recognition of amounts, income versus expenses, and accounts."],
-        ["账单管理", "分类切换、归档标签调整更顺手，支持 AA、退款与报销。", "Entry management", "Smoother category switching and archived-tag handling, with splits, refunds and reimbursements."],
-        ["新版引导与更新介绍", "新用户通过连续演示了解 Coast；老用户首次打开新版可查看更新介绍，也能在设置中重看。", "Onboarding and release notes", "A continuous walkthrough introduces Coast to new users. Returning users can view what's new on first launch and revisit it in Settings."],
+      { title: ["新功能与升级", "New features and upgrades"], items: V11_HIGHLIGHTS.map((feature): Item => [feature.title[0] + (feature.pro ? "（Pro）" : ""), feature.body[0], feature.title[1] + (feature.pro ? " (Pro)" : ""), feature.body[1]]) },
+      { title: ["日常体验与修复", "Everyday improvements and fixes"], items: [
+        ["FIRE 指标、图解与小火人", "新增与真实进度对应的小火人反馈和空状态形象。FI、Coast、Barista 的摘要显示真实目标与完成比例，详情补齐计算依据与图解；储蓄率同时看近 12 月平均和本月值。", "FIRE metrics, explanations and Flame", "New Flame feedback and empty states reflect actual progress. FI, Coast and Barista summaries show explicit targets and progress, with calculations and diagrams in details. Savings rate shows both the trailing 12-month average and current month."],
+        ["本月概览与模块整理", "收支概览和记账活跃度跟随所选月份，年和全部视图隐藏；模块排序、显隐和主导航顺序可按习惯调整。", "Monthly overviews and module organization", "Income / spending and logging-activity overviews follow the selected month and are hidden in Year / All views. Reorder or hide modules and customize main navigation order."],
+        ["记账面板与原生表单", "改进金额键盘与账户选择；编辑表单统一为原生分组行，持仓份额与单价保留所需小数精度。", "Entry panel and native forms", "Improved amount keypad and account selection, native grouped editing forms, and preserved decimal precision for holding units and prices."],
+        ["模板、计划与标签", "模板和计划的记账能力对齐，保留标签；分类支持批量归组，归档标签可就地移除。", "Templates, plans and tags", "Templates and plans share entry capabilities and keep their tags. Categories support batch grouping; archived tags can be removed in place."],
+        ["小组件的数据与隐私", "App 在数据变化后发布快照，处理跨天、跨月和币种口径；缺数据使用真实占位。实际刷新时间由系统安排。", "Widget data and privacy", "Snapshots reflect data changes, day / month boundaries and currency scope. Missing data uses placeholders; the system schedules actual refreshes."],
+        ["新版引导与更新介绍", "新用户通过连续叙事了解记账、资产和 FIRE；老用户首次升级可查看本次更新，也能在设置重看。", "Onboarding and update introduction", "A continuous walkthrough connects entries, assets and FIRE. Returning users can view the update introduction on upgrade and revisit it in Settings."],
       ] },
     ],
   },

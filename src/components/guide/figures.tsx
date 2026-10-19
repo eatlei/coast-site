@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { COMPARISON } from "@/content/product"
 import { Slider } from "@/components/ui/slider"
 import { NumberInput } from "@/components/site/NumberInput"
 import { useLang } from "@/lib/i18n"
@@ -608,13 +609,13 @@ export function PrivacyDiagram() {
     <div className={`rounded-xl p-4 text-center ${cls}`}><div className="text-2xl">{e}</div><div className="mt-1 font-medium">{h}</div><div className="mt-1 text-[12px] text-muted-foreground">{d}</div></div>
   )
   return (
-    <Fig caption={t("数据只在你的设备和你自己的 iCloud 之间走；每日备份是另一条独立的路，同步出了问题也能整体恢复。", "Data only travels between your devices and your own iCloud. Daily backups are a separate path, so you can restore even if sync goes wrong.")}>
+    <Fig caption={t("账本在设备与私人 iCloud 间同步，不发送给开发者；每日备份可用于恢复。公开数据查询和购买服务的联网范围见隐私政策。", "Your ledger syncs between your devices and private iCloud, not to the developer. Daily backups support recovery; public-data and purchase-service requests are described in the Privacy Policy.")}>
       <div className="grid items-center gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
         <Box e="📱💻" h={t("你的设备", "Your devices")} d="iPhone · iPad · Mac" cls="bg-muted/60" />
         <div className="text-center text-muted-foreground">⇄</div>
         <Box e="☁️" h={t("你的 iCloud", "Your iCloud")} d={t("私有数据库，只有你的 Apple 账户能读", "Private database only your Apple account can read")} cls="bg-primary/8 ring-1 ring-primary/20" />
         <div className="text-center text-muted-foreground">✕</div>
-        <Box e="🗄️" h={t("Coast 的服务器", "Coast's servers")} d={t("不存在。没有账号，也没有追踪", "Don't exist. No account, no tracking")} cls="border border-dashed border-border opacity-70" />
+        <Box e="🗄️" h={t("Coast 的服务器", "Coast's servers")} d={t("不接收你的账单", "Does not receive your ledger")} cls="border border-dashed border-border opacity-70" />
       </div>
       <div className="mt-5">
         <div className="mb-2 text-xs text-muted-foreground">{t("每日自动备份 · 保留最近 10 份 · 在「文件」App → iCloud 云盘 → Coast", "Daily backups · latest 10 kept · Files → iCloud Drive → Coast")}</div>
@@ -625,28 +626,13 @@ export function PrivacyDiagram() {
 }
 
 export function ProTable() {
-  const { t } = useLang()
-  const Y = <span className="text-success">●</span>, N = <span className="text-muted-foreground/40">—</span>
-  const rows: [string, React.ReactNode, React.ReactNode][] = [
-    [t("记账、模板、快捷记账（截图 / 通知）、批量修改、导入、AA 分账、报销、计划", "Logging, templates, Quick Capture (screenshot / notification), batch edit, import, splits, claims, plans"), Y, Y],
-    [t("总预算、首页的消费节奏", "Total budget, Spending Pace on the home card"), Y, Y],
-    [t("自由倒计时、试算滑块、FI 进度、储蓄率、被动收入覆盖率", "Freedom countdown, What-If sliders, FI Progress, Savings Rate, Passive Income Coverage"), Y, Y],
-    [t("iCloud 同步、每日备份、iPad 与 Mac", "iCloud sync, daily backups, iPad & Mac"), Y, Y],
-    [t("多币种与每日汇率", "Multi-currency and daily rates"), Y, Y],
-    [t("时薪换算看板、账单详情里的工时", "Hours of Work card, hours on entry details"), Y, Y],
-    [t("投资持仓（按份额记、查最新价）", "Investment holdings (units and latest prices)"), N, Y],
-    [t("场景模拟、达成区间", "Scenarios, achievement range"), N, Y],
-    [t("Coast FIRE、Barista FIRE、高级 FI 参数", "Coast FIRE, Barista FIRE, advanced FI parameters"), N, Y],
-    [t("分类预算、预算页的配速推演", "Category budgets, pace projection on the budget page"), N, Y],
-    [t("完整月度回顾、常买", "Full Monthly Review, Repeat Buys"), N, Y],
-    [t("想买的东西值几小时、记账时看工时", "Wish list in hours, hours while adding"), N, Y],
-    [t("主题配色与 App 图标", "Themes and app icons"), N, Y],
-  ]
+  const { t, lang } = useLang()
+  const pick = (copy: [string, string]) => copy[lang === "zh" ? 0 : 1]
   return (
-    <Fig>
-      <table className="w-full text-sm">
-        <thead><tr className="text-left text-xs text-muted-foreground"><th className="pb-2 font-normal" /><th className="w-16 pb-2 text-center font-normal">{t("免费", "Free")}</th><th className="w-16 pb-2 text-center font-normal">Pro</th></tr></thead>
-        <tbody>{rows.map(([a, f, p]) => <tr key={a} className="border-t border-border"><td className="py-2.5 pr-3">{a}</td><td className="py-2.5 text-center">{f}</td><td className="py-2.5 text-center">{p}</td></tr>)}</tbody>
+    <Fig caption={t("v1.1 权限对比。符合历史免费权益的用户，完整月报、复购洞察和分类预算按 App 内保留权益执行。", "v1.1 access comparison. Eligible legacy users retain full reviews, repeat-buy insights and category budgets as shown in the app.")}>
+      <table className="w-full table-fixed text-sm">
+        <thead><tr className="text-left text-xs text-muted-foreground"><th scope="col" className="pb-3 font-normal">{t("功能", "Feature")}</th><th scope="col" className="w-[25%] pb-3 text-center font-normal">{t("免费", "Free")}</th><th scope="col" className="w-[25%] pb-3 text-center font-normal">Pro</th></tr></thead>
+        <tbody>{COMPARISON.map((row) => <tr key={row.label[0]} className="border-t border-border align-top"><th scope="row" className="py-3 pr-3 text-left font-normal">{pick(row.label)}</th><td className="px-1 py-3 text-center text-muted-foreground">{row.free ? pick(row.free) : <span aria-label={t("不包含", "Not included")}>—</span>}</td><td className="px-1 py-3 text-center font-medium">{pick(row.pro)}</td></tr>)}</tbody>
       </table>
     </Fig>
   )
@@ -835,7 +821,7 @@ export function ReturnTiers() {
   })
   const max = Math.max(...months)
   return (
-    <Fig caption={t("演示账本：月支出 1.2 万、月储蓄 8000、净资产 80 万。倒计时显示中性档；点开数字下面那行，能看到悲观到乐观的年份区间。", "Demo ledger: ¥12k spending, ¥8k saved a month, ¥800k net worth. The countdown uses Neutral; tap the line under it for the pessimistic-to-optimistic range.")}>
+    <Fig caption={t("演示账本：月支出 1.2 万、月储蓄 8000、净资产 80 万。倒计时显示中性档；Pro 可看悲观到乐观的年份区间与收支试算。", "Demo ledger: ¥12k spending, ¥8k saved a month, ¥800k net worth. The countdown uses Neutral; Pro adds the pessimistic-to-optimistic range and What-If sliders.")}>
       <div className="space-y-2.5">
         {tiers.map(([n, r], i) => (
           <div key={n} className="grid grid-cols-[96px_1fr_92px] items-center gap-3 text-sm">

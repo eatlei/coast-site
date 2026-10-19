@@ -206,7 +206,7 @@ function Themes() {
   })
   return (
     <div ref={root} className="flex h-11 items-center gap-2">
-      {["#007AFF", "#D9538E", "#111111", "#2A9D5C", "#F0A020", "#7C5CFF"].map((c) => <span key={c} className="sw size-4 rounded-full" style={{ background: c }} />)}
+      {["#007AFF", "#D9538E", "#111111"].map((c) => <span key={c} className="sw size-4 rounded-full" style={{ background: c }} />)}
     </div>
   )
 }
