@@ -121,7 +121,7 @@ function Hero() {
 
 /* ---------- 功能四屏：桌面端 pin 住整段，滚动切屏 ---------- */
 const FEATURES = [
-  { img: "fire-pro", zh: ["自由倒计时", "首页最大的数字不是余额，是「还有 14 年 11 个月」。拖动试算滑杆，它实时重算。"], en: ["Freedom countdown", "The biggest number isn't a balance. It's \"14 years, 11 months to go,\" and it moves as you drag the sliders."] },
+  { img: "fire-pro", zh: ["自由倒计时", "FIRE 页直接显示距离财务自由还有多久。展开试算，调整收入与支出，倒计时实时重算。"], en: ["Freedom countdown", "The FIRE tab shows how long until financial freedom. Expand What-If and adjust income or spending to recalculate the countdown."] },
   { img: "ledger", zh: ["复杂的钱也记得清", "AA、报销、分次退款、组合支付、分期、周期账单，都有自己的位置。"], en: ["The messy stuff, handled", "Splits, reimbursements, partial refunds, installments, recurring bills. Each has a place."] },
   { img: "assets", zh: ["资产看趋势", "现金、投资、不动产、负债分开算。新增资产晴雨表，结合持仓、组合付款与余额校准，看清财务状况。"], en: ["Net worth as a trend", "Cash, investments, property and debt, with asset weather, holdings, combined payments and balance reconciliation."] },
   { img: "budget", zh: ["预算看节奏", "月中就知道会不会超。建议额度按你真实花过的来，不是拍脑袋。"], en: ["Budget by pace", "Know mid-month if you'll go over. Limits from what you actually spent, not a guess."] },
@@ -161,10 +161,10 @@ function Features() {
             })}
           </ol>
         </div>
-        <div className="relative mx-auto h-[600px] w-[304px]">
+        <div className="relative mx-auto h-[640px] w-[304px]">
           {FEATURES.map((f, i) => (
             <div key={f.img} className="absolute inset-0 transition-opacity duration-500" style={{ opacity: i === active ? 1 : 0 }} aria-hidden={i !== active}>
-              <Device src={screen(f.img, lang)} width={280} />
+              <Device src={screen(f.img, lang)} alt={lang === "zh" ? f.zh[0] : f.en[0]} width={280} />
             </div>
           ))}
         </div>
@@ -447,12 +447,12 @@ function More() {
 
 /* ---------- 截图带：桌面端竖向滚动驱动横向平移 ---------- */
 const SHOTS = [
-  ["fire-pro", "FIRE 页 · Coast FIRE 线", "FIRE · Coast FIRE line"],
+  ["fire-pro", "FIRE 页 · 收支试算", "FIRE · What-If"],
   ["budget", "预算 · 消费节奏", "Budget · pace"],
   ["recurring", "周期账单识别", "Recurring detection"],
   ["ledger", "账单首页", "Ledger"],
   ["templates", "记账模板", "Templates"],
-  ["assets", "资产组成", "Asset composition"],
+  ["assets", "资产概览与晴雨表", "Assets & financial weather"],
 ]
 function Shots() {
   const { lang, t } = useLang()
@@ -477,7 +477,7 @@ function Shots() {
         <div ref={track} className="no-scrollbar mt-8 flex gap-8 overflow-x-auto px-6 pb-4 md:overflow-visible md:px-10">
           {SHOTS.map(([img, zh, en]) => (
             <figure key={img} className="w-[220px] shrink-0">
-              <Device src={screen(img, lang)} width={200} />
+              <Device src={screen(img, lang)} alt={lang === "zh" ? zh : en} width={200} />
               <figcaption className="tag mt-4 text-center">{lang === "zh" ? zh : en}</figcaption>
             </figure>
           ))}

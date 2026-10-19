@@ -40,7 +40,7 @@ export function useLang() {
 export const BASE = import.meta.env.BASE_URL
 export const asset = (name: string) => `${BASE}assets/${name}`
 /** 手机截图按语言分两套：screen-<name>.zh.webp / .en.webp */
-export const screen = (name: string, lang: Lang) => `${BASE}assets/screen-${name}.${lang}.webp`
+export const screen = (name: string, lang: Lang) => `${BASE}assets/screen-${name}.${lang}.webp?v=1.1-20261019`
 export const APP_STORE = "https://apps.apple.com/cn/app/id6793885422"
 export const MAIL = "hi@thisleon.com"
 /** 联系方式：首页「联系我」和页脚共用这一份，改一处即可 */
