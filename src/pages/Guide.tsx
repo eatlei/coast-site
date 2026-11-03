@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react"
-import { ChevronDown, ChevronLeft, ChevronRight, ListTree, MapPin } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { ChevronDown, ChevronLeft, ChevronRight, ListTree, MapPin, Search } from "lucide-react"
 import { Device, Footer, Header } from "@/components/site/Shell"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
@@ -21,6 +21,8 @@ type Block =
   | { p: L }
   | { tip: L }
   | { list: L[] }
+  | { steps: L[] }
+  | { table: { headers: L[]; rows: L[][] } }
   | { img: string; cap: L }
   | { fig: React.ComponentType }
   | { def: L }
@@ -38,15 +40,465 @@ const MORE_INFO: L = ["点开 FIRE 页的指标卡片，可看完整解释：它
 
 const GROUPS: Group[] = [
 {
+  "id": "v1-1-1",
+  "title": [
+    "v1.1.1（测试中）",
+    "v1.1.1 · In testing"
+  ],
+  "pages": [
+    {
+      "slug": "v1-1-1",
+      "title": [
+        "v1.1.1：从这里开始",
+        "v1.1.1: start here"
+      ],
+      "lead": [
+        "把新功能放进日常记账：选好周期、处理到期计划，再给账单留下完整记录。",
+        "Put the updates into everyday use: choose a cycle, review due plans and keep complete bill records."
+      ],
+      "blocks": [
+        {
+          "cardmap": [
+            [
+              [
+                "记账周期与日历",
+                "Cycles and calendar"
+              ],
+              [
+                "按自己的起始日看账",
+                "Track using your own start day"
+              ],
+              "accounting-period"
+            ],
+            [
+              [
+                "月、季、年预算",
+                "Period budgets"
+              ],
+              [
+                "额度、结转和智能方案",
+                "Limits, carryover and smart plans"
+              ],
+              "budget"
+            ],
+            [
+              [
+                "计划入账与识别待办",
+                "Booking and capture inbox"
+              ],
+              [
+                "到期后确认，异常时处理",
+                "Review due entries and resolve issues"
+              ],
+              "booking-confirmation"
+            ],
+            [
+              [
+                "账单笔记",
+                "Bill notes"
+              ],
+              [
+                "文字和照片与简短备注分开",
+                "Keep text and photos separate from short notes"
+              ],
+              "bill-notes"
+            ],
+            [
+              [
+                "记账偏好与草稿",
+                "Preferences and drafts"
+              ],
+              [
+                "键盘、快捷操作和历史备注",
+                "Keypad, quick actions and previous notes"
+              ],
+              "entry-preferences"
+            ],
+            [
+              [
+                "账户与校准",
+                "Accounts and reconciliation"
+              ],
+              [
+                "从账户记账，看清余额依据",
+                "Add from accounts and understand balances"
+              ],
+              "reconciliation"
+            ]
+          ]
+        },
+        {
+          "p": [
+            "日常记账、账单笔记、账户基础操作继续免费。自定义每月起始日属于 Pro；预算仍是总预算免费、分类预算与配速推演属于 Pro。",
+            "Everyday entries, bill notes and basic account actions remain free. A custom accounting start day requires Pro; total budgets are free, while category budgets and pace projections require Pro."
+          ]
+        },
+        {
+          "related": [
+            "home",
+            "entry",
+            "account-detail",
+            "pro"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "accounting-period",
+      "title": [
+        "记账周期：按自己的节奏",
+        "Accounting cycles: your own rhythm"
+      ],
+      "lead": [
+        "发薪日不是月初，也可以让账单、统计和预算按同一个周期看。",
+        "If payday is not the first, your ledger, statistics and budgets can still share one cycle."
+      ],
+      "blocks": [
+        {
+          "where": [
+            [
+              [
+                "设置 → 记账偏好 → 记账周期",
+                "Settings → Entry Preferences → Accounting Cycle"
+              ],
+              [
+                "选择每月起始日并应用",
+                "Choose and apply a monthly start day"
+              ]
+            ]
+          ]
+        },
+        {
+          "steps": [
+            [
+              "默认每月 1 日免费。Pro 可选择 1—31 日，确认应用后，相关页面按新周期重新归组。",
+              "The default start on day 1 is free. Pro lets you choose days 1–31; apply it to regroup the relevant views."
+            ],
+            [
+              "账单页右上角「⋯」选择月、季、半年或年；左右箭头翻到相邻周期，点击标题可选择具体月份、季度、半年或年份。",
+              "On Entries, use the top-right menu to choose month, quarter, half-year or year. Arrows move between periods; tap the title to choose a specific one."
+            ],
+            [
+              "预算页分别选择月、季或年。账单展示的半年视图不创建半年预算，也不会自动放大已有预算。",
+              "Choose month, quarter or year separately on Budget. The half-year ledger view does not create a half-year budget or scale an existing limit."
+            ]
+          ]
+        },
+        {
+          "table": {
+            "headers": [
+              [
+                "设置与名称",
+                "Setting and label"
+              ],
+              [
+                "包含的日期",
+                "Dates included"
+              ]
+            ],
+            "rows": [
+              [
+                [
+                  "每月 5 日起 · 2026 年 10 月",
+                  "Start day 5 · October 2026"
+                ],
+                [
+                  "10 月 5 日—11 月 4 日",
+                  "October 5–November 4"
+                ]
+              ],
+              [
+                [
+                  "每月 31 日起 · 2026 年 11 月",
+                  "Start day 31 · November 2026"
+                ],
+                [
+                  "10 月 31 日—11 月 29 日",
+                  "October 31–November 29"
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "p": [
+            "1—15 日起算按开始月命名，16—31 日起算按次月命名。遇到二月等短月，当期起始日落在月末，下个长月再恢复你选的日期。",
+            "Cycles starting on days 1–15 use the starting month name; days 16–31 use the following month. A short month uses its last day, then the chosen day returns in a longer month."
+          ]
+        },
+        {
+          "p": [
+            "修改起始日只改变归组范围，不改真实账单日期、账户余额或计划扣款日。Pro 到期后保留已生效的周期；免费用户也可以恢复每月 1 日。",
+            "Changing the start day changes grouping, not entry dates, account balances or scheduled payment dates. An existing custom cycle stays in effect after Pro expires; free users can return to day 1."
+          ]
+        },
+        {
+          "related": [
+            "calendar",
+            "budget",
+            "home",
+            "data",
+            "pro"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "calendar",
+      "title": [
+        "日历：选好一天再记",
+        "Calendar: choose a day, then log"
+      ],
+      "lead": [
+        "在日期上看消费，也从日期上开始记账。",
+        "Read spending by date, and start an entry from that date."
+      ],
+      "blocks": [
+        {
+          "steps": [
+            [
+              "先把账单页切到「月」，再打开收支日历。季、半年和年视图不提供日历；切回月后可重新开启。",
+              "Switch Entries to Month, then open the spending calendar. Calendar is unavailable in quarter, half-year and year views; return to Month to use it again."
+            ],
+            [
+              "在日历卡头分别切换分类图标和金额显示。分类图标表示当天有效金额最大的分类，没有有效收支的日期仍显示日期。",
+              "Use the calendar header controls for category icons and amounts. The icon represents the largest effective category total for that day; dates without effective income or spending keep their day number."
+            ],
+            [
+              "选择日期后，再打开普通记账、AA 或模板入口；新账沿用所选日期。已有草稿改过日期后，不会在重新打开时被覆盖。",
+              "Select a date before opening an entry, split or template. The new entry uses that date; a date already changed in the draft is preserved on reopening."
+            ]
+          ]
+        },
+        {
+          "p": [
+            "纯待报销和转账等只有资金发生、没有净支出的日期，不显示成一笔零元消费。退出日历后，或从其他页面开始记账，不会继续沿用日历选中的日期。",
+            "Days containing only pending reimbursement or transfers are not shown as zero-cost purchases. Leaving Calendar or starting from another tab stops carrying its selected date."
+          ]
+        },
+        {
+          "related": [
+            "accounting-period",
+            "entry",
+            "receipts-transfers"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "booking-confirmation",
+      "title": [
+        "计划入账与识别待办",
+        "Plan booking and capture inbox"
+      ],
+      "lead": [
+        "计划到期、付款识别有了结果，都在首页接着处理。",
+        "Continue on Home when a plan comes due or a payment capture needs attention."
+      ],
+      "blocks": [
+{"where": [[["计划中心 → 新建或打开计划 → 入账方式", "Plan Center → Create or open a plan → Booking mode"], ["选择自动入账或手动确认", "Choose automatic booking or manual confirmation"]], [["首页 → 入账确认", "Home → Booking confirmation"], ["处理到期计划、异常或识别结果", "Review due plans, issues or captured results"]]]},
+        {
+          "steps": [
+            [
+              "新建或编辑贷款、分期、周期账单时，选择自动入账或手动确认，并核对账户与日期。",
+              "When creating or editing a loan, installment or recurring plan, choose automatic booking or manual confirmation, and check its account and date."
+            ],
+            [
+              "打开首页待办卡：手动确认的到期期数先检查再入账；自动入账异常先处理原因，新的自动入账记录可查看对应账单。",
+              "Open the inbox card on Home. Review due manual periods before booking, resolve automatic-booking issues, and open the bills created by new automatic entries."
+            ],
+            [
+              "「已查看」只移除提醒，不删除账单、不再记一笔。已经入账的期数再次确认不会重复写入。",
+              "Marking a notice as read only clears the reminder. It neither deletes a bill nor adds another one; confirming a booked period again does not duplicate it."
+            ]
+          ]
+        },
+        {
+          "p": [
+            "计划入账会在 App 启动、回到前台和相关数据变化时检查；App 被系统终止后，不保证仍能在后台准时执行。待确认的到期计划仍按预算规则预留，入账后移除对应预留，避免重复计算。",
+            "Plan booking is checked on launch, foregrounding and relevant data changes. It is not guaranteed to execute on time while the app is terminated. Due pending periods remain reserved under budget rules; booking removes their corresponding reserve to avoid double counting."
+          ]
+        },
+        {
+          "p": [
+            "如果旧贷款缺少负债账户，按提示明确选择原账户后再处理，不会猜测账户或自动补记全部逾期期数。",
+            "If an older loan lacks its liability account, explicitly select the original account when prompted. Coast does not guess it or automatically book every overdue period."
+          ]
+        },
+        {
+          "steps": [
+            [
+              "识别结果需要继续处理时，从首页打开对应草稿，核对金额、币种、分类和账户后保存。",
+              "When a captured result needs attention, open its draft from Home and check the amount, currency, category and account before saving."
+            ],
+            [
+              "关闭识别草稿会保留在本机待办队列；已识别入账的内容可以打开原账单查看或修改。",
+              "Closing a captured draft keeps it in the on-device inbox. Open a saved captured entry to view or edit its original bill."
+            ]
+          ]
+        },
+        {
+          "related": [
+            "entry",
+            "quick-capture",
+            "budget",
+            "account-detail"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "bill-notes",
+      "title": [
+        "账单笔记：给一笔钱留个记录",
+        "Bill notes: keep the story"
+      ],
+      "lead": [
+        "简短备注用来快速识别，账单笔记留给更完整的文字和照片。",
+        "Use a short note for identification, and bill notes for richer text and photos."
+      ],
+      "blocks": [
+        {
+          "steps": [
+            [
+              "在记账功能行里打开「笔记」，或进入已有账单详情打开笔记操作。收入和转账也可以添加。",
+              "Open Notes in the entry options row, or use the note action in an existing bill’s details. Income and transfer entries can have notes too."
+            ],
+            [
+              "填写详细文字、选择照片，确认后保存。没有完成保存前仍是草稿；取消或放弃不会覆盖原内容。",
+              "Write the longer text and choose photos, then save. Until saved, changes stay in the draft; canceling or discarding them leaves the original content intact."
+            ],
+            [
+              "回到账单详情查看笔记，点击照片放大。短备注和笔记分别保留，不用把所有信息都挤在账单列表的一行里。",
+              "Read the note in bill details and tap a photo to enlarge it. Short notes and bill notes remain separate."
+            ]
+          ]
+        },
+        {
+          "p": [
+            "笔记入口可在记账功能行的自定义里排序或隐藏；已使用的笔记仍会显示。模板不携带账单笔记；分期记账时，笔记附在当场生成的首笔账单上。",
+            "Reorder or hide Notes through the entry options customization; an active note remains visible. Templates do not carry bill notes. For an installment entry, the note belongs to the first bill created immediately."
+          ]
+        },
+        {
+          "p": [
+            "文字纳入备份导出与恢复；照片沿用账单照片的 iCloud 资产同步，JSON 快照不包含照片。需要保留照片时，不要只依赖 JSON 备份。",
+            "Note text is included in backup export and restore. Photos use the bill-photo iCloud asset sync and are not included in JSON snapshots; do not rely solely on JSON backup to retain photos."
+          ]
+        },
+        {
+          "related": [
+            "entry",
+            "receipts-transfers",
+            "sync"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "entry-preferences",
+      "title": [
+        "快捷操作、键盘与草稿",
+        "Quick actions, keypad and drafts"
+      ],
+      "lead": [
+        "让最常用的入口顺手，也让还没输完的内容留得住。",
+        "Keep common actions within reach and unfinished input intact."
+      ],
+      "blocks": [
+        {
+          "steps": [
+            [
+              "从加号附近展开常用操作，选择支出、收入或转账。不同点按与长按偏好继续由设置控制，入口复用原来的记账面板。",
+              "Expand common actions beside Add and choose expense, income or transfer. Settings retain control of tap and long-press behavior; the actions reuse the entry panel."
+            ],
+            [
+              "设置 → 记账偏好 → 数字键盘首行，选择 789 或 123。共用金额键盘统一使用该排列，删除和运算列位置不变。",
+              "Go to Settings → Entry Preferences → Keypad first row and choose 789 or 123. Shared amount keypads use that arrangement without moving the delete or operator columns."
+            ],
+            [
+              "输入金额时临时切到后台再回来，未完成的金额和首次覆盖状态会保留。只有完成才写回，取消不覆盖原值。",
+              "When returning from the background, the unfinished amount and initial replacement state are preserved. Completing commits the change; canceling keeps the original value."
+            ]
+          ]
+        },
+        {
+          "p": [
+            "备注建议按当前分类和输入内容查找历史，较早使用的名称也能检索；尚未用过的新名称会以不同样式显示，确认后再使用。",
+            "Note suggestions search history within the current category using your input, including older names. A new name is styled distinctly so you can confirm it before use."
+          ]
+        },
+        {
+          "related": [
+            "entry",
+            "account-detail",
+            "bill-notes",
+            "personalize"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "reconciliation",
+      "title": [
+        "余额校准：把现在对准",
+        "Reconciliation: align the present"
+      ],
+      "lead": [
+        "账户能展示已保存的未来账单，对账时却要和银行此刻的余额比较。",
+        "An account can include saved future entries, while reconciliation compares the bank’s balance right now."
+      ],
+      "blocks": [
+        {
+          "steps": [
+            [
+              "在资产页的账户菜单进入批量对账，或打开对应账户的校准入口，核对币种与实际余额。",
+              "Open Batch Reconcile from the account menu on Assets, or the account’s reconciliation action, and check the currency and real balance."
+            ],
+            [
+              "「App 推算」及快捷填入只使用截至当前的流水。填入银行当前余额后，校准差额独立留痕，避免把未来扣款混入校准后再次扣减。",
+              "The expected balance and quick fill use entries up to the current time. Enter the current bank balance; the adjustment is recorded separately so a future charge is not counted in reconciliation and then deducted again."
+            ],
+            [
+              "投资账户可选择把差额记为收益或亏损；普通校准只改余额。缺少必要汇率或读取失败时，先补齐或重试，再保存。",
+              "For an investment account, you can choose to record the difference as a gain or loss. Ordinary reconciliation only adjusts the balance. Resolve missing rates or retry failed loading before saving."
+            ]
+          ]
+        },
+        {
+          "p": [
+            "账户首页的当前余额仍包含已保存的未来账单；历史趋势按对应截止时点展示。这与用于核对银行此刻余额的「App 推算」不是同一个时间范围。",
+            "The account’s current balance still includes saved future entries; historical trends use their own cutoff. This is a different time scope from the expected balance used to reconcile against the bank right now."
+          ]
+        },
+        {
+          "p": [
+            "投资校准的收益或亏损不当成消费、预算支出或每月新增本金；不要把普通余额差额直接视作真实现金收入。",
+            "An investment reconciliation gain or loss is not spending, budget expense or new monthly principal. An ordinary balance difference is not automatically cash income."
+          ]
+        },
+        {
+          "related": [
+            "account-detail",
+            "assets",
+            "holdings",
+            "diff-assets",
+            "c-net-worth"
+          ]
+        }
+      ]
+    }
+  ]
+},
+{
   "id": "v1-1",
   "title": [
-    "v1.1 新功能",
-    "New in v1.1"
+    "资产与进阶功能",
+    "Assets and advanced tools"
   ],
   "pages": [
     {
       "slug": "asset-weather",
-      "isNew": true,
       "title": [
         "个人资产晴雨表",
         "Personal asset weather"
@@ -96,7 +548,6 @@ const GROUPS: Group[] = [
     },
     {
       "slug": "holdings",
-      "isNew": true,
       "title": [
         "投资持仓与收益（Pro）",
         "Holdings and returns (Pro)"
@@ -135,11 +586,12 @@ const GROUPS: Group[] = [
             "pro"
           ]
         }
-      ]
+      ,
+{"p": ["投资校准时，可明确选择把差额记为收益或亏损；不选择时沿用普通余额校准。该差额不作为消费、预算支出或新增本金。", "When reconciling an investment, explicitly choose whether to record the adjustment as gain or loss; otherwise it remains an ordinary balance adjustment. It is not consumption, budget spending or new principal."]},
+{"related": ["reconciliation"]}]
     },
     {
       "slug": "custom-categories",
-      "isNew": true,
       "title": [
         "自定义一级分类（Pro）",
         "Custom top-level categories (Pro)"
@@ -152,8 +604,8 @@ const GROUPS: Group[] = [
         {
           "list": [
             [
-              "设置 → 分类与标签，在顶部切换「按 FI 分组（默认）」与「我的分组」。FI 分类免费；自定义一级分类需要 Pro。",
-              "In Settings → Categories & Tags, switch between FI categories and My Groups at the top. FI categories are free; custom top-level categories require Pro."
+              "设置 → 分类管理，在顶部切换「按 FI 分组（默认）」与「我的分组」。FI 分类免费；自定义一级分类需要 Pro。",
+              "In Settings → Manage Categories, switch between FI categories and My Groups at the top. FI categories are free; custom top-level categories require Pro."
             ],
             [
               "在自定义模式里新建一级分类，把二级分类归进去；可以批量归组，尚未分配的二级保留在未分组中。记账面板和数据页可按你的分类显示。",
@@ -182,7 +634,6 @@ const GROUPS: Group[] = [
     },
     {
       "slug": "spending",
-      "isNew": true,
       "title": [
         "消费模拟：花之前先算一笔",
         "Spending simulator: before you buy"
@@ -223,7 +674,6 @@ const GROUPS: Group[] = [
     },
     {
       "slug": "receipts-transfers",
-      "isNew": true,
       "title": [
         "到账、转账与组合付款",
         "Receipts, transfers and combined payments"
@@ -271,7 +721,6 @@ const GROUPS: Group[] = [
     },
     {
       "slug": "widgets",
-      "isNew": true,
       "title": [
         "桌面与锁屏小组件",
         "Home and Lock Screen widgets"
@@ -540,12 +989,12 @@ const GROUPS: Group[] = [
         slug: "c-roles",
         title: ["支出的四个角色", "The four spending roles"],
         short: ["固定、必要、弹性、其他：每个分类在 FIRE 计算里算什么", "Fixed, essential, flexible, other: what each category counts as"],
-        loc: ["设置 → 分类与标签", "Settings → Categories & Tags"],
+        loc: ["设置 → 分类管理", "Settings → Manage Categories"],
         lead: ["分类的名字你随便起，角色决定它在自由计算里的位置。", "Name categories however you like; the role decides where they sit in the math."],
         blocks: [
           { def: ["每个一级支出分类都属于四个角色之一：固定（房租、订阅）、必要（吃饭、通勤）、弹性（聚餐、打车、购物）、其他（一次性大事）。", "Every top-level expense category has one of four roles: Fixed (rent, subscriptions), Essential (meals, commute), Flexible (eating out, taxis, shopping) and Other (one-offs)."] },
           { fig: F.RolesMap },
-          { where: [[["设置 → 分类与标签", "Settings → Categories & Tags"], ["新建或修改一级分类时选角色", "Pick a role when you create or edit a top-level category"]]] },
+          { where: [[["设置 → 分类管理", "Settings → Manage Categories"], ["新建或修改一级分类时选角色", "Pick a role when you create or edit a top-level category"]]] },
           { related: ["categories", "c-lean", "c-standard"] },
         ],
       },
@@ -578,7 +1027,9 @@ const GROUPS: Group[] = [
         slug: "diff-assets",
         title: ["资产：对账定锚", "Assets: anchored by reconciling"],
         lead: ["资产余额怎么来，决定了净资产曲线可不可信——而 FIRE 倒计时就是建在这条曲线上的。", "How balances are computed decides whether the net worth curve can be trusted — and the FIRE countdown is built on that curve."],
-        blocks: [{ fig: F.DiffAssets }, { related: ["c-net-worth", "assets"] }],
+        blocks: [{ fig: F.DiffAssets }, { related: ["c-net-worth", "assets"] },
+{"p": ["用于对照银行此刻余额的推算只取截至当前的流水；账户首页则仍可包含已保存的未来账单。了解这两个时间范围，避免把未来扣款重复算进校准。", "The expected bank balance uses entries up to now, while the account’s current balance can include saved future entries. Keeping these scopes distinct avoids double-counting future charges in reconciliation."]},
+{"related": ["reconciliation"]}],
       },
       {
         slug: "diff-numbers",
@@ -636,14 +1087,15 @@ const GROUPS: Group[] = [
         blocks: [
           { p: ["适合打标签的是跨分类的一件事：一次出差、一趟旅行、装修、孩子、某个副业。机票是交通、酒店是住宿、吃饭是餐饮，打上同一个「出差」标签，事后就能看这件事一共花了多少。", "Tags suit things that cut across categories: a business trip, a holiday, a renovation, a kid, a side project. Flights are transport, the hotel is lodging, meals are dining — tag them all Business Trip and you can see what the whole thing cost."] },
           { list: [
-            ["标签多了就分组：设置 → 分类与标签 → 标签管理，点右上「编辑」，「＋」里选「新建分组」，起个名字、勾上要放进去的标签，一步完成。", "When tags pile up, group them: Settings → Categories & Tags → Manage Tags, tap Edit, then + → New group, name it and tick the tags to include."],
+            ["标签多了就分组：设置 → 标签管理，点右上「编辑」，「＋」里选「新建分组」，起个名字、勾上要放进去的标签，一步完成。", "When tags pile up, group them: Settings → Manage Tags, tap Edit, then + → New group, name it and tick the tags to include."],
             ["编辑状态下，每个标签右边写着它在哪个组，点一下就能换组；组名旁边的 ↑ ↓ 调整分组顺序，也能改名或解散分组。", "In edit mode, each tag shows its group on the right — tap to move it. Use ↑ ↓ next to a group name to reorder groups, or rename and dissolve them."],
             ["记账时选标签：最上面是搜索和最近用过的，下面按组排成一个个小胶囊，点哪个选哪个。搜不到就地新建，顺手指定放进哪个组。", "Picking tags while logging: search and recent tags are on top, then chips by group — tap to select. If it doesn't exist, create it right there and choose its group."],
             ["数据页的标签卡点进去，能看到一个标签在这段时间里花了多少、花在哪些分类上。", "On the Data tab, open a tag to see how much went to it over the period and across which categories."],
           ] },
           { tip: ["别把标签当第二套分类用。「餐饮」「交通」已经是分类了，再打一遍同名标签只会让记账变慢。", "Don't use tags as a second set of categories. Dining and Transport are already categories; tagging them again just slows you down."] },
           { related: ["categories", "data"] },
-        ],
+{"p": ["分类管理和标签管理在设置中分别进入。筛选、预算与账单详情沿用你设置的分类名称和图标；删除有历史引用的分类或标签时，按提示处理引用，不会把内部图标编码当作名称。", "Open category and tag management separately in Settings. Filters, budgets and bill details use your category names and icons. Follow the reference-handling prompts when deleting an item used by history."]},
+{"related": ["custom-categories"]}],
       },
     ],
   },
@@ -657,7 +1109,7 @@ const GROUPS: Group[] = [
         lead: ["越常见的账，越该用越快的方式记。", "The more often you log something, the faster the method should be."],
         blocks: [
           { fig: F.EntryWays },
-          { img: "templates", cap: ["模板：把常记的条目存下来，长按「＋」一步选用", "Templates: save frequent entries and long-press + to use one"] },
+          { img: "templates", cap: ["模板：把常记的条目存下来，从加号快捷入口选用", "Templates: save frequent entries and use one from the Add actions"] },
           { list: [
             ["记账面板的金额一上来是 0，你按多少就显示多少，键盘自带加减乘除。", "The amount starts at 0 and shows exactly what you type; the keypad does arithmetic."],
             ["付完款不想打开 App？用快捷记账：截一张付款成功页、或者让付款通知自己记（见「快捷记账」那一篇）。", "Don't want to open the app after paying? Use Quick Capture — a screenshot of the payment screen, or let the payment notification record itself (see Quick Capture)."],
@@ -667,11 +1119,11 @@ const GROUPS: Group[] = [
             ["小费、服务费、税费有常用比例一点即得；组合支付只列用到的账户，差额一键补齐。金额框都能直接写算式，比如 88+45。", "Tip, service charge and tax have one-tap common percentages; Combined Payment lists only the accounts you use and fills the remainder in one tap. Every amount field takes arithmetic, like 88+45."],
           ] },
           { fig: F.ExtrasLabel },
-        ],
+{"p": ["v1.1.1 的加号快捷入口、金额键盘和历史备注用法见「快捷操作、键盘与草稿」；图文说明放在独立的账单笔记里。周期和还款计划可选择自动入账或到期后确认。", "For v1.1.1 Add actions, keypad and previous-note suggestions, see Quick actions, keypad and drafts. Keep richer text and photos in bill notes. Recurring and repayment plans support automatic booking or confirmation when due."]},
+{"related": ["entry-preferences", "bill-notes", "booking-confirmation", "calendar"]}],
       },
       {
         slug: "quick-capture",
-        isNew: true,
         title: ["快捷记账：付完款不打开 App", "Quick Capture: log without opening the app"],
         lead: ["记账最难的一步是「打开 App」。这一篇把这一步拿掉。", "The hardest part of tracking is opening the app. This removes that step."],
         blocks: [
@@ -690,7 +1142,9 @@ const GROUPS: Group[] = [
             ["识别出的优惠作为附加项保留，实付金额仍是账单金额；余额、未完成付款、营销数字不会直接当作消费金额。原币金额也会传到确认流程中。", "Recognized discounts are kept as extras while the paid amount remains the entry amount. Balances, incomplete payments and promotional figures are not used directly as purchase amounts. Original currencies are carried into confirmation."],
           ] },
           { p: ["想折腾的话：在快捷指令里点开 Coast 的记账动作 →「显示更多」，可以给某一条快捷指令单独指定收支方向、分类、账户、标签和备注，比如「公司卡」那条固定记到公司卡、打上「报销」标签。", "For tinkerers: in Shortcuts, open Coast's capture action → Show More to set direction, category, account, tags and note for that one shortcut — say, a Company Card shortcut that always uses that card and tags it Reimbursable."] },
-        ],
+{"img": "capture", "cap": ["截图记账：添加快捷指令并选择触发方式", "Screenshot Capture: install the shortcut and choose a trigger"]},
+{"p": ["识别结果需要继续处理时，会保留为本机待办草稿；从首页打开后核对再保存。SGD / S$、英文付款信息和支付时间有补充处理，字段不明确时仍应核对。", "Captured results needing attention remain as on-device inbox drafts; open them from Home and review before saving. SGD / S$, English payment fields and payment times have improved handling, but ambiguous fields still need review."]},
+{"related": ["booking-confirmation", "bill-notes"]}],
       },
       {
         slug: "batch",
@@ -756,21 +1210,23 @@ const GROUPS: Group[] = [
           { img: "ledger", cap: ["账单页顶部的卡片左右滑：本月支出 ⇄ 财务自由目标", "Swipe the top card on Entries: spent this month ⇄ Financial Freedom Goal"] },
           { p: ["卡片下面的快速入口是「有就看一眼」的地方：待报销、AA 分账、计划、转账、退款，显示哪些、用卡片还是胶囊样式，都能在设置里改。", "Below it are shortcuts worth a glance: To Claim, Split Bills, Plans, Transfers, Refunds. Pick which show, and card or chip style, in Settings."] },
           { related: ["c-countdown"] },
-        ],
+{"p": ["右上角「⋯」可选择月、季、半年或年；点击周期标题选择具体时间。月视图可开启日历，从选中日期继续记账；其他跨度不提供日历。展示周期与预算配置各自独立。", "Choose month, quarter, half-year or year from the top-right menu; tap the period title to select a date range. Month view supports the calendar and entries from its selected day. Display periods and budget configuration are independent."]},
+{"p": ["首页待办集中展示到期计划、自动入账异常、新入账记录和需要继续处理的识别草稿；按条目核对并处理，「已查看」只清除提醒。", "Home’s inbox brings due plans, booking issues, new entries and captured drafts together. Review each item; marking it as read only clears its reminder."]},
+{"related": ["accounting-period", "calendar", "booking-confirmation", "bill-notes"]}],
       },
       {
         slug: "budget",
         title: ["预算：让过去的你帮你算", "Budgets from your own history"],
         lead: ["拉表格手动算预算，大多坚持不了几个月。Coast 直接从你的历史里算，你只需要决定要不要再收紧一点。", "Budget spreadsheets rarely survive a few months. Coast works it out from your history; you just decide how much tighter to go."],
         blocks: [
-          { p: ["在预算页打开「智能预算」，「重新生成」会按最近 3 个月给出额度——用的是中位数，不是平均数：", "Open Smart Budget on the budget page. Regenerate proposes limits from the last three months — using the median, not the average:"] },
-          { fig: F.MedianVsAverage },
-          { p: ["在这个基础上可以拖动滑块再收紧。预算的意义往往是「比过去花得少」，照搬历史等于把旧习惯合理化。「铺满全年」则优先参考去年同月：", "Then drag the slider to tighten it — a budget is usually about spending less than before, not making old habits official. Fill Year looks at the same month last year first:"] },
-          { fig: F.SeasonalBudget },
-          { p: ["总额合适、但分类之间分得不对时，用「再平衡」把额度从花不完的分类挪到真正在花的分类。", "If the total is right but the split isn't, Rebalance moves room from categories you never use up to the ones you do."] },
-          { fig: F.PaceChart },
-          { tip: ["预算就是个参考，超了也不用有负担。月中展开本月支出卡看一眼消费节奏：曲线跑到虚线上面，剩下的日子收一收就好。", "A budget is a reference; going over isn't failure. Mid-month, expand the monthly card and check the pace: above the dashed line, ease off for the rest of the month."] },
-        ],
+{"p": ["在预算页切换月、季或年，分别设置总额度、分类额度、单期调整和结转。总预算免费；分类预算和配速推演属于 Pro。", "Switch between month, quarter and year on Budget and configure each period’s total, categories, exceptions and carryover. Total budgets are free; category budgets and pace projections require Pro."]},
+{"steps": [["先选要修改的月份、季度或年份，再进入额度编辑。可以只改这一期，也可以从本期起调整默认额度；更早的设置和其他单期例外会保留。", "Choose the month, quarter or year before editing. Change only that period or adjust the default from that period onward; earlier settings and other exceptions are preserved."], ["需要沿用额度时，复制上一期；要提前规划时，直接选择未来周期。年度规划按当前粒度生成十二个月或四个季度的总预算。", "Copy the previous period to reuse limits, or select a future period to plan ahead. Year planning creates totals for twelve months or four quarters, depending on the chosen granularity."], ["在智能方案中比较平均、中位数、最低值或主动收紧。建议基于之前三个已经结束的周期，月预算看月、季预算看季、年预算看年。", "Compare average, median, minimum or tighter smart plans. Suggestions use the previous three completed periods at the selected granularity: months, quarters or years."]]},
+{"p": ["结转开启后，上一期结余累加到下一期，超支会扣减下一期的可用额度。负可用额不会显示成「预算内」。分类分配需要调整时，可用再平衡；独立设置的总预算不会被改写。", "Carryover adds a prior surplus to the next period and deducts overspending from the next available limit. A negative available amount is not within budget. Rebalance category allocations without overwriting an independently set total budget."]},
+{"p": ["未入账计划按真实排期预留，暂停、结束日期、单期调整和不计预算标记会影响预留；贷款只把利息计入支出。到期等待确认的计划仍会预留，入账后移除对应预留。", "Unbooked plans reserve amounts according to their schedules, pauses, end dates, period overrides and budget exclusions. Only loan interest counts as spending. Due pending periods remain reserved until their entry replaces the reserve."]},
+{"p": ["批量应用遇到缺失汇率时，先补齐再应用，不会只改一半。保存失败时保留草稿，修正问题后可以重试。账单页的半年展示独立于预算，不会生成半年额度。", "Complete missing exchange rates before a bulk apply; it does not apply only part of the changes. Failed saves keep the draft for retry. The ledger’s half-year display does not create a half-year budget."]},
+{"related": ["accounting-period", "booking-confirmation", "home", "pro"]},
+{ fig: F.PaceChart }
+],
       },
       {
         slug: "data",
@@ -783,7 +1239,8 @@ const GROUPS: Group[] = [
           ] },
           { p: ["「常买」会把同一样东西的历次价格收在一起：买了几次、通常多少钱、最低最高多少。", "Repeat Buys gathers every price you've paid for the same thing: how often, the usual price, the lowest and highest."] },
           { fig: F.RepeatBuyDots },
-        ],
+{"p": ["统计归组沿用当前记账起始日；切换周期前，先核对自己查看的是哪个记账月份。默认每月 1 日免费，自定义起始日属于 Pro。", "Statistics follow the accounting start day. Check which accounting month you are viewing. Day 1 is free; a custom start day requires Pro."]},
+{"related": ["accounting-period"]}],
       },
       {
         slug: "work-hours",
@@ -814,11 +1271,10 @@ const GROUPS: Group[] = [
           { fig: F.ReconcileFlow },
           { tip: ["对账入口在「资产 → 右上角账户菜单 → 批量对账」。合并记账、漏记几笔都没关系，填一遍真实余额，差额自动记为校准。", "Reconcile from Assets → account menu at top right → Batch Reconcile. Merged or missed entries don't matter — enter real balances and the gap is recorded as a calibration."] },
           { related: ["c-net-worth", "diff-assets"] },
-        ],
+{"related": ["reconciliation", "account-detail"]}],
       },
       {
         slug: "account-detail",
-        isNew: true,
         title: ["整理账户与账户详情", "Organizing and inspecting accounts"],
         lead: ["账户多了要排个顺序；某个账户的余额不对，要能看出它是怎么变成现在这个数的。", "With more accounts you'll want them in order — and when a balance looks off, you'll want to see how it got there."],
         blocks: [
@@ -838,7 +1294,9 @@ const GROUPS: Group[] = [
             ["校准记录：每次对账的日期、对账后的余额、对账前算出来的余额，以及差了多少。差得多的那几次，往往就是漏记的那几个月。长按可以删除一次校准（会改变余额，先确认）。", "Reconciliations: the date of each one, the balance you set, what Coast expected beforehand, and the difference. The big gaps usually mark the months you missed entries. Long-press to delete a reconciliation (it changes the balance, so you'll be asked first)."],
           ] },
           { related: ["assets", "accounts", "c-net-worth"] },
-        ],
+{"steps": [["在账户详情使用记账或转账入口；信用卡还款预选当前卡片为转入方，付款账户由你确认。明确的账户上下文优先于默认账户，「保存再记」沿用当前账户。", "Use entry or transfer actions in account details. A card repayment preselects that card as destination; confirm the paying account yourself. Explicit account context takes priority over defaults, and Save and add another keeps that account."], ["新建或编辑负债账户时，直接设置额度、账单日和还款日；只填写还款日，也能在概览中查看。归档账户不提供新增入口，实物资产不提供付款入口。", "Set limits, statement days and due days when creating or editing liabilities. A due date alone is also shown in Overview. Archived accounts have no add action; physical assets have no payment action."]]},
+{"p": ["大账本按完整活动日分批加载。近期退款、报销或 AA 到账会显示，即使原消费发生得较早；逐步加载不改变完整余额、趋势或每月进出。读取失败可以重试。", "Large ledgers load by complete activity days. Recent refunds, reimbursements or split receipts appear even when the original purchase is older. Progressive loading does not change the full balance, trends or monthly flows; retry after a loading failure."]},
+{"related": ["reconciliation", "entry-preferences", "booking-confirmation"]}],
       },
     ],
   },
@@ -903,7 +1361,8 @@ const GROUPS: Group[] = [
             ["开启 iCloud 同步后，iPhone、iPad、Mac 之间自动同步，数据会自动同步，无需靠重启触发；具体到达时间受网络、iCloud 和系统调度影响（设置 → iCloud 同步详情里能看到「实时推送」是否已开启）。iPad 和 Mac 上是铺满全屏的大屏布局，见「在 iPad 上用」。", "With iCloud sync on, iPhone, iPad and Mac stay in step — entries sync without relaunching; timing depends on the network, iCloud and system scheduling (Settings → iCloud Sync Details shows whether Live Push is on). iPad and Mac use a full-screen layout — see Using Coast on iPad."],
             ["在别人面前打开 App？点眼睛图标隐藏金额；或者在设置里打开「后台模糊」，切到多任务界面时整屏糊掉。", "Around other people? Tap the eye to hide amounts, or turn on Blur in background so the app switcher shows nothing."],
           ] },
-        ],
+{"p": ["每日快照保留最近 10 份，未变化的内容复用已有快照；恢复前选择对应文件，读写或删除失败会提示。账单笔记文字包含在 JSON 中，照片通过账单的 iCloud 资产同步，不包含在 JSON 快照中。", "Keep the latest 10 daily snapshots, reusing an existing snapshot when content is unchanged. Choose the desired file to restore; read, write and delete failures give feedback. Bill-note text is in JSON, while photos sync as bill iCloud assets and are not in JSON snapshots."]},
+{"related": ["bill-notes"]}],
       },
       {
         slug: "ipad",
@@ -949,13 +1408,15 @@ const GROUPS: Group[] = [
             ["还没决定要不要会员？设置里「用示例数据体验」：演示账本里全部会员功能都打开，并标着「会员」，退出后你的真实数据不受影响。", "Not sure about Pro yet? Settings → Try with sample data: every Pro feature is open in the demo ledger, marked Pro, and your real data isn't touched."],
             ["有问题或想要的功能：设置 → 关于 → 联系我，邮箱、X、小红书都在那里。", "Questions or feature ideas: Settings → About → Get in Touch has email, X and Xiaohongshu."],
           ] },
-        ],
+{"related": ["entry-preferences", "accounting-period"]}],
       },
       {
         slug: "pro",
         title: ["免费与 Pro", "Free and Pro"],
         lead: ["记账、看账、自由倒计时都免费。Pro 解锁的是更深一层的推演和个性化。", "Logging, reviewing and the freedom countdown are free. Pro adds deeper projections and personalization."],
-        blocks: [{ fig: F.ProTable }],
+        blocks: [{ fig: F.ProTable },
+{"p": ["自定义记账周期属于 Pro：默认每月 1 日免费，Pro 可自选 1—31 日。已经应用的自定义周期在会员到期后保留，也可恢复每月 1 日。", "Custom accounting cycles require Pro: day 1 is free, and Pro allows days 1–31. An applied custom cycle remains after expiry; you can also return to day 1."]},
+{"related": ["accounting-period", "budget"]}],
       },
     ],
   },
@@ -965,12 +1426,33 @@ const PAGES = GROUPS.flatMap((g) => g.pages.map((p) => ({ ...p, group: g.id })))
 const BY_SLUG = new Map(PAGES.map((p) => [p.slug, p]))
 const slugFromHash = () => {
   const h = decodeURIComponent(window.location.hash.slice(1))
-  return BY_SLUG.has(h) ? h : "fire"
+  return BY_SLUG.has(h) ? h : "v1-1-1"
 }
 
-function Nav({ current, open, toggle, onPick }: { current: string; open: Set<string>; toggle: (id: string) => void; onPick?: () => void }) {
+const TESTING_TOPICS = new Set(["entry","home","budget","account-detail","assets","diff-assets","holdings","quick-capture","data","sync","personalize","tags","pro"])
+function VersionStatus({ slug }: { slug: string }) {
+  const { t } = useLang()
+  if (BY_SLUG.get(slug)?.group !== "v1-1-1" && !TESTING_TOPICS.has(slug)) return null
+  return <p className="version-status">{t("v1.1.1 · 未更新 · 测试中", "v1.1.1 · Not released · In testing")}</p>
+}
+
+function GuideSteps({ items }: { items: L[] }) {
+  const { lang } = useLang()
+  return <ol className="guide-steps">{items.map((item,i) => <li key={i}><span aria-hidden="true">{String(i+1).padStart(2,"0")}</span><p>{item[lang === "zh" ? 0 : 1]}</p></li>)}</ol>
+}
+function GuideTable({ data }: { data: { headers: L[]; rows: L[][] } }) {
+  const { lang } = useLang(); const pick = (item: L) => item[lang === "zh" ? 0 : 1]
+  return <div className="guide-table"><table><thead><tr>{data.headers.map((item,i) => <th key={i} scope="col">{pick(item)}</th>)}</tr></thead><tbody>{data.rows.map((row,i) => <tr key={i}>{row.map((item,j) => <td key={j}>{pick(item)}</td>)}</tr>)}</tbody></table></div>
+}
+
+function Nav({ current, open, toggle, onPick, query = "" }: { current: string; open: Set<string>; toggle: (id: string) => void; onPick?: () => void; query?: string }) {
   const { lang } = useLang()
   const pick = (x: L) => (lang === "zh" ? x[0] : x[1])
+  if (query.trim()) {
+    const terms = query.trim().toLocaleLowerCase().split(/\s+/)
+    const results = PAGES.filter(page => terms.every(term => `${pick(page.title)} ${pick(page.lead)} ${JSON.stringify(page.blocks)}`.toLocaleLowerCase().includes(term))).sort((a,b) => Number(terms.every(term => pick(b.title).toLocaleLowerCase().includes(term))) - Number(terms.every(term => pick(a.title).toLocaleLowerCase().includes(term))))
+    return <nav className="manual-search-results" aria-label={lang === "zh" ? "搜索结果" : "Search results"}><p role="status">{lang === "zh" ? `${results.length} 篇内容` : `${results.length} topics`}</p>{results.map(page => <a href={`#${page.slug}`} key={page.slug} aria-current={page.slug === current ? "page" : undefined} onClick={onPick}>{pick(page.title)}<ChevronRight size={14} /></a>)}{results.length === 0 && <p>{lang === "zh" ? "换个词试试，如「预算」「退款」或「同步」。" : "Try a word like budget, refund or sync."}</p>}</nav>
+  }
   return (
     <nav className="space-y-1">
       {GROUPS.map((g) => {
@@ -988,7 +1470,7 @@ function Nav({ current, open, toggle, onPick }: { current: string; open: Set<str
                   return (
                     <li key={p.slug}>
                       <a href={`#${p.slug}`} onClick={onPick}
-                        className={`block rounded-md px-2.5 py-1.5 text-[14px] leading-snug ${active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"}`}>
+                        aria-current={active ? "page" : undefined} className={`block rounded-md px-2.5 py-1.5 text-[14px] leading-snug ${active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"}`}>
                         {pick(p.title)}
                         {p.isNew && <span className="ml-1.5 rounded-full bg-primary px-1.5 py-px align-middle text-[10px] font-semibold text-primary-foreground">New</span>}
                       </a>
@@ -1004,6 +1486,11 @@ function Nav({ current, open, toggle, onPick }: { current: string; open: Set<str
   )
 }
 
+function ManualSearch({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const { t } = useLang()
+  return <label className="manual-search"><Search size={16} aria-hidden="true" /><input type="search" aria-label={t("搜索手册", "Search the manual")} placeholder={t("搜索功能或用法", "Search features or usage")} value={value} onChange={event => onChange(event.target.value)} /></label>
+}
+
 export default function Guide() {
   const { t, lang } = useLang()
   const pick = (x: L) => (lang === "zh" ? x[0] : x[1])
@@ -1012,6 +1499,8 @@ export default function Guide() {
   const idx = PAGES.findIndex((p) => p.slug === slug)
   const [open, setOpen] = useState<Set<string>>(() => new Set([page.group]))
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [query, setQuery] = useState("")
+  const contentsFocus = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
     const onHash = () => setSlug(slugFromHash())
@@ -1031,6 +1520,8 @@ export default function Guide() {
   const link = (s: string) => BY_SLUG.get(s)
 
   const renderBlock = (b: Block, j: number) => {
+    if ("steps" in b) return <GuideSteps key={j} items={b.steps} />
+    if ("table" in b) return <GuideTable key={j} data={b.table} />
     if ("p" in b) return <p key={j} className="leading-relaxed text-muted-foreground">{pick(b.p)}</p>
     if ("tip" in b) return (
       <div key={j} className="rounded-xl bg-primary/8 px-4 py-3 text-[15px] leading-relaxed">
@@ -1125,16 +1616,17 @@ export default function Guide() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-[1200px] px-6 pb-24 pt-28 md:px-10">
-        <div className="grid gap-10 md:grid-cols-[232px_minmax(0,1fr)] lg:gap-16">
-          <aside className="hidden md:block">
-            <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pb-6">
-              <div className="mb-3 px-2 font-heading text-xl">{t("使用手册", "Manual")}</div>
-              <Nav current={slug} open={open} toggle={toggle} />
+      <main className="manual-page editorial-page">
+        <header className="editorial-masthead"><h1>{t("使用手册", "Manual")}</h1><p>{t("从记一笔到账户与自由目标，找到你要的用法。", "Find your way from the first entry to accounts and financial freedom.")}</p></header>
+        <div className="manual-layout">
+          <aside className="manual-sidebar hidden md:block">
+            <div className="manual-sidebar-inner">
+              <ManualSearch value={query} onChange={setQuery} />
+              <Nav current={slug} open={open} toggle={toggle} query={query} onPick={() => setQuery("")} />
             </div>
           </aside>
 
-          <article className="min-w-0 max-w-[720px]">
+          <article className="manual-article" id="manual-reading">
             {/* 手机：目录按钮吸在顶栏下面（顶栏 fixed top-3 h-14，底边在 68px），往下读也随时能换篇 */}
             <div className="sticky top-[76px] z-10 -mx-6 mb-6 bg-background/85 px-6 py-2 backdrop-blur md:hidden">
               <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -1143,28 +1635,28 @@ export default function Guide() {
                   <span className="shrink-0">{t("目录", "Contents")}</span>
                   <span className="truncate text-muted-foreground">· {pick(page.title)}</span>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-80 overflow-y-auto">
-                  <SheetHeader><SheetTitle className="font-heading">{t("使用手册", "Manual")}</SheetTitle></SheetHeader>
-                  <div className="px-3 pb-6"><Nav current={slug} open={open} toggle={toggle} onPick={() => setSheetOpen(false)} /></div>
+                <SheetContent side="left" className="w-80 overflow-y-auto" initialFocus={contentsFocus}>
+                  <SheetHeader><SheetTitle className="font-heading" ref={contentsFocus} tabIndex={-1}>{t("使用手册", "Manual")}</SheetTitle></SheetHeader>
+                  <div className="px-3 pb-6"><ManualSearch value={query} onChange={setQuery} /><Nav current={slug} open={open} toggle={toggle} query={query} onPick={() => { setSheetOpen(false); setQuery("") }} /></div>
                 </SheetContent>
               </Sheet>
             </div>
 
             <div className="font-sans text-xs font-bold uppercase tracking-[.12em] text-primary">{pick(groupTitle)}</div>
-            <h1 className="mt-2 text-3xl font-semibold md:text-4xl">{pick(page.title)}{page.isNew && <span className="ml-3 rounded-full bg-primary px-2.5 py-1 align-middle text-xs font-semibold text-primary-foreground">New</span>}</h1>
-            <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{pick(page.lead)}</p>
+            <h2 className="manual-title">{pick(page.title)}{page.isNew && <span className="ml-3 rounded-full bg-primary px-2.5 py-1 align-middle text-xs font-semibold text-primary-foreground">New</span>}</h2>
+            <VersionStatus slug={slug} /><p className="manual-lead">{pick(page.lead)}</p>
 
-            <div className="mt-8 space-y-5">{page.blocks.map(renderBlock)}</div>
+            <div className="manual-body">{page.blocks.map(renderBlock)}</div>
 
-            <div className="mt-14 grid gap-3 border-t border-border pt-6 sm:grid-cols-2">
+            <div className="manual-pagination">
               {prev ? (
-                <a href={`#${prev.slug}`} className="group rounded-xl border border-border p-4 hover:border-primary/40">
+                <a href={`#${prev.slug}`} className="manual-page-link group">
                   <div className="flex items-center gap-1 text-xs text-muted-foreground"><ChevronLeft className="size-3.5" />{t("上一篇", "Previous")}</div>
                   <div className="mt-1 font-medium group-hover:text-primary">{pick(prev.title)}</div>
                 </a>
               ) : <span />}
               {next && (
-                <a href={`#${next.slug}`} className="group rounded-xl border border-border p-4 text-right hover:border-primary/40">
+                <a href={`#${next.slug}`} className="manual-page-link group text-right">
                   <div className="flex items-center justify-end gap-1 text-xs text-muted-foreground">{t("下一篇", "Next")}<ChevronRight className="size-3.5" /></div>
                   <div className="mt-1 font-medium group-hover:text-primary">{pick(next.title)}</div>
                 </a>
@@ -1181,4 +1673,35 @@ export default function Guide() {
       <Footer />
     </>
   )
+}
+
+/** The same manual content, read inside a dialog without changing the page URL. */
+export function EmbeddedGuide({ slug }: { slug: string }) {
+  const { lang, t } = useLang()
+  const [current, setCurrent] = useState(slug)
+  const root = useRef<HTMLElement>(null)
+  useEffect(() => { root.current?.closest(".experience-body")?.scrollTo({ top: 0, behavior: "instant" }) }, [current])
+  const page = BY_SLUG.get(current) ?? BY_SLUG.get(slug)!
+  const pick = (value: L) => value[lang === "zh" ? 0 : 1]
+  const navigate = (next: string) => { if (BY_SLUG.has(next)) setCurrent(next) }
+  return <article className="embedded-guide" ref={root}>
+    {current !== slug && <div className="embedded-guide-heading"><button type="button" onClick={() => setCurrent(slug)}><ChevronLeft size={15} />{t("返回本页", "Back to this topic")}</button><h3>{pick(page.title)}</h3></div>}
+    <VersionStatus slug={current} /><p className="embedded-guide-lead">{pick(page.lead)}</p>
+    {page.blocks.map((block, i) => {
+      if ("steps" in block) return <GuideSteps key={i} items={block.steps} />
+      if ("table" in block) return <GuideTable key={i} data={block.table} />
+      if ("p" in block) return <p key={i}>{pick(block.p)}</p>
+      if ("tip" in block) return <aside key={i}>{pick(block.tip)}</aside>
+      if ("def" in block) return <blockquote key={i}>{pick(block.def)}</blockquote>
+      if ("formula" in block) return <div className="embedded-guide-formula" key={i}>{pick(block.formula)}</div>
+      if ("fig" in block) { const Figure = block.fig; return <Figure key={i} /> }
+      if ("list" in block) return <ul key={i}>{block.list.map((item,j) => <li key={j}>{pick(item)}</li>)}</ul>
+      if ("img" in block) return <figure key={i}><Device src={screen(block.img,lang)} alt={pick(block.cap)} width={210} /><figcaption>{pick(block.cap)}</figcaption></figure>
+      if ("where" in block) return <section className="embedded-guide-where" key={i}><h4>{t("在 App 中", "In the app")}</h4><dl>{block.where.map(([location,action],j) => <div key={j}><dt>{pick(location)}</dt><dd>{pick(action)}</dd></div>)}</dl></section>
+      if ("related" in block) return <nav className="embedded-guide-related" aria-label={t("相关内容", "Related topics")} key={i}>{block.related.map(next => BY_SLUG.has(next) && <button type="button" key={next} onClick={() => navigate(next)}>{pick(BY_SLUG.get(next)!.title)}<ChevronRight size={14} /></button>)}</nav>
+      if ("cardmap" in block) return <div className="embedded-guide-related" key={i}>{block.cardmap.map(([name,question,next]) => <button type="button" key={next} onClick={() => navigate(next)}><span>{pick(name)} · {pick(question)}</span><ChevronRight size={14} /></button>)}</div>
+      if ("index" in block) return <div className="embedded-guide-related" key={i}>{PAGES.filter(item => item.short).map(item => <button type="button" key={item.slug} onClick={() => navigate(item.slug)}>{pick(item.title)}<ChevronRight size={14} /></button>)}</div>
+      return null
+    })}
+  </article>
 }

@@ -4,10 +4,12 @@ Coast App 的对外站点，托管在 GitHub Pages：https://eatlei.github.io/co
 
 | 页面 | 路径 | 说明 |
 |---|---|---|
-| 首页 | `/` | 产品介绍、试算器、定价、FAQ |
-| 使用手册 | `/guide.html` | 占位中 |
+| 首页 | `/` | 产品小册、用户评价、原地体验、定价、FAQ |
+| 使用手册 | `/guide.html` | 可搜索的分章说明，含 v1.1.1 测试版功能与用法 |
 | 隐私政策 | `/privacy.html` | App 内设置页与付费墙链接到这里，**文件名不能改** |
-| 更新日志 | `/changelog.html` | 同上 |
+| 更新日志 | `/changelog.html` | 常驻版本目录；v1.1.1 标注未更新、测试中 |
+| 常见问题 | `/faq.html` | 功能范围、免费与 Pro、同步与数据 |
+| 联系方式 | `/contact.html` | 作者与产品联系入口 |
 
 ## 技术栈
 
@@ -34,7 +36,8 @@ npm run build    # 产物在 dist/
 
 ## 素材
 
-`public/assets/screen-*.{zh,en}.webp` 是手机截图，按站点语言切换。中文的 `fire / ledger / assets` 从 App Store 营销图
-（FIRE 仓库 `app-store-fixed/zh`）裁出，偏移 (140, 500)、尺寸 962×2084；其余中文图和全部英文图来自模拟器
-`--seed-demo --pro` 加对应页面参数直接截屏（英文加 `-appLanguage en -AppleLanguages "(en)"`），状态栏用 `simctl status_bar override` 定成 9:41。
-`icon.png` 取自 App Store 的应用图标。
+`public/assets/screen-<name>.{zh,en}.webp` 为浅色 App 截图，`screen-<name>.{zh,en}.dark.webp` 为对应的深色截图。两种语言、两种外观共 44 张，来自 Coast 1.1.1（1364）的专用模拟器演示账本；网页外观切换时使用对应原图。
+
+`iphone-mockup.png` 来自 Apple Design Resources，保留官方边框与灵动岛；来源见 `public/assets/iphone-mockup-source.txt`。`difference-*-line.png` 为小火人主题插画，深色页面使用专用的 SVG 颜色与线条处理。`icon.png` 取自 App Store 应用图标。
+
+手册与首页详情弹窗共用 `Guide.tsx` 的内容；新增用法后应同步核对首页小册入口、`content/product.ts` 的免费 / Pro 范围和 FAQ。v1.1.1 当前仍标注「未更新 · 测试中」，正式发布时再调整状态。

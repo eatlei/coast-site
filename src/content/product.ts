@@ -1,9 +1,9 @@
-/** Website copy verified against Coast 1.1: PlanComparison and ProFeature. */
+/** Website copy verified against Coast 1.1.1: PlanComparison and ProFeature. */
 export type Copy = [string, string]
 export type Comparison = { label: Copy; free: Copy | null; pro: Copy }
 const yes: Copy = ["有", "Included"]
 export const COMPARISON: Comparison[] = [
-  { label: ["记账、账户、标签、模板、周期与还款计划", "Entries, accounts, tags, templates and recurring / repayment plans"], free: ["不限量", "Unlimited"], pro: ["不限量", "Unlimited"] },
+  { label: ["记账、图文笔记、账户、标签、模板、周期与还款计划", "Entries, bill notes, accounts, tags, templates and recurring / repayment plans"], free: ["不限量", "Unlimited"], pro: ["不限量", "Unlimited"] },
   { label: ["截图 / 通知 / 快捷指令记账、转账与组合付款", "Screenshot / notification / Shortcuts capture, transfers and combined payments"], free: yes, pro: yes },
   { label: ["AA 分账、分次退款、报销与到账记录", "Splits, partial refunds, reimbursements and received-payment records"], free: yes, pro: yes },
   { label: ["CSV / Excel 导入、全部账单导出", "CSV / Excel import and full entry export"], free: ["全部", "Full access"], pro: ["全部", "Full access"] },
@@ -17,6 +17,7 @@ export const COMPARISON: Comparison[] = [
   { label: ["收支试算滑杆、场景保存与并排比较", "What-If sliders, saved scenarios and side-by-side comparisons"], free: null, pro: yes },
   { label: ["Coast FIRE、Barista FIRE 与高级 FI 参数", "Coast FIRE, Barista FIRE and advanced FI parameters"], free: null, pro: yes },
   { label: ["预算", "Budgets"], free: ["总预算", "Total budget"], pro: ["含分类预算与配速推演", "Category budgets and pace projection"] },
+  { label: ["自定义记账周期", "Custom accounting cycle"], free: ["每月 1 日", "Day 1 of each month"], pro: ["自选 1—31 日", "Choose day 1–31"] },
   { label: ["月度回顾", "Monthly review"], free: ["一句话摘要", "One-line summary"], pro: ["完整版", "Full review"] },
   { label: ["复购洞察", "Repeat-buy insights"], free: null, pro: yes },
   { label: ["投资按份额 × 单价记、按代码查价、本金与收益", "Investment units × price, symbol lookup, contributions and returns"], free: null, pro: yes },
@@ -29,7 +30,7 @@ export const COMPARISON: Comparison[] = [
   { label: ["收支配色、分类图标导入与 App 图标搜索", "Income / expense colors, imported category icons and app-icon search"], free: yes, pro: yes },
 ]
 export const FREE_FEATURES: Copy[] = [
-  ["不限量记账、AA、退款、报销与到账记录", "Unlimited entries, splits, refunds, reimbursements and receipts"],
+  ["不限量记账、图文笔记、AA、退款、报销与到账记录", "Unlimited entries, bill notes, splits, refunds, reimbursements and receipts"],
   ["账户分组、信用卡管理、资产晴雨表与小组件", "Account groups, credit-card tools, asset weather and widgets"],
   ["CSV / Excel 导入导出、iCloud 同步与备份", "CSV / Excel import / export, iCloud sync and backups"],
   ["FI 进度、中性倒计时、总预算与月报摘要", "FI progress, neutral countdown, total budget and review summary"],
@@ -38,6 +39,7 @@ export const FREE_FEATURES: Copy[] = [
   ["App 内字号、主导航排序与图标搜索", "In-app text size, navigation order and app-icon search"],
 ]
 export const PRO_FEATURES: Copy[] = [
+  ["自定义每月记账起始日", "Custom monthly accounting start day"],
   ["投资持仓、价格查询、本金与收益", "Holdings, price lookup, contributions and returns"],
   ["自定义一级分类", "Custom top-level categories"],
   ["达成区间与收支试算", "Forecast range and What-If sliders"],

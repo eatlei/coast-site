@@ -22,7 +22,7 @@ export function LangMenu() {
   const { lang, setLang, t } = useLang()
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger nativeButton={false} render={<Button variant="outline" size="sm" className="gap-1.5 px-2.5 text-xs font-medium" aria-label={t("语言", "Language")} />}>
+      <DropdownMenuTrigger nativeButton render={<Button variant="outline" size="sm" className="gap-1.5 px-2.5 text-xs font-medium" aria-label={t("语言", "Language")} />}>
         <Languages className="size-3.5" />{lang === "zh" ? "中文" : "EN"}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -44,7 +44,7 @@ export function ThemeMenu() {
   const label = { auto: t("自动", "Auto"), light: t("浅色", "Light"), dark: t("深色", "Dark") }
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger nativeButton={false} render={<Button variant="outline" size="sm" className="gap-1.5 px-2.5 text-xs font-medium" aria-label={t("外观", "Appearance")} />}>
+      <DropdownMenuTrigger nativeButton render={<Button variant="outline" size="sm" className="gap-1.5 px-2.5 text-xs font-medium" aria-label={t("外观", "Appearance")} />}>
         <Icon className="size-3.5" />{label[theme]}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -108,18 +108,18 @@ export function Header() {
   }, [])
   return (
     <header className="pointer-events-none fixed inset-x-0 top-3 z-20 px-3 md:px-6">
-      <div className={`glass pointer-events-auto mx-auto flex h-14 w-full max-w-[1200px] items-center gap-4 rounded-full pl-5 pr-2.5 md:pl-7 ${scrolled ? "is-scrolled" : ""}`}>
+      <div className={`glass pointer-events-auto mx-auto flex h-14 w-full max-w-[1200px] items-center gap-2 rounded-full pl-4 pr-2.5 sm:gap-4 md:pl-7 ${scrolled ? "is-scrolled" : ""}`}>
         <a href={BASE} className="mr-auto flex items-center gap-2.5 font-heading text-xl font-semibold">
           <img src={asset("icon.png")} alt="" className="size-7 rounded-md" />Coast
         </a>
-        <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+        <nav className="hidden items-center gap-6 text-sm text-muted-foreground xl:flex">
           {NAV.map((n) => <a key={n.href} href={n.href} className="hover:text-foreground">{t(n.zh, n.en)}</a>)}
         </nav>
         <LangMenu />
         <ThemeMenu />
         <DownloadButton size="sm" className="hidden sm:inline-flex" />
         <Sheet open={menuOpen} onOpenChange={setMenuOpen} onOpenChangeComplete={onMenuSettled}>
-          <SheetTrigger render={<Button variant="outline" size="icon-sm" className="md:hidden" aria-label="Menu" />}>
+          <SheetTrigger render={<Button variant="outline" size="icon-sm" className="xl:hidden" aria-label="Menu" />}>
             <Menu />
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
@@ -142,10 +142,12 @@ export function Header() {
 export function Footer() {
   const { t } = useLang()
   return (
-    <footer className="rule mx-auto flex w-full max-w-[1200px] flex-wrap items-center gap-x-7 gap-y-3 py-10 text-xs text-muted-foreground">
+    <footer className="site-footer rule">
+      <div className="footer-identity">
       <a href={BASE} className="flex items-center gap-2 font-heading text-base text-foreground"><img src={asset("icon.png")} alt="" className="size-6 rounded-md" />Coast</a>
       <span>© 2026 Leon · <a href={`mailto:${MAIL}`} className="hover:text-foreground">{MAIL}</a> · <a href={X_URL} rel="noopener" className="hover:text-foreground">X @{X_HANDLE}</a> · <span title={t(`小红书号 ${XHS_ID}`, `Xiaohongshu ID ${XHS_ID}`)}>{t("小红书", "Xiaohongshu")} @{XHS_NAME}</span></span>
-      <nav className="flex flex-wrap gap-5 md:ml-auto">
+      </div>
+      <nav className="footer-links" aria-label={t("页脚导航", "Footer navigation")}>
         <a href={`${BASE}guide.html`} className="hover:text-foreground">{t("使用手册", "Manual")}</a>
         <a href={`${BASE}faq.html`} className="hover:text-foreground">{t("常见问题", "FAQ")}</a>
         <a href={`${BASE}contact.html`} className="hover:text-foreground">{t("联系我", "Contact")}</a>
@@ -173,11 +175,16 @@ export function DocPage({ title, subtitle, children, wide = false }: { title: st
   )
 }
 
-export function Device({ src, alt = "", width = 300, className = "" }: { src: string; alt?: string; width?: number; className?: string }) {
-  const pad = Math.round(width * 0.04), radius = Math.round(width * 0.173)
+/** 苹果官方 iPhone 18 Pro Max Black PNG；透明屏幕开口 1320 × 2868，外框和灵动岛覆盖在截图上方。 */
+export function Device({ src, alt = "", width = 300, className = "", priority = false }: { src: string; alt?: string; width?: number; className?: string; priority?: boolean }) {
+  const darkSrc = src.includes("/assets/screen-") ? src.replace(/\.webp(?=\?|$)/, ".dark.webp") : src
   return (
-    <div className={`mx-auto border border-rule bg-card shadow-[0_20px_50px_-30px_rgba(0,0,0,.4)] ${className}`} style={{ width: width + pad * 2, padding: pad, borderRadius: radius }}>
-      <img src={src} alt={alt} width={width} className="h-auto border border-rule" style={{ width, borderRadius: radius - pad }} loading="lazy" />
+    <div className={`device-mockup ${className}`} style={{ width: width * 1470 / 1320 }}>
+      <img className="device-frame" src={`${asset("iphone-mockup.png")}?v=apple-18-20261103`} alt="" aria-hidden="true" width={1470} height={3000} loading={priority ? "eager" : "lazy"} draggable={false} />
+      <div className="device-screen">
+        <img className="device-capture-light" src={src} alt={alt} width={1320} height={2868} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} draggable={false} />
+        <img className="device-capture-dark" src={darkSrc} alt={alt} width={1320} height={2868} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} draggable={false} />
+      </div>
     </div>
   )
 }

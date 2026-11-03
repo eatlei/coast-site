@@ -1,18 +1,48 @@
-import * as React from "react"
+import { useEffect, useRef, useState } from "react"
 import { V11_HIGHLIGHTS } from "@/content/product"
-import { Shuffle } from "lucide-react"
-import { DocPage } from "@/components/site/Shell"
-import { BASE, useLang } from "@/lib/i18n"
-import { REDUCED, gsap, useGSAP } from "@/lib/gsap"
+import { ArrowRight, ChevronDown, ListTree } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Device, Footer, Header } from "@/components/site/Shell"
+import { BASE, screen, useLang } from "@/lib/i18n"
 
 /** [中文标题, 中文说明, 英文标题, 英文说明]；说明可为空 */
 type Item = [string, string, string, string]
 type Section = { title: [string, string]; items: Item[] }
-type Version = { v: string; date: [string, string]; intro: [string, string]; sections: Section[] }
+type Version = { screen?: string; v: string; date: [string, string]; intro: [string, string]; sections: Section[] }
 
 const VERSIONS: Version[] = [
   {
-    v: "1.1.0",
+    v: "1.1.1", screen: "ledger",
+    date: ["2026 年 11 月 · 更新汇总", "November 2026 · Update overview"],
+    intro: ["从记一笔到对账，把每天会遇到的小事做得更顺手。记账周期可按自己的节奏设置，预算支持月、季、年；到期计划能在首页确认，账单笔记、账户操作和大账本加载也一起改进。", "A smoother everyday flow, from adding an entry to reconciling accounts. Choose your accounting cycle, plan monthly, quarterly or yearly budgets, and review due entries on Home. Bill notes, account actions and large-ledger loading have also improved."],
+    sections: [
+      { title: ["记账与账单", "Entries and bills"], items: [
+        ["加号旁的快捷入口", "常用操作在加号附近展开，可直接添加支出、收入或转账，继续沿用已有记账面板与偏好。", "Quick actions beside Add", "Open common actions near the Add button, then add spending, income or transfers using the familiar entry panel and preferences."],
+        ["账单笔记与关联记录", "账单支持独立的文字、图片笔记；AA、退款和报销等关联操作集中在详情中查看，追踪原消费与后续回款更方便。", "Bill notes and linked activity", "Keep separate text and photo notes on bills. Find linked splits, refunds and reimbursements in bill details and trace the original purchase alongside later receipts."],
+        ["更直观的日历", "日历可切换分类图标与金额展示。选中某一天后，从普通记账、AA 或模板入口记账，会沿用所选日期。", "A clearer calendar", "Switch category icons and amounts on the calendar. Entries, splits and templates opened from a selected day keep that date."],
+        ["草稿与历史备注", "金额输入切到后台再回来时保留未完成的草稿；历史备注按当前分类检索，较早用过的名称也能找到。数字键盘可选择 789 或 123 排列。", "Drafts and previous notes", "Keep unfinished amount drafts when returning from the background. Find previous notes within the current category, including older names, and choose a 789 or 123 keypad layout."],
+      ] },
+      { title: ["预算与记账周期", "Budgets and accounting cycles"], items: [
+        ["按自己的周期看账", "默认每月 1 日免费，Pro 可自选 1—31 日为记账起始日。账单首页可按月、季、半年、年查看，相关统计与预算沿用同一记账周期。", "A cycle that fits your life", "Day 1 is free; Pro lets you choose a start day from 1–31. Browse the ledger by month, quarter, half-year or year, with related statistics and budgets using the same cycle."],
+        ["月、季、年预算", "分别设置额度、单期调整与结转；可以复制上一期、提前规划未来预算。智能建议参考过去三个已结束周期，提供平均、中位数等方案。", "Monthly, quarterly and yearly budgets", "Set independent limits, period-specific changes and carryover. Copy the previous period or plan ahead; smart suggestions use the last three completed periods with options such as average and median."],
+        ["到期入账有确认、有记录", "贷款、分期和周期账单可选自动入账或手动确认。首页集中展示待确认、自动入账异常及新的入账记录；已查看只清除提醒，不会重复记账。", "Review entries when plans come due", "Choose automatic booking or manual confirmation for loans, installments and recurring plans. Home brings pending confirmations, automatic-booking issues and new entries together. Marking a notice as read clears the reminder without recording another entry."],
+      ] },
+      { title: ["账户与资金", "Accounts and money"], items: [
+        ["从账户直接记一笔", "账户详情提供对应的记账和转账入口，信用卡还款预选当前卡片为转入方。新建、编辑负债账户时，也能直接设置额度、账单日和还款日。", "Add entries from an account", "Use relevant entry and transfer actions in account details. Credit-card repayments preselect the card as the destination; set limits, statement days and due days when creating or editing liability accounts."],
+        ["大账本分批加载", "账户账单按完整活动日逐步加载，减少一次打开全量记录的等待；近期退款、报销和 AA 到账仍能关联到较早的原账单。", "Load large ledgers in batches", "Load account entries progressively by complete activity days. Recent refunds, reimbursements and split receipts remain linked to their older original bills."],
+        ["余额校准更清楚", "对账推算以截至当前的流水核对实际余额，校准差额单独记录；投资账户可选择把差额记为收益或亏损。", "Clearer reconciliation", "Compare the real balance with entries up to the current time and keep reconciliation adjustments separate. Investment accounts can optionally record an adjustment as a gain or loss."],
+        ["回款与资金方向复核", "改进 AA、分次退款、报销与组合付款的关联处理，让编辑、删除回款后的账户余额与个人实际支出保持一致。", "Linked receipts and payment direction", "Refined linked splits, partial refunds, reimbursements and combined payments so editing or removing a receipt keeps account balances and personal spending consistent."],
+      ] },
+      { title: ["识别与日常体验", "Capture and everyday improvements"], items: [
+        ["付款识别更完整", "补充英文付款信息、SGD / S$ 币种和支付时间的识别处理；金额、币种或时间不明确时，仍需核对后保存。", "More complete payment recognition", "Improved handling of English payment information, SGD / S$ and payment times. Check ambiguous amounts, currencies or times before saving."],
+        ["分类、标签与图标", "筛选、预算和账单详情沿用自定义分类名称与图标；分类、标签管理入口更清楚，并改进排序、删除和历史引用的处理。", "Categories, tags and icons", "Filters, budgets and bill details use custom category names and icons. Clearer category and tag management, with refined sorting, deletion and historical references."],
+        ["加载与备份反馈", "改进页面重复加载时的内容保留、图表刷新和隐私展示；备份复用相同内容的快照，文件操作失败时提供明确反馈。", "Loading and backup feedback", "Improved retained content during reloads, chart refreshes and privacy display. Backups reuse snapshots with unchanged content and give clear feedback when file operations fail."],
+      ] },
+    ],
+  },
+  {
+    v: "1.1.0", screen: "assets",
     date: ["2026 年 10 月", "Oct 2026"],
     intro: ["从账户管理到花钱前的决定：新增个人资产晴雨表、账户分组、信用卡概览、投资持仓、自定义分类和消费模拟器，补齐到账记录与锁屏入口。日常记账能力继续免费；投资持仓与收益、自定义一级分类属于 Pro，消费模拟器的基础结果免费、完整分析与冷静期属于 Pro。", "From account management to spending decisions: personal asset weather, account groups, credit-card overviews, holdings, custom categories, a spending simulator, received-payment records and new Lock Screen choices. Everyday logging remains free. Holdings / returns and custom top-level categories require Pro; basic spending-simulation results are free, while full analysis and cooling-off tools require Pro."],
     sections: [
@@ -381,120 +411,44 @@ const ROADMAP: { tier: "free" | "pro"; zh: [string, string]; en: [string, string
   { tier: "free", zh: ["AA 分账：拍照识别", "一张小票拍下来，菜品自动逐行认出，谁点了什么勾一下就分好——不用再手动敲每一项。识别在手机本地完成，不上传。"], en: ["Split bills from a photo", "Snap the receipt, every line item is recognised, tick who had what and the split is done — no more typing each item. Recognition runs on your phone; nothing is uploaded."] },
 ]
 
-/** 一次只看一张：点「换一个」随机换到另一张（不会连着出同一张），下面的点能直接跳。
- *  平铺占大半屏、横滑又像在翻商品——这里想要的是「随手抽一张看看在做什么」。
- *  七张叠在同一格里、只显示一张，高度自动取最高的那张——换到哪张下面都不跳。
- *
- *  「酷一点」的部分（都只在 hover 设备上、且尊重减弱动态效果）：
- *  跟鼠标走的 3D 倾斜（同首页 TiltCard 的手法）、跟鼠标走的一束光、
- *  Pro 卡是镭射卡：彩虹描边色相跟鼠标转、卡面一层跟鼠标走的虹彩，正文底色仍是实色保证可读；换卡时从侧面翻进来。
- *  （试过 1px 渐变描边 + 右下角大水印序号：描边在 3D 倾斜下边缘发虚、水印压住了正文——都撤了） */
 function Roadmap() {
   const { t, lang } = useLang()
-  const z = lang === "zh"
-  const n = ROADMAP.length
-  const [i, setI] = React.useState(() => Math.floor(Math.random() * n))
-  const [spin, setSpin] = React.useState(0)
-  const go = (next: number) => setI(((next % n) + n) % n)
-  const shuffle = () => { let next = i; while (next === i) next = Math.floor(Math.random() * n); go(next); setSpin((x) => x + 1) }
-
-  const stage = React.useRef<HTMLDivElement>(null)
-  const fx = React.useRef<{ rx: gsap.QuickToFunc; ry: gsap.QuickToFunc } | null>(null)
-  useGSAP(() => {
-    const el = stage.current!
-    gsap.set(el, { transformPerspective: 1000, transformOrigin: "50% 50%" })
-    const opt = { duration: 0.5, ease: "power3" }
-    fx.current = { rx: gsap.quickTo(el, "rotationX", opt), ry: gsap.quickTo(el, "rotationY", opt) }
-  }, { scope: stage })
-  const move = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget, r = el.getBoundingClientRect()
-    const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height
-    el.style.setProperty("--mx", `${px * 100}%`)
-    el.style.setProperty("--my", `${py * 100}%`)
-    // 镭射描边的色相跟着鼠标转一圈：横向走一遍 = 转 360°
-    el.style.setProperty("--angle", `${Math.round(px * 360)}deg`)
-    const f = fx.current; if (!f || matchMedia("(hover: none)").matches || matchMedia(REDUCED).matches) return
-    f.ry(((e.clientX - r.left) / r.width - 0.5) * 10); f.rx(-((e.clientY - r.top) / r.height - 0.5) * 8)
-  }
-  const leave = () => { const f = fx.current; if (!f) return; f.rx(0); f.ry(0) }
-
-  return (
-    <section id="roadmap" className="grid gap-6 py-12 first:pt-2 md:grid-cols-[200px_1fr] md:gap-12">
-      <div className="md:sticky md:top-24 md:self-start">
-        <div className="font-heading text-[44px] leading-none">{t("计划中", "Next")}</div>
-        <div className="mt-2 text-sm text-muted-foreground">{t("接下来要做的大功能", "What's coming")}</div>
-      </div>
-      <div className="min-w-0">
-        <p className="max-w-[640px] leading-relaxed text-muted-foreground">{t("只列大功能和做它的理由。顺序不代表先后，做到哪一步会在这里更新。", "Only the big ones, and why. Order isn't priority; this list updates as each one lands.")}</p>
-        <div className="roadmap-stage mt-6 max-w-[640px]">
-          <div ref={stage} onMouseMove={move} onMouseLeave={leave} className="grid">
-            {ROADMAP.map((r, k) => (
-              <div key={r.zh[0]} aria-hidden={k !== i} className={`col-start-1 row-start-1 relative overflow-hidden rounded-2xl p-6 md:p-8 ${r.tier === "pro" ? "roadmap-holo" : "border border-rule bg-card"} ${k === i ? "roadmap-card" : "invisible"}`}>
-                <div className="roadmap-light" aria-hidden />
-                <div className="relative flex items-center justify-between gap-3">
-                  <div className="flex items-baseline gap-3">
-                    <span className="num text-xs text-muted-foreground">{String(k + 1).padStart(2, "0")}</span>
-                    <div className="text-lg font-medium">{z ? r.zh[0] : r.en[0]}</div>
-                  </div>
-                  <span className={`tag rounded-full px-2 py-0.5 text-[11px] ${r.tier === "pro" ? "roadmap-holo-pill" : "bg-muted text-muted-foreground"}`}>{r.tier === "pro" ? "Pro" : t("免费", "Free")}</span>
-                </div>
-                <p className="relative mt-3 text-[15px] leading-relaxed text-muted-foreground">{z ? r.zh[1] : r.en[1]}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="mt-4 flex max-w-[640px] flex-wrap items-center gap-4">
-          <button type="button" onClick={shuffle} className="inline-flex h-9 items-center gap-2 rounded-full border border-rule bg-card px-4 text-sm font-medium transition-colors hover:border-primary/40">
-            <Shuffle key={spin} className={`size-4 ${spin ? "roadmap-dice" : ""}`} />{t("换一个", "Show me another")}
-          </button>
-          <div className="flex items-center gap-1.5" aria-label={t("第几个", "Which one")}>
-            {ROADMAP.map((x, k) => (
-              <button key={x.zh[0]} type="button" onClick={() => go(k)} aria-label={z ? x.zh[0] : x.en[0]} className={`h-2 rounded-full transition-all ${k === i ? "w-5 bg-foreground" : "w-2 bg-border hover:bg-muted-foreground/60"}`} />
-            ))}
-          </div>
-          <span className="num text-xs text-muted-foreground">{i + 1} / {n}</span>
-          <a href={`${BASE}contact.html`} className="tag ml-auto text-primary hover:underline">{t("还有想要的功能？告诉我 →", "Want something else? Tell me →")}</a>
-        </div>
-      </div>
-    </section>
-  )
+  return <details className="release-roadmap" id="roadmap"><summary>{t("接下来的计划", "What is next")}<ChevronDown size={19} /></summary><p>{t("计划会随开发进度调整，顺序不代表上线先后。", "Plans evolve as development progresses; their order is not a release schedule.")}</p><div>{ROADMAP.map(item => <section key={item.zh[0]}><h3>{lang === "zh" ? item.zh[0] : item.en[0]}<span>{item.tier === "pro" ? "Pro" : t("免费", "Free")}</span></h3><p>{lang === "zh" ? item.zh[1] : item.en[1]}</p></section>)}</div><a href={`${BASE}contact.html`}>{t("告诉我你的想法", "Share your ideas")}<ArrowRight size={15} /></a></details>
 }
+
+function VersionNav({ selected, onPick }: { selected: string; onPick?: () => void }) {
+  const { t } = useLang()
+  return <nav className="release-version-nav" aria-label={t("选择版本", "Choose a version")}>{VERSIONS.map(item => <a key={item.v} href={`#v${item.v}`} aria-current={item.v === selected ? "page" : undefined} onClick={onPick}><span>{item.v}</span>{item === VERSIONS[0] && <small>{t("测试中", "In testing")}</small>}</a>)}</nav>
+}
+
+function versionFromHash() { return VERSIONS.find(item => `#v${item.v}` === location.hash)?.v ?? VERSIONS[0].v }
 
 export default function Changelog() {
   const { t, lang } = useLang()
   const z = lang === "zh"
-  return (
-    <DocPage wide title={t("更新日志", "Changelog")} subtitle={t("每一次更新，都离自由更近一步。", "Every update, one step closer to freedom.")}>
-      <div className="divide-y divide-border">
-        <Roadmap />
-        {VERSIONS.map((ver) => (
-          <section key={ver.v} id={`v${ver.v}`} className="grid gap-6 py-12 first:pt-2 md:grid-cols-[200px_1fr] md:gap-12">
-            <div className="md:sticky md:top-24 md:self-start">
-              <div className="font-heading text-[44px] leading-none">{ver.v}</div>
-              <div className="mt-2 text-sm text-muted-foreground">{z ? ver.date[0] : ver.date[1]}</div>
-            </div>
-            <div>
-              <p className="max-w-[640px] leading-relaxed text-muted-foreground">{z ? ver.intro[0] : ver.intro[1]}</p>
-              {ver.sections.map((g) => (
-                <div key={g.title[0]} className="mt-8">
-                  <h2 className="mb-3 font-sans text-xs font-bold uppercase tracking-[.12em] text-primary">{z ? g.title[0] : g.title[1]}</h2>
-                  <ul className="space-y-2">
-                    {g.items.map((it) => {
-                      const title = z ? it[0] : it[2], body = z ? it[1] : it[3]
-                      return (
-                        <li key={it[0]} className="flex gap-3 text-[15px] leading-relaxed">
-                          <span className="mt-[11px] size-1.5 shrink-0 rounded-full bg-border" />
-                          <span><span className="font-medium">{title}</span>{body && <span className="text-muted-foreground">　{body}</span>}</span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-        ))}
+  const [selected, setSelected] = useState(versionFromHash)
+  useEffect(() => { const update = () => { if (location.hash !== "#roadmap") setSelected(versionFromHash()) }; window.addEventListener("hashchange",update); return () => window.removeEventListener("hashchange",update) }, [])
+  const ver = VERSIONS.find(item => item.v === selected)!
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const contentsFocus = useRef<HTMLHeadingElement>(null)
+  const previousVersion = useRef(selected)
+  useEffect(() => {
+    if (previousVersion.current === selected) return
+    previousVersion.current = selected
+    document.getElementById("release-reading")?.scrollIntoView({ block: "start", behavior: "instant" })
+  }, [selected])
+  return <><Header /><main className="release-page editorial-page">
+    <header className="editorial-masthead"><h1>{t("更新日志", "Changelog")}</h1><p>{t("每一次更新，都让记账更顺手。", "Every update makes tracking feel a little better.")}</p></header>
+    <div className="release-layout">
+      <aside className="release-sidebar"><div className="manual-sidebar-inner"><p className="release-directory-label">{t("版本记录", "Version history")}</p><VersionNav selected={selected} /></div></aside>
+      <div className="release-reading" id="release-reading">
+        <div className="release-mobile-directory"><Sheet open={sheetOpen} onOpenChange={setSheetOpen}><SheetTrigger render={<Button variant="outline" className="w-full justify-start gap-2" />}><ListTree size={17} />{t("版本", "Version")} · {selected}</SheetTrigger><SheetContent side="left" className="w-80 overflow-y-auto" initialFocus={contentsFocus}><SheetHeader><SheetTitle ref={contentsFocus} tabIndex={-1}>{t("版本记录", "Version history")}</SheetTitle></SheetHeader><div className="px-4 pb-6"><VersionNav selected={selected} onPick={() => setSheetOpen(false)} /></div></SheetContent></Sheet></div>
+    <article className="release-article" key={ver.v}>
+      <header className={`release-opening ${ver.screen ? "has-phone" : ""}`}><div><p className="release-date">{z ? ver.date[0] : ver.date[1]}</p><h2>Coast {ver.v}</h2>{ver.v === "1.1.1" && <p className="version-status">{t("未更新 · 测试中", "Not released · In testing")}</p>}<p className="release-intro">{z ? ver.intro[0] : ver.intro[1]}</p></div>{ver.screen && <div className="release-phone"><Device src={screen(ver.screen,lang)} alt={t("Coast 界面", "Coast app interface")} width={174} /></div>}</header>
+      <div className="release-sections">{ver.sections.map(group => <section key={group.title[0]}><h3>{z ? group.title[0] : group.title[1]}</h3><div>{group.items.map(item => <div className="release-item" key={item[0]}><h4>{z ? item[0] : item[2]}</h4>{(z ? item[1] : item[3]) && <p>{z ? item[1] : item[3]}</p>}</div>)}</div></section>)}</div>
+    </article>
+    <Roadmap />
       </div>
-    </DocPage>
-  )
+    </div>
+  </main><Footer /></>
 }

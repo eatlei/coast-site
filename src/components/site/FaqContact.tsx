@@ -9,16 +9,16 @@ import { MAIL, X_HANDLE, X_URL, XHS_ID, XHS_NAME, useLang } from "@/lib/i18n"
 /* ---------- FAQ ---------- */
 const FAQ: [string, string, string, string][] = [
   [
-    "v1.1 新增了什么？",
-    "资产晴雨表、账户分组和信用卡管理、投资持仓与收益、自定义一级分类、消费模拟器、到账记录，以及锁屏应急金和记一笔入口。转账、快捷记账、字号和导航排序也有升级。投资持仓与收益、自定义一级分类是 Pro；消费模拟器有免费与 Pro 两部分。完整范围见使用手册的免费 / Pro 对比。",
-    "What's new in v1.1?",
-    "Asset weather, account groups and credit-card tools, holdings and returns, custom top-level categories, the spending simulator, received-payment records, and Lock Screen runway and quick entry. Transfers, Quick Capture, text size and navigation order are improved too. Holdings / returns and custom categories require Pro; the spending simulator has both Free and Pro features. See the guide for the full access comparison."
+    "v1.1.1 测试中，有哪些调整？",
+    "v1.1.1 尚未更新，正在测试。测试版新增记账周期、月 / 季 / 年预算、到期计划确认、账单图文笔记，并改进快捷入口、日历、金额草稿、历史备注和大账本加载。默认每月 1 日免费，自定义起始日属于 Pro；总预算免费，分类预算和配速推演属于 Pro。具体步骤见使用手册的 v1.1.1 功能与用法。",
+    "What is being tested in v1.1.1?",
+    "v1.1.1 is not released and is in testing. The test version includes accounting cycles, monthly / quarterly / yearly budgets, due-plan confirmation and bill notes with text and photos, plus improved quick actions, calendar, amount drafts, previous notes and large-ledger loading. Day 1 is free; a custom start requires Pro. Total budgets are free; category budgets and pace projections require Pro. See v1.1.1 features and usage in the manual."
   ],
   [
     "免费版能用多久？哪些要 Pro？",
-    "免费版没有使用期限，记账、账户、标签、模板、AA、退款、报销、总预算、导入导出、iCloud 同步、资产晴雨表和小组件都能用。FI 进度与中性倒计时免费，试算滑杆、三档区间、场景比较、Coast / Barista FIRE、高级 FI 参数、投资分析、自定义一级分类和其他进阶功能属于 Pro。月报免费版是一句话摘要；分类预算和完整月报属于 Pro。符合历史免费权益的用户以 App 内保留权益为准。",
+    "免费版没有使用期限，记账、账户、标签、模板、AA、退款、报销、总预算、导入导出、iCloud 同步、资产晴雨表和小组件都能用。FI 进度与中性倒计时免费，试算滑杆、三档区间、场景比较、Coast / Barista FIRE、高级 FI 参数、投资分析、自定义一级分类、自定义记账起始日和其他进阶功能属于 Pro。月报免费版是一句话摘要；分类预算和完整月报属于 Pro。符合历史免费权益的用户以 App 内保留权益为准。",
     "How long does Free last, and what needs Pro?",
-    "Free has no time limit: entries, accounts, tags, templates, splits, refunds, claims, total budgets, import / export, iCloud sync, asset weather and widgets are included. FI progress and the neutral countdown are free. What-If sliders, forecast ranges, scenario comparisons, Coast / Barista FIRE, advanced FI settings, investment analysis, custom top-level categories and other advanced features require Pro. Free reviews have a one-line summary; category budgets and full reviews require Pro. Eligible legacy access is retained as shown in the app."
+    "Free has no time limit: entries, accounts, tags, templates, splits, refunds, claims, total budgets, import / export, iCloud sync, asset weather and widgets are included. FI progress and the neutral countdown are free. What-If sliders, forecast ranges, scenario comparisons, Coast / Barista FIRE, advanced FI settings, investment analysis, custom top-level categories, a custom accounting start day and other advanced features require Pro. Free reviews have a one-line summary; category budgets and full reviews require Pro. Eligible legacy access is retained as shown in the app."
   ],
   [
     "消费模拟器是不是都收费？",

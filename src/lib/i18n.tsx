@@ -39,8 +39,8 @@ export function useLang() {
 /** 站点根路径（GitHub Pages 子目录），静态资源统一走这里 */
 export const BASE = import.meta.env.BASE_URL
 export const asset = (name: string) => `${BASE}assets/${name}`
-/** 手机截图按语言分两套：screen-<name>.zh.webp / .en.webp */
-export const screen = (name: string, lang: Lang) => `${BASE}assets/screen-${name}.${lang}.webp?v=1.1-20261019`
+/** 浅色原图按语言分套；Device 同时使用对应的 .dark.webp 深色原图。 */
+export const screen = (name: string, lang: Lang) => `${BASE}assets/screen-${name}.${lang}.webp?v=themed-1.1.1-1364-r2`
 export const APP_STORE = "https://apps.apple.com/cn/app/id6793885422"
 export const MAIL = "hi@thisleon.com"
 /** 联系方式：首页「联系我」和页脚共用这一份，改一处即可 */

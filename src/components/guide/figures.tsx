@@ -253,23 +253,11 @@ function Steps({ steps }: { steps: [string, string][] }) {
 export function EntryWays() {
   const { t } = useLang()
   const ways = [
-    { h: t("点「＋」", "Tap +"), s: t("约 5 秒", "~5 s"), d: t("选分类 → 输金额 → 完成。键盘自带加减乘除。", "Category → amount → done. The keypad does arithmetic."), w: 70 },
-    { h: t("长按「＋」用模板", "Long-press + for a template"), s: t("约 2 秒", "~2 s"), d: t("房租、通勤、每天那杯咖啡，一步选用。", "Rent, commute, the daily coffee — one step."), w: 28 },
-    { h: t("截图记账（施工中）", "Screenshot Capture (under construction)"), s: t("约 1 秒", "~1 s"), d: t("支付完截个屏，金额、时间、分类、账户自动填好。入口暂时关闭。", "Screenshot the payment; amount, time, category and account filled in. Temporarily off."), w: 14 },
+    [t("手动记一笔", "Add an entry"),t("从加号选择支出、收入或转账，核对金额、分类和账户。", "Choose expense, income or transfer from Add, then check the amount, category and account.")],
+    [t("复用模板", "Reuse a template"),t("从加号快捷入口选择模板，填写这次有变化的内容。点按与长按按你的偏好设置。", "Choose a template from Add actions and change only what differs. Tap and long-press behavior follows your preferences.")],
+    [t("截图与通知记账", "Screenshot and notification capture"),t("安装对应快捷指令，识别后核对金额、币种、分类与账户。通知记账需 iOS 27。", "Install the relevant shortcut and review the amount, currency, category and account after capture. Notification Capture requires iOS 27.")],
   ]
-  return (
-    <Fig caption={t("大致耗时，按常见操作估。越常见的账，越该用越快的方式记。", "Rough timings for typical use. The more often you log something, the faster the method should be.")}>
-      <div className="space-y-4">
-        {ways.map((w) => (
-          <div key={w.h}>
-            <div className="flex items-baseline justify-between gap-3"><span className="font-medium">{w.h}</span><span className="num text-sm text-primary">{w.s}</span></div>
-            <div className="mt-1.5 h-2 rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{ width: `${w.w}%` }} /></div>
-            <div className="mt-1.5 text-[13px] text-muted-foreground">{w.d}</div>
-          </div>
-        ))}
-      </div>
-    </Fig>
-  )
+  return <Fig caption={t("不同入口，沿用同一套账单与统计规则。", "Different entry points use the same bill and statistics rules.")}><div className="guide-entry-ways">{ways.map(([title,body],i) => <div key={title}><span aria-hidden="true">0{i+1}</span><div><h4>{title}</h4><p>{body}</p></div></div>)}</div></Fig>
 }
 
 export function ExtrasLabel() {

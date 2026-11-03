@@ -1,19 +1,21 @@
 import * as React from "react"
-import { Check, Cloud, CalendarDays, EyeOff, FileText, GitBranch, Globe, Hourglass, LayoutGrid, Palette, Repeat, Scale, ScanLine, ShoppingBag, Smartphone, Undo2, Upload, Wand2 } from "lucide-react"
-import { ListChecks, Shapes } from "lucide-react"
+import { Check, Cloud, CalendarDays, Smartphone, Upload } from "lucide-react"
+import { Star, ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
-import { NumberInput } from "@/components/site/NumberInput"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { APP_STORE_REVIEWS, APP_STORE_REVIEW_SOURCE, APP_STORE_RATING, APP_STORE_RATING_SOURCE } from "@/content/reviews"
+import { captureBook, turnBookPage, type BookSnapshot } from "@/components/site/bookTurn"
+import { CoastExplainer } from "@/components/site/CoastExplainer"
+import { ConventionalSketch } from "@/components/site/ConventionalSketch"
+import { BookletExperience } from "@/components/site/BookletExperience"
 import { Device, DownloadButton, Footer, Header } from "@/components/site/Shell"
 import { H2, Lead, Section, Tag } from "@/components/site/Blocks"
 import { Contact, Faq } from "@/components/site/FaqContact"
-import { Sketch, type SketchId } from "@/components/site/Sketches"
-import { FREE_FEATURES as FREE, PRO_FEATURES as PRO, V11_HIGHLIGHTS } from "@/content/product"
+import { FREE_FEATURES as FREE, PRO_FEATURES as PRO } from "@/content/product"
 import { APP_STORE, screen, useLang } from "@/lib/i18n"
-import { EASE, REDUCED, ScrollTrigger, SplitText, gsap, useGSAP } from "@/lib/gsap"
+import { EASE, REDUCED, ScrollTrigger, gsap, useGSAP } from "@/lib/gsap"
 
 /* ---------- 财务模型：和 App 内 MetricsEngine.forecast 同一套逐月迭代 ---------- */
-const NET = 576000, EXP = 10063, INC = 26850, WR = 0.04, RULER = 300 // 25 年标尺
 function monthsToFI(n0: number, s: number, annual: number, fi: number): number | null {
   if (n0 >= fi) return 0
   const m = annual / 12
@@ -22,496 +24,343 @@ function monthsToFI(n0: number, s: number, annual: number, fi: number): number |
   for (let t = 0; t < 1200; t++) { n = n * (1 + m) + s; if (n >= fi) return t + 1 }
   return null
 }
-function plan(cut: number, raise: number, extraMonthly = 0) {
-  const exp = EXP * (1 - cut) + extraMonthly, inc = INC * (1 + raise), fi = (exp * 12) / WR, s = inc - exp
-  return { exp, inc, fi, s, mid: monthsToFI(NET, s, 0.05, fi), opt: monthsToFI(NET, s, 0.07, fi), pes: monthsToFI(NET, s, 0.03, fi) }
-}
-const BASELINE = plan(0, 0)
-const fmt = (n: number) => "¥" + Math.round(n).toLocaleString("en-US")
-const fiYear = (m: number | null) => { const now = new Date(); return now.getFullYear() + Math.floor((now.getMonth() + (m ?? 0)) / 12) }
-
-/** 净资产轨迹，固定 N 个采样点（点数固定才能用 GSAP 把两条 path 的 d 平滑过渡） */
-function trajectory(p: ReturnType<typeof plan>, N = 60) {
-  const months = p.mid ?? RULER, m = 0.05 / 12
-  const series = [NET]; let n = NET
-  for (let t = 0; t < months; t++) { n = n * (1 + m) + p.s; series.push(n) }
-  const pts: [number, number][] = []
-  for (let i = 0; i <= N; i++) {
-    const idx = Math.min(series.length - 1, Math.round((i / N) * months))
-    pts.push([(i / N) * months, Math.max(0, Math.min(1, (series[idx] - NET) / (p.fi - NET)))])
-  }
-  return pts
-}
-/** x 轴：normalized 时终点铺满宽度（首屏装饰）；absolute 时按 25 年标尺（试算器，能看到终点左右移动） */
-function pathD(pts: [number, number][], box: { x0: number; w: number; yTop: number; yBot: number }, axis: "normalized" | "absolute") {
-  const last = pts[pts.length - 1][0] || 1
-  return pts.map(([t, y], i) => {
-    const x = box.x0 + box.w * (axis === "normalized" ? t / last : Math.min(1, t / RULER))
-    return `${i ? "L" : "M"}${x.toFixed(1)} ${(box.yBot - (box.yBot - box.yTop) * y).toFixed(1)}`
-  }).join(" ")
-}
-
-/* 滑杆值全页共享：首屏曲线和试算器画的是同一条线 */
-const SimContext = React.createContext<{ cut: number; raise: number; setCut: (v: number) => void; setRaise: (v: number) => void }>({ cut: 0, raise: 0, setCut: () => {}, setRaise: () => {} })
-
-/* ---------- Hero：复利曲线（真算的）+ 逐行揭示 ---------- */
-const HERO_BOX = { x0: 0, w: 1150, yTop: 120, yBot: 975 }
+/* ---------- 首屏：核心价值、下载与真实产品界面 ---------- */
 function Hero() {
   const { t, lang } = useLang()
-  const { cut, raise } = React.useContext(SimContext)
-  const root = React.useRef<HTMLDivElement>(null)
-  const pathRef = React.useRef<SVGPathElement>(null)
-  const p = plan(cut / 100, raise / 100)
-  const d = pathD(trajectory(p), HERO_BOX, "normalized")
+  const root = React.useRef<HTMLElement>(null)
   useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduced: REDUCED }, (ctx) => {
-      if (ctx.conditions?.reduced) return
-      const split = SplitText.create(".hero-h1", { type: "lines", mask: "lines", linesClass: "hl", autoSplit: true })
-      const tl = gsap.timeline({ defaults: { ease: EASE } })
-      tl.addLabel("curve", 0.3)
-      tl.from(split.lines, { yPercent: 120, duration: 1.1, stagger: 0.12 }, 0.1)
-        .from(".hero-sub", { y: 18, opacity: 0, duration: 0.9 }, "-=0.6")
-        .from(".hero-cta", { y: 12, opacity: 0, duration: 0.7 }, "-=0.6")
-        .from(".hero-phone", { y: 48, opacity: 0, duration: 1.2 }, "-=1")
-        .fromTo(".hero-curve", { drawSVG: "0%" }, { drawSVG: "100%", duration: 1.8, ease: "power2.inOut" }, "curve")
-        .from(".hero-dot", { scale: 0, duration: 0.45, ease: "back.out(2.5)" }, "curve+=1.75")
-        .from(".hero-year", { opacity: 0, x: -6, duration: 0.5 }, "curve+=1.9")
-      gsap.to(".hero-phone", { yPercent: -10, ease: "none", scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true } })
-      return () => split.revert()
-    })
-  }, { scope: root, dependencies: [lang], revertOnUpdate: true })
-  // 滑杆变了：曲线平滑过渡到新形状。只在 d 真变了才 tween，且不能 overwrite:true——
-  // 那会把同一条 path 上的 DrawSVG 绘制动画一起杀掉（StrictMode 下 effect 跑两次就会触发）
-  React.useEffect(() => {
-    const el = pathRef.current
-    if (!el || el.getAttribute("d") === d) return
-    gsap.to(el, { attr: { d }, duration: 0.6, ease: "power2.out", overwrite: "auto" })
-  }, [d])
-
+    if (matchMedia(REDUCED).matches) return
+    gsap.from(".hero-copy, .hero-preview", { y: 20, opacity: 0, duration: 0.8, stagger: 0.12, ease: EASE })
+  }, { scope: root })
   return (
-    <section ref={root} className="relative overflow-hidden px-6 pb-20 pt-32 md:px-10 md:pb-28 md:pt-40">
-      {/* 曲线按容器拉伸，圆点不能画在 SVG 里（会被拉成椭圆），用同一套坐标换算成百分比定位：
-          SVG 铺满整段，终点 (1150, 120) → left 95.8%，top 12%。终点放得高，是为了在 1280 宽时也露在手机上方 */}
-      <svg className="pointer-events-none absolute inset-0 hidden h-full w-full md:block" viewBox="0 0 1200 1000" preserveAspectRatio="none" aria-hidden="true">
-        <path ref={pathRef} className="hero-curve" d={d} fill="none" stroke="var(--primary)" strokeWidth="1.25" vectorEffect="non-scaling-stroke" opacity=".38" />
-      </svg>
-      <span className="hero-dot pointer-events-none absolute hidden size-2.5 md:block -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" style={{ left: "95.83%", top: "12%" }} aria-hidden="true" />
-      <span className="hero-year tag pointer-events-none absolute hidden -translate-y-1/2 md:block font-mono text-primary" style={{ left: "calc(95.83% - 12px)", top: "calc(12% + 18px)", transform: "translateX(-100%)" }} aria-hidden="true">{fiYear(p.mid)}</span>
-      <div className="relative mx-auto grid w-full max-w-[1200px] items-end gap-12 md:grid-cols-[minmax(0,1fr)_320px] md:gap-20">
-        <div>
-          <h1 key={lang} className="hero-h1 max-w-[720px] text-[34px] font-semibold leading-[1.12] sm:text-[44px] md:text-[60px]">
-            {lang === "zh" ? <>所有记账都在讲过去，<br />只有它在讲<span className="text-primary">未来</span>。</>
-              : <>Every money app talks about the past.<br />This one talks about <span className="text-primary">when you can stop</span>.</>}
+    <section ref={root} className="home-hero">
+      <div className="hero-surface">
+        <div className="hero-copy">
+          <h1 className="hero-h1">
+            {lang === "zh" ? <>记下今天，<br /><span className="text-primary">看见自由的那一天。</span></>
+              : <>Track today.<br /><span className="text-primary">See your freedom day.</span></>}
           </h1>
-          <p className="hero-sub mt-7 max-w-[480px] text-[17px] leading-relaxed text-muted-foreground md:text-lg">
-            {t("Coast 把「今天花了多少」和「哪一年可以不上班」连起来。记账是输入，输出是一个日期。",
-              "Coast connects what you spent today to the year you can stop working. Tracking is the input. The output is a date.")}
-          </p>
-          <a href="changelog.html" className="mt-5 inline-flex rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90">{t("v1.1 · 资产晴雨表与账户升级 →", "v1.1 · Asset weather & account upgrades →")}</a>
-          <div className="hero-cta mt-9 flex flex-wrap items-center gap-5">
+          <p className="hero-sub">{t("记清收支与资产，看见距离财务自由还有多久。", "Track spending and net worth. See how far you are from financial freedom.")}</p>
+          <div className="hero-actions">
             <DownloadButton size="lg" full />
-            <span className="tag">{t("iOS 18+ · 无账号 · 无服务器", "iOS 18+ · No account · No server")}</span>
           </div>
+          <p className="hero-note">{t("iOS 18+ · 无需注册", "iOS 18+ · No account needed")}</p>
         </div>
-        <div className="hero-phone"><Device src={screen("fire", lang)} alt="Coast FIRE" width={280} /></div>
+        <div className="hero-preview" aria-label={t("Coast 的自由倒计时与日常账单界面", "Coast freedom countdown and everyday ledger")}>
+          <div className="hero-phone hero-phone-main"><Device src={screen("fire", lang)} alt={t("Coast 自由倒计时", "Coast freedom countdown")} width={280} priority /></div>
+          <div className="hero-phone hero-phone-secondary"><Device src={screen("ledger", lang)} alt={t("Coast 日常账单", "Coast everyday ledger")} width={280} priority /></div>
+        </div>
       </div>
     </section>
   )
 }
 
-/* ---------- 功能四屏：桌面端 pin 住整段，滚动切屏 ---------- */
+/* ---------- 两本产品小册：功能与差异，按章节原地翻阅 ---------- */
 const FEATURES = [
   { img: "fire-pro", zh: ["自由倒计时", "FIRE 页直接显示距离财务自由还有多久。展开试算，调整收入与支出，倒计时实时重算。"], en: ["Freedom countdown", "The FIRE tab shows how long until financial freedom. Expand What-If and adjust income or spending to recalculate the countdown."] },
   { img: "ledger", zh: ["复杂的钱也记得清", "AA、报销、分次退款、组合支付、分期、周期账单，都有自己的位置。"], en: ["The messy stuff, handled", "Splits, reimbursements, partial refunds, installments, recurring bills. Each has a place."] },
   { img: "assets", zh: ["资产看趋势", "现金、投资、不动产、负债分开算。新增资产晴雨表，结合持仓、组合付款与余额校准，看清财务状况。"], en: ["Net worth as a trend", "Cash, investments, property and debt, with asset weather, holdings, combined payments and balance reconciliation."] },
-  { img: "budget", zh: ["预算看节奏", "月中就知道会不会超。建议额度按你真实花过的来，不是拍脑袋。"], en: ["Budget by pace", "Know mid-month if you'll go over. Limits from what you actually spent, not a guess."] },
+  { img: "budget", zh: ["预算跟着周期走", "月中就知道会不会超。建议额度按你真实花过的来，不是拍脑袋。"], en: ["Budgets for your cycle", "Know mid-month if you'll go over. Limits from what you actually spent, not a guess."] },
+  { img: "capture", zh: ["少输入，也能记完整", ""], en: ["Less typing, complete entries", ""] },
+  { img: "data", zh: ["从流水里，看见习惯", ""], en: ["Find the habits in your entries", ""] },
+  { img: "currency", zh: ["换设备、换币种，都接得上", ""], en: ["Across devices and currencies", ""] },
+  { img: "appearance", zh: ["把记账调成顺手的样子", ""], en: ["Make tracking feel like yours", ""] },
 ]
-function Features() {
+const DIFFERENCES = [
+  { title: ["算出距离自由还有多久", "Calculate the time to freedom"], question: ["这个月花了多少钱？", "How much did I spend this month?"], answer: ["把收支、储蓄率和净资产连起来，看距离财务自由还有多久。调整收入与支出，还能试算自由日的变化。", "Connect spending, savings rate and net worth to a freedom countdown. Adjust income and spending to see how that date changes."], href: "countdown" },
+  { title: ["按生活角色分类", "Classify by each expense’s role"], question: ["这笔钱该放在哪个分类？", "Which category does this entry belong in?"], answer: ["同样是餐饮，吃饭归必要，聚餐归弹性。先看清能调整的开销，再把不同角色带入自由计算。", "Meals can be essential while dining out is flexible. See which spending can change, and how each role enters your FI calculation."], href: "diff-categories" },
+  { title: ["以真实余额为起点", "Start from a real balance"], question: ["账户余额现在是多少？", "What is my account balance?"], answer: ["核对当下余额，校准差额单独留痕；未来账单不混进当前对账。资产与负债、余额与净资产趋势，都有自己的依据。", "Reconcile the balance now and keep adjustments traceable, without mixing future bills into current reconciliation. Account and net-worth trends have a clear basis."], href: "diff-assets" },
+  { title: ["回款后，只算实际支出", "Count spending after money returns"], question: ["退款、报销、AA 该怎么算？", "How do refunds, claims and splits count?"], answer: ["退款、报销和 AA 按净额计算，转账不当成收入或支出。一次性大额可单独设置统计范围，让日常消费与自由计算更贴近真实生活。", "Refunds, reimbursements and splits count at their net amount; transfers are not income or spending. Set the scope of one-off expenses separately for calculations that reflect everyday life."], href: "diff-numbers" },
+  { title: ["买之前，看看要工作多久", "See the working time before buying"], question: ["这件东西多少钱？", "How much does it cost?"], answer: ["工资换算成时薪，每笔消费也能看成工时。消费模拟区分一次买入和每月支出，先看自由日的变化；Pro 再加完整分析、冷静期和忍住了 / 入手了清单。", "Translate your recorded pay into an hourly rate and purchases into work hours. Model one-off or recurring purchases and their freedom-date impact; Pro adds full analysis, a cooling-off period and Skipped / Bought lists."], href: "spending" },
+  { title: ["把不同的生活，放在一起算", "Compare the lives you could choose"], question: ["按现在的生活继续走？", "Keep following the same path?"], answer: ["换城市、涨薪或买房，用具体的收支和资产变化试算。Pro 可保存方案并排比较，也能探索 Coast FIRE、Barista FIRE 与自己的 FI 参数。", "Model a move, pay rise or home purchase using actual changes to income, spending and assets. Pro saves scenarios for side-by-side comparison and adds Coast FIRE, Barista FIRE and advanced FI assumptions."], href: "scenarios" },
+]
+const FEATURE_POINTS = [
+  {
+    "zh": [
+      "打开 FIRE 页，就能看到自由倒计时",
+      "调整收入与支出，试算自由日的变化",
+      "FI 进度、储蓄率与被动收入覆盖率；Pro 含三档区间、Coast / Barista FIRE"
+    ],
+    "en": [
+      "Open FIRE to see your freedom countdown",
+      "Adjust income and spending to explore your freedom date",
+      "FI progress, savings rate and passive-income coverage; Pro adds ranges and Coast / Barista FIRE"
+    ]
+  },
+  {
+    "zh": [
+      "AA、报销、分次退款与组合支付，按实际承担的金额看账",
+      "独立的账单笔记，给每笔钱留下文字和照片",
+      "账单按月、季、半年或年查看，月视图可用日历",
+      "贷款、分期、周期账单，到期后在首页核对确认"
+    ],
+    "en": [
+      "See your net cost across splits, claims, partial refunds and combined payments",
+      "Keep richer text and photos in separate bill notes",
+      "Browse month, quarter, half-year or year; use Calendar in Month view",
+      "Review due loan, installment and recurring entries on Home"
+    ]
+  },
+  {
+    "zh": [
+      "现金、投资、不动产与负债，分开看清",
+      "账户内直接记账、转账或还款，大账本按天逐步加载",
+      "对账核对当下余额，校准差额单独留痕",
+      "免费管理信用卡；Pro 查看持仓、本金与收益"
+    ],
+    "en": [
+      "Separate cash, investments, property and debt",
+      "Add entries, transfer or repay from an account; large ledgers load progressively by day",
+      "Reconcile the real balance now and keep adjustments traceable",
+      "Free credit-card tools; Pro holdings, contributions and returns"
+    ]
+  },
+  {
+    "zh": [
+      "月、季、年分别设预算，支持单期调整与结转",
+      "参考过去三个已结束周期，比较平均、中位数等建议",
+      "到期计划先预留，入账后移除对应预留",
+      "总预算免费；分类与配速、自定义每月起始日属于 Pro"
+    ],
+    "en": [
+      "Set independent monthly, quarterly and yearly limits, exceptions and carryover",
+      "Compare average, median and other suggestions from three completed periods",
+      "Reserve due plans, then remove the corresponding reserve when booked",
+      "Free total budgets; categories, pace and a custom start day require Pro"
+    ]
+  },
+  {
+    "zh": [
+      "截图、付款通知与快捷指令，减少手动录入；识别在本机完成",
+      "识别待办关闭后保留草稿，打开核对后再保存",
+      "模板与周期计划处理重复账单，支持自动入账或手动确认",
+      "批量修改、CSV / Excel 导入，以及全部账单导出"
+    ],
+    "en": [
+      "Capture screenshots, payment notifications and Shortcuts on device",
+      "Keep captured drafts in the inbox and review them before saving",
+      "Templates and recurring plans support automatic booking or manual confirmation",
+      "Batch edit, import CSV / Excel and export the full ledger"
+    ]
+  },
+  {
+    "zh": [
+      "按分类、标签、账户看收支，统计跟随当前记账周期",
+      "免费查看月报摘要；Pro 展开完整回顾与自由日变化",
+      "Pro 复购洞察，看常去的商户、次数与累计花费"
+    ],
+    "en": [
+      "Explore income and spending by category, tag and account in your accounting cycle",
+      "Free monthly summaries; Pro full reviews and freedom-date changes",
+      "Pro repeat-buy insights show frequent merchants and cumulative costs"
+    ]
+  },
+  {
+    "zh": [
+      "iCloud 私有库同步，iPhone、iPad 与 Mac 接着记",
+      "每日快照保留最近 10 份，可恢复；导入导出免费",
+      "多币种、每日汇率与跨币种实际到账；缺汇率时提醒补充"
+    ],
+    "en": [
+      "Private iCloud sync across iPhone, iPad and Mac",
+      "Restore from the latest 10 daily snapshots; free import and export",
+      "Multiple currencies, daily rates and actual cross-currency receipts; missing rates flagged"
+    ]
+  },
+  {
+    "zh": [
+      "桌面和锁屏小组件：预算、资产晴雨表、应急金与记一笔",
+      "调整字号、导航和配色，选择 789 / 123 金额键盘",
+      "切回 App 保留未完成的金额草稿，历史备注按分类找",
+      "导入分类图标、搜索账户图标；Pro 含自定义一级分类与主题"
+    ],
+    "en": [
+      "Home and Lock Screen widgets for budgets, asset weather, runway and quick entry",
+      "Adjust text size, tabs and colors; choose a 789 or 123 keypad",
+      "Keep unfinished amount drafts and find previous notes by category",
+      "Import category icons and find account icons; Pro custom categories and themes"
+    ]
+  }
+]
+const BOOK_CHAPTERS = {
+  features: { zh: ["自由倒计时", "日常记账", "资产全景", "周期预算", "快捷录入", "数据回顾", "同步与币种", "顺手好用"], en: ["Freedom date", "Daily tracking", "Net worth", "Period budgets", "Quick capture", "Insights", "Sync & currencies", "Make it yours"] },
+  difference: { zh: ["自由目标", "分类思路", "真实余额", "净额统计", "消费与时间", "人生方案"], en: ["Your goal", "Categories", "Real balances", "Net spending", "Spending & time", "Life scenarios"] },
+}
+const COMPARISON_BEFORE = [
+  { title: ["知道钱花在哪", "Know where the money went"], body: ["账单、分类与图表，回顾已经发生的收支。", "Entries, categories and charts describe spending that has already happened."] },
+  { title: ["按消费用途分类", "Group spending by purchase type"], body: ["餐饮、交通、购物，再细分每一种用途。", "Food, transport and shopping, broken down into finer purchase types."] },
+  { title: ["看账户当前有多少钱", "See the current account balance"], body: ["记录余额，或从已有流水累加。", "Record a balance, or add up the entries you have logged."] },
+  { title: ["分别记录支出与回款", "Record spending and money returned"], body: ["买外套花 599 元，后来收到退款 200 元。", "Spend ¥599 on a coat, then receive ¥200 back."] },
+  { title: ["只看商品的标价", "See the price tag"], body: ["一副耳机 1,200 元，记下支出金额。", "A pair of headphones costs ¥1,200. Record the purchase amount."] },
+  { title: ["回顾已经发生的变化", "Review changes after they happen"], body: ["用过去的收支，了解现在的生活。", "Use past entries to understand your life today."] },
+]
+type BookTopic = "features" | "difference"
+function CoastBooklet({ topic, onNextBook }: { topic: BookTopic; onNextBook: () => void }) {
   const { t, lang } = useLang()
-  const root = React.useRef<HTMLElement>(null)
-  const [active, setActive] = React.useState(0)
-  useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
-      ScrollTrigger.create({
-        trigger: root.current, start: "top 84px", end: () => "+=" + FEATURES.length * 60 + "%", pin: true, scrub: true, anticipatePin: 1,
-        onUpdate: (self) => setActive(Math.min(FEATURES.length - 1, Math.floor(self.progress * FEATURES.length))),
+  const [page, setPage] = React.useState(0)
+  const content = React.useRef<HTMLDivElement>(null)
+  const detailTrigger = React.useRef<HTMLButtonElement>(null)
+  const [detailsOpen, setDetailsOpen] = React.useState(false)
+  const [detailPage, setDetailPage] = React.useState(0)
+  const openDetails = () => { setDetailPage(page); setDetailsOpen(true) }
+  const cleanupTurn = React.useRef<(() => void) | null>(null)
+  const snapshot = React.useRef<BookSnapshot | null>(null)
+  const busy = React.useRef(false)
+  const pending = React.useRef<{ next: number; animate: boolean } | null>(null)
+  const turn = React.useRef({ direction: 1, animate: false })
+  const touch = React.useRef<{ x: number; y: number } | null>(null)
+  const chapters = BOOK_CHAPTERS[topic][lang]
+  const feature = FEATURES[page]
+  const difference = DIFFERENCES[page]
+  const [title] = lang === "zh" ? feature.zh : feature.en
+  const go = (next: number, animate = true) => {
+    if (next < 0 || next >= chapters.length || next === page) return
+    if (busy.current) { pending.current = { next, animate }; return }
+    snapshot.current = animate && !matchMedia(REDUCED).matches && content.current ? captureBook(content.current) : null
+    turn.current = { direction: next > page ? 1 : -1, animate }
+    setPage(next)
+  }
+  React.useLayoutEffect(() => {
+    const old = snapshot.current
+    snapshot.current = null
+    if (old && content.current) {
+      busy.current = true
+      cleanupTurn.current = turnBookPage(content.current, old, turn.current.direction, () => {
+        busy.current = false
+        const queued = pending.current
+        pending.current = null
+        if (queued) go(queued.next, queued.animate)
       })
-    })
-  }, { scope: root })
+    }
+    return () => { cleanupTurn.current?.(); busy.current = false }
+  }, [page])
   return (
-    <Section id="features" innerRef={root} className="md:min-h-[calc(100vh-84px)] md:py-20">
-      <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,1fr)_360px] md:gap-20">
-        <div>
-          <Tag>{t("四件事", "Four things")}</Tag>
-          <H2>{t("多数记账停在「这个月花了 3200」。Coast 多答一句。", "Most trackers stop at \"you spent $480 this month.\" Coast answers one more.")}</H2>
-          <Lead>{t("这 3200 让自由日往后推了几天。储蓄率、净资产、预算节奏、FI 倒计时，全部从同一本账里算出来。", "How many days that pushed back your freedom date. Savings rate, net worth, budget pace and the FI countdown all come from one ledger.")}</Lead>
-          <ol className="mt-10 max-w-[560px]">
-            {FEATURES.map((f, i) => {
-              const [title, body] = lang === "zh" ? f.zh : f.en
-              return (
-                <li key={f.img} className="feature-row grid cursor-pointer grid-cols-[20px_1fr] gap-3 py-4" data-active={i === active} onClick={() => setActive(i)}>
-                  <span className="dot mt-[9px]" />
-                  <div>
-                    <h3 className="font-sans text-[18px] font-semibold tracking-normal">{title}</h3>
-                    <p className="mt-1.5 max-w-[460px] text-[14.5px] leading-relaxed text-muted-foreground">{body}</p>
-                  </div>
-                </li>
-              )
-            })}
-          </ol>
-        </div>
-        <div className="relative mx-auto h-[640px] w-[304px]">
-          {FEATURES.map((f, i) => (
-            <div key={f.img} className="absolute inset-0 transition-opacity duration-500" style={{ opacity: i === active ? 1 : 0 }} aria-hidden={i !== active}>
-              <Device src={screen(f.img, lang)} alt={lang === "zh" ? f.zh[0] : f.en[0]} width={280} />
+    <div className="coast-booklet" data-topic={topic} role="region" aria-label={t("Coast 小册子，可用左右方向键翻页", "Coast booklet. Use the left and right arrow keys to turn pages.")} tabIndex={0}
+      onKeyDown={event => { if ((event.target as HTMLElement).closest('[role="dialog"]')) return; if (event.key === "ArrowRight" || event.key === "ArrowLeft") { event.preventDefault(); go(page + (event.key === "ArrowRight" ? 1 : -1), false) } }}>
+      <nav className="booklet-contents" aria-label={t("小册目录", "Booklet contents")}>
+        {chapters.map((chapter, i) => <button type="button" key={chapter} aria-current={page === i ? "page" : undefined} onClick={event => go(i, event.detail !== 0)}><span>0{i + 1}</span>{chapter}</button>)}
+      </nav>
+      <div className="booklet-stage"><div className="booklet-paper" ref={content}
+        onTouchStart={event => { touch.current = event.touches.length !== 1 || (event.target as HTMLElement).closest("a,button") ? null : { x: event.touches[0].clientX, y: event.touches[0].clientY } }}
+        onTouchCancel={() => { touch.current = null }}
+        onTouchEnd={event => { const start = touch.current; touch.current = null; if (!start) return; const dx = event.changedTouches[0].clientX - start.x; const dy = event.changedTouches[0].clientY - start.y; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(page + (dx < 0 ? 1 : -1)) }}>
+        {topic === "features" ? <>
+          <article className="booklet-leaf booklet-copy" aria-labelledby={`book-${topic}-${page}`}>
+            <h3 id={`book-${topic}-${page}`}>{title}</h3>
+            <ul className="booklet-points">{FEATURE_POINTS[page][lang].map(point => <li key={point}><Check size={15} aria-hidden="true" />{point}</li>)}</ul>
+            <button type="button" ref={detailTrigger} className="story-link" aria-haspopup="dialog" onClick={openDetails}>{t("查看功能与用法", "Features & usage")} <ArrowRight size={15} aria-hidden="true" /></button>
+            <span className="booklet-folio" aria-hidden="true">{String(page * 2 + 1).padStart(2, "0")}</span>
+          </article>
+          <div className="booklet-leaf booklet-visual"><Device src={screen(feature.img, lang)} alt={title} width={208} /><span className="booklet-folio" aria-hidden="true">{String(page * 2 + 2).padStart(2, "0")}</span></div>
+        </> : <>
+          <article className="booklet-leaf comparison-leaf comparison-before">
+            <span className="comparison-label">{t("收支记录", "Recording entries")}</span>
+            <h3>{t(...COMPARISON_BEFORE[page].title as [string, string])}</h3>
+            <ConventionalSketch page={page} />
+            <p className="comparison-description">{t(...COMPARISON_BEFORE[page].body as [string, string])}</p>
+            <span className="booklet-folio" aria-hidden="true">{String(page * 2 + 1).padStart(2, "0")}</span>
+          </article>
+          <article className="booklet-leaf booklet-copy booklet-answer comparison-leaf comparison-coast">
+            <span className="comparison-label">Coast</span>
+            <h3>{t(...difference.title as [string, string])}</h3>
+            <img className="comparison-art" src={`${import.meta.env.BASE_URL}assets/${["difference-freedom-line.png", "difference-categories-line.png", "difference-balances-line.png", "difference-net-spending-line.png", "difference-hours-line.png", "difference-scenarios-line.png"][page]}`} alt="" aria-hidden="true" />
+            <CoastExplainer page={page} freedomMonths={monthsToFI(500000, 12000, .05, 2400000)} />
+            <p className="comparison-description">{t(...difference.answer as [string, string])}</p>
+            <button type="button" ref={detailTrigger} className="story-link" aria-haspopup="dialog" onClick={openDetails}>{t("查看详情", "Explore the details")} <ArrowRight size={15} aria-hidden="true" /></button>
+            <span className="booklet-folio" aria-hidden="true">{String(page * 2 + 2).padStart(2, "0")}</span>
+          </article>
+        </>}
+      </div></div>
+      <div className="booklet-controls">
+        <button type="button" className="booklet-prev" disabled={page === 0} onClick={event => go(page - 1, event.detail !== 0)}><ArrowLeft size={17} aria-hidden="true" />{t("上一页", "Previous")}</button>
+        <div className="booklet-position" role="status" aria-live="polite" aria-atomic="true"><strong>{String(page + 1).padStart(2, "0")} <span>/ {String(chapters.length).padStart(2, "0")}</span></strong><span className="sr-only">{chapters[page]}</span></div>
+        <button type="button" className="booklet-next" onClick={event => page === chapters.length - 1 ? onNextBook() : go(page + 1, event.detail !== 0)}>{page === chapters.length - 1 ? (topic === "features" ? t("读读有何不同", "Read what is different") : t("回看记账功能", "Explore tracking")) : t("下一页", "Next page")}<ArrowRight size={17} aria-hidden="true" /></button>
+      </div>
+      <BookletExperience topic={topic} page={detailPage} open={detailsOpen} onOpenChange={setDetailsOpen} returnFocus={detailTrigger} forecast={(spend, income, net, annual, withdrawal) => monthsToFI(net, income - spend, annual, spend * 12 / withdrawal)} />
+    </div>
+  )
+}
+function Features() {
+  const { t } = useLang()
+  const [topic, setTopic] = React.useState<BookTopic>("features")
+  const openBook = (next: BookTopic) => {
+    setTopic(next)
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>('#features [role="tab"][aria-selected="true"]')?.focus({ preventScroll: true })
+      document.querySelector<HTMLElement>('#features .explore-tablist')?.scrollIntoView({ block: "start", behavior: "instant" })
+    })
+  }
+  return (
+    <Section id="features" className="home-features">
+      <svg width="0" height="0" className="illustration-filter-defs" aria-hidden="true" focusable="false">
+        <defs><filter id="coast-dark-illustration" x="-3%" y="-3%" width="106%" height="106%" colorInterpolationFilters="sRGB">
+          <feColorMatrix in="SourceGraphic" type="matrix" values="-0.37 0 0 0 0.45  -0.58 0 0 0 0.68  -0.86 0 0 0 1  0 0 0 1.8 0" result="nightInk" />
+          <feMorphology in="nightInk" operator="dilate" radius="0.4" />
+        </filter></defs>
+      </svg>
+      <div className="mx-auto w-full max-w-[1120px]">
+        <h2 className="sr-only">{t("认识 Coast", "Explore Coast")}</h2>
+        <Tabs value={topic} onValueChange={value => { setTopic(value as BookTopic); requestAnimationFrame(() => ScrollTrigger.refresh()) }} className="home-explore-tabs">
+          <TabsList className="explore-tablist" aria-label={t("选择小册子", "Choose a booklet")}>
+            <TabsTrigger value="features">{t("记账功能", "Everyday tracking")}</TabsTrigger>
+            <TabsTrigger value="difference">{t("Coast 有何不同", "What makes Coast different")}</TabsTrigger>
+          </TabsList>
+          <p className="version-status text-center">{t("v1.1.1 · 未更新 · 测试中", "v1.1.1 · Not released · In testing")}</p>
+          <TabsContent value="features"><CoastBooklet topic="features" onNextBook={() => openBook("difference")} /></TabsContent>
+          <TabsContent value="difference"><CoastBooklet topic="difference" onNextBook={() => openBook("features")} /></TabsContent>
+        </Tabs>
+      </div>
+    </Section>
+  )
+}
+
+function RatingLaurel({ side }: { side: "left" | "right" }) {
+  const leaves = [[36, 86], [27, 73], [21, 58], [20, 43], [24, 28], [30, 16]]
+  return (
+    <svg className={`rating-laurel rating-laurel-${side}`} viewBox="0 0 56 104" fill="none" aria-hidden="true">
+      <path d="M44 98C14 78 12 37 35 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      {leaves.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`} fill="currentColor">
+        <path d="M0 0C-10-1-17-9-16-18C-7-17-1-9 0 0Z" />
+        <path d="M0 0C8-2 13-10 11-18C4-15 0-8 0 0Z" opacity=".75" />
+      </g>)}
+    </svg>
+  )
+}
+
+function Reviews() {
+  const { t, lang } = useLang()
+  return (
+    <Section id="reviews" className="home-reviews">
+      <div className="mx-auto w-full max-w-[1120px]">
+        <h2 className="sr-only">{t("用户口碑", "User reviews")}</h2>
+        <a href={APP_STORE_RATING_SOURCE} className="rating-summary" aria-label={t(`App Store 全球评分 ${APP_STORE_RATING.average.toFixed(1)} 分，满分 5 分，共 ${APP_STORE_RATING.count} 个评分`, `Worldwide App Store: ${APP_STORE_RATING.average.toFixed(1)} out of 5, from ${APP_STORE_RATING.count} ratings`)}>
+          <RatingLaurel side="left" />
+          <div className="rating-content">
+            <div className="rating-score"><span>{APP_STORE_RATING.average.toFixed(1)}</span><small>/ 5</small></div>
+            <div className="rating-details">
+              <span>{t("用户口碑", "User reviews")}</span>
+              <div className="review-stars rating-stars" aria-hidden="true">{Array.from({length:5},(_,i)=><Star key={i} size={12} fill={i < Math.round(APP_STORE_RATING.average) ? "currentColor" : "none"} />)}</div>
+              <span>{t(`${APP_STORE_RATING.count} 个评分`, `${APP_STORE_RATING.count} ratings`)}</span>
             </div>
+          </div>
+          <RatingLaurel side="right" />
+        </a>
+        <div className="review-grid">
+          {APP_STORE_REVIEWS.map(review => (
+            <figure className="user-review" key={review.id}>
+              <div className="review-stars" role="img" aria-label={t(`${review.rating} 星，满分 5 星`, `${review.rating} out of 5 stars`)}>{Array.from({length:review.rating},(_,i)=><Star key={i} aria-hidden="true" size={14} fill="currentColor" />)}</div>
+              <blockquote>{lang === "zh" ? review.quote : review.en}</blockquote>
+              <figcaption><div className="review-author"><span className="review-name" title={review.author}>{review.author}</span><span className="review-region">{t("· 中国区", "· China")}</span></div><time dateTime={review.date}>{new Date(review.date).toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US",{year:"numeric",month:"short",day:"numeric",timeZone:"Asia/Shanghai"})}</time></figcaption>
+            </figure>
           ))}
         </div>
+        <div className="reviews-source"><a href={APP_STORE_REVIEW_SOURCE} className="story-link">{t("在 App Store 阅读完整评价", "Read the full reviews on the App Store")} <span aria-hidden="true">↗</span></a></div>
       </div>
     </Section>
   )
 }
 
 /* ---------- 试算器：曲线 + 两条滑杆 + 一杯咖啡 ---------- */
-const CHART_BOX = { x0: 0, w: 600, yTop: 14, yBot: 140 }
-function SimChart({ p }: { p: ReturnType<typeof plan> }) {
-  const { t } = useLang()
-  const ref = React.useRef<SVGPathElement>(null)
-  const dotRef = React.useRef<SVGGElement>(null)
-  const dCur = pathD(trajectory(p), CHART_BOX, "absolute")
-  const dBase = React.useMemo(() => pathD(trajectory(BASELINE), CHART_BOX, "absolute"), [])
-  const endX = CHART_BOX.w * Math.min(1, (p.mid ?? RULER) / RULER)
-  React.useEffect(() => {
-    if (!ref.current || !dotRef.current || ref.current.getAttribute("d") === dCur) return
-    gsap.to(ref.current, { attr: { d: dCur }, duration: 0.5, ease: "power2.out", overwrite: "auto" })
-    gsap.to(dotRef.current, { x: endX, duration: 0.5, ease: "power2.out", overwrite: "auto" })
-  }, [dCur, endX])
-  return (
-    <svg className="sim-chart" viewBox="0 0 600 170" preserveAspectRatio="none" aria-hidden="true">
-      <line className="axis" x1="0" y1="140" x2="600" y2="140" strokeWidth="1" />
-      {[0, 5, 10, 15, 20, 25].map((y) => <text key={y} x={(y / 25) * 600} y="160" textAnchor={y === 0 ? "start" : y === 25 ? "end" : "middle"}>{y}{t("年", "y")}</text>)}
-      <path className="base" d={dBase} fill="none" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
-      <path ref={ref} className="cur" d={dCur} fill="none" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-      <g ref={dotRef} transform={`translate(${endX} 0)`}><circle cx="0" cy={CHART_BOX.yTop} r="4" fill="var(--primary)" /></g>
-    </svg>
-  )
-}
-
-function Simulator() {
-  const { t, lang } = useLang()
-  const { cut, raise, setCut, setRaise } = React.useContext(SimContext)
-  const p = plan(cut / 100, raise / 100)
-  const [shown, setShown] = React.useState(p.mid ?? 0)
-  const shownRef = React.useRef(shown)
-  React.useEffect(() => { shownRef.current = shown }, [shown])
-  React.useEffect(() => {
-    const o = { v: shownRef.current }
-    const tween = gsap.to(o, { v: p.mid ?? 0, duration: 0.45, ease: "power2.out", onUpdate: () => setShown(Math.round(o.v)) })
-    return () => { tween.kill() }
-  }, [p.mid])
-  const d = p.mid === null ? null : BASELINE.mid! - p.mid
-  const pct = (v: number) => <span className="tag ml-2">{v > 0 ? "+" : v < 0 ? "−" : ""}{Math.abs(v)}%</span>
-  const unit = (zh: string, en: string) => <span className="mx-1.5 font-sans text-base font-normal text-muted-foreground md:text-lg">{t(zh, en)}</span>
-
-  // 一杯咖啡：每天多花 X → 自由日推迟几天。基于当前滑杆状态算，不是基线
-  const [coffee, setCoffee] = React.useState(30)
-  const withCoffee = plan(cut / 100, raise / 100, coffee * 30.4)
-  const delayDays = p.mid !== null && withCoffee.mid !== null ? Math.round((withCoffee.mid - p.mid) * 30.4) : null
-
-  return (
-    <Section id="try">
-      <div className="mx-auto grid w-full max-w-[1200px] gap-12 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-20">
-        <div>
-          <Tag>{t("试一试", "Try it")}</Tag>
-          <H2>{t("少花多少，自由提前多久？", "Spend less, retire sooner. By how much?")}</H2>
-          <Lead>{t("这就是 App 里那两条滑杆。减支双重生效：存得多，要攒的目标也变小；增收只增加储蓄。数字是演示账本的。", "The two sliders from the app. Cutting spending works twice: you save more and the target shrinks. Earning more only adds savings. Numbers are from the demo ledger.")}</Lead>
-          <div className="mt-10 max-w-[420px]">
-            <div className="tag">{t("顺便算一笔", "One more thing")}</div>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-[15px]">
-              <span>{t("每天一笔", "A daily")}</span>
-              <span className="relative"><span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 font-mono text-sm text-muted-foreground">¥</span>
-                <NumberInput value={coffee} onValueChange={setCoffee} max={999} className="h-9 w-24 pl-6 font-mono" aria-label={t("每天多花", "Daily spend")} /></span>
-              <span>{t("的咖啡，", "coffee")}</span>
-            </div>
-            <div className="mt-3 text-[15px]">
-              {delayDays === null ? <span className="text-muted-foreground">{t("当前收支算不出自由日。", "No freedom date at this rate.")}</span>
-                : lang === "zh" ? <>自由日推迟 <b className="font-mono text-primary">{delayDays}</b> 天。</>
-                : <>pushes your freedom date back <b className="font-mono text-primary">{delayDays}</b> days.</>}
-            </div>
-          </div>
-        </div>
-        <div>
-          <div className="tag">{t("距离标准 FI", "Time to standard FI")}</div>
-          <div className="big-num mt-3 text-[52px] md:text-[68px]">
-            {p.mid === null ? <span className="text-[28px]">{t("储蓄率为负", "Negative savings")}</span>
-              : <>{Math.floor(shown / 12)}{unit("年", "yr")}{shown % 12}{unit("个月", "mo")}</>}
-          </div>
-          <div className={`mt-3 min-h-6 text-sm font-medium ${d === null || d < 0 ? "text-destructive" : d > 0 ? "text-success" : "text-muted-foreground"}`}>
-            {d === null ? t("当前收支无法达到 FI", "Can't reach FI at this rate")
-              : d === 0 ? t("拖动下面的滑杆", "Drag a slider below")
-              : lang === "zh" ? `${d > 0 ? "自由日提前" : "自由日推迟"} ${Math.floor(Math.abs(d) / 12)} 年 ${Math.abs(d) % 12} 个月`
-              : `Freedom ${d > 0 ? "" : "delayed "}${Math.floor(Math.abs(d) / 12)}y ${Math.abs(d) % 12}m${d > 0 ? " sooner" : ""}`}
-          </div>
-          {p.mid !== null && <div className="tag mt-1">{t(`预计 ${fiYear(p.opt)}–${fiYear(p.pes)} 年间达成 · 乐观 7% / 悲观 3%`, `Expected ${fiYear(p.opt)}–${fiYear(p.pes)} · 7% optimistic / 3% pessimistic`)}</div>}
-          <div className="mt-6"><SimChart p={p} /></div>
-          <div className="mt-2 flex gap-4 text-xs text-muted-foreground"><span><span className="mr-1.5 inline-block h-px w-4 border-t border-dashed border-rule align-middle" />{t("现在的账", "As is")}</span><span><span className="mr-1.5 inline-block h-0.5 w-4 bg-primary align-middle" />{t("调整后", "Adjusted")}</span></div>
-          <div className="mt-8 grid gap-7">
-            <div>
-              <div className="mb-4 flex items-baseline justify-between text-sm"><span className="text-muted-foreground">{t("每月花费", "Monthly spending")}</span><b className="num font-medium">{fmt(p.exp)}{pct(-cut)}</b></div>
-              <Slider min={-30} max={30} step={1} value={cut} onValueChange={(v) => setCut(Array.isArray(v) ? v[0] : v)} aria-label="expense" />
-            </div>
-            <div>
-              <div className="mb-4 flex items-baseline justify-between text-sm"><span className="text-muted-foreground">{t("每月收入", "Monthly income")}</span><b className="num font-medium">{fmt(p.inc)}{pct(raise)}</b></div>
-              <Slider min={-20} max={30} step={1} value={raise} onValueChange={(v) => setRaise(Array.isArray(v) ? v[0] : v)} aria-label="income" />
-            </div>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-            <span className="tag">{t("净资产 ¥57.6 万 · 年化 5% · 提取率 4%", "Net worth ¥576k · 5% return · 4% withdrawal")}</span>
-            <Button variant="ghost" size="xs" onClick={() => { setCut(0); setRaise(0) }}>{t("重置", "Reset")}</Button>
-          </div>
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-/* ---------- 分类：把三笔钱归类 ---------- */
-type Cat = { id: string; e: string; zh: string; en: string; income?: boolean; f: string[]; role: [string, string]; d: [string, string] }
-const CATS: Cat[] = [
-  { id: "fixed", e: "🏠", zh: "固定支出", en: "Fixed", f: ["lean", "std", "cover"], role: ["Lean FI 基数", "Lean FI base"], d: ["房租、保险、订阅。不花不行的那部分，决定你「最低能活」的自由线。", "Rent, insurance, subscriptions. The part you can't skip; it sets your bare-bones freedom line."] },
-  { id: "essential", e: "🛒", zh: "必要支出", en: "Essential", f: ["lean", "std", "cover"], role: ["Lean FI 基数", "Lean FI base"], d: ["吃饭、通勤、水电。生活运转的成本，和固定支出一起构成 Lean FI。", "Food, commute, utilities. With fixed costs it forms Lean FI."] },
-  { id: "flexible", e: "🎉", zh: "弹性支出", en: "Flexible", f: ["std"], role: ["标准 FI 基数", "Standard FI base"], d: ["外食、购物、旅行。优化的主战场：试算滑杆减的就是这一块。", "Dining out, shopping, travel. Where optimizing happens; the what-if slider cuts here."] },
-  { id: "other", e: "📦", zh: "其他支出", en: "Other", f: ["out"], role: ["默认剔除", "Excluded by default"], d: ["买房首付、婚礼这类一次性的大事。不该被年化成「你每年都会这么花」。", "Down payments, weddings. One-offs that shouldn't be annualized."] },
-  { id: "salary", e: "💼", zh: "固定收入", en: "Salary", income: true, f: ["rate"], role: ["储蓄率分母", "Savings-rate denominator"], d: ["工资。储蓄率 = 1 − 支出 ÷ 收入，这是倒计时的引擎。", "Wages. Savings rate = 1 − spend ÷ income. The engine of the countdown."] },
-  { id: "passive", e: "🌱", zh: "被动收入", en: "Passive", income: true, f: ["cover", "rate"], role: ["覆盖率分子", "Coverage numerator"], d: ["利息、分红、租金。覆盖率到 100%，就是 Lean FIRE 达成。", "Interest, dividends, rent. At 100% coverage, that's Lean FIRE."] },
-  { id: "otherIncome", e: "🧧", zh: "其他收入", en: "Other income", income: true, f: ["out"], role: ["默认剔除", "Excluded by default"], d: ["红包、二手、偶然所得。不稳定的钱不该撑起自由日。", "Gifts, resale, windfalls. Unreliable money shouldn't hold up your freedom date."] },
-]
-const QUIZ = [
-  { e: "🏠", zh: "房租", en: "Rent", amt: "¥4,500", ans: "fixed", hintZh: "每个月都得交，金额不变。", hintEn: "Due every month, same amount." },
-  { e: "🍲", zh: "周末火锅", en: "Weekend hotpot", amt: "¥260", ans: "flexible", hintZh: "不吃也行，这是最容易省下来的那类。", hintEn: "Optional, and the easiest kind to cut." },
-  { e: "📈", zh: "基金分红", en: "Fund dividend", amt: "¥1,200", ans: "passive", hintZh: "钱自己生的钱。", hintEn: "Money your money made." },
-]
-function Tok({ id, active }: { id: string; active: string }) {
-  const { lang } = useLang()
-  const c = CATS.find((x) => x.id === id)!
-  return <span className="t" data-hot={id === active} data-in={!!c.income}>{lang === "zh" ? c.zh.replace("支出", "") : c.en}</span>
-}
-function Line({ k, dim, children }: { k: string; dim: boolean; children: React.ReactNode }) {
-  return <div className="formula" data-dim={dim}><span className="k">{k}</span>{children}</div>
-}
-function Categories() {
-  const { t, lang } = useLang()
-  const [step, setStep] = React.useState(0)                // 0..2 三道题，3 = 完成
-  const [picked, setPicked] = React.useState<string | null>(null)
-  const [wrong, setWrong] = React.useState<string | null>(null)
-  const q = QUIZ[Math.min(step, QUIZ.length - 1)]
-  const done = step >= QUIZ.length
-  const active = picked ?? (done ? "fixed" : "")
-  const c = CATS.find((x) => x.id === active)
-  const dim = (id: string) => !c || !c.f.includes(id)
-  const choose = (id: string) => {
-    if (done || picked) return
-    if (id === q.ans) { setPicked(id); setWrong(null) }
-    else { setWrong(id); setTimeout(() => setWrong(null), 400) }
-  }
-  const next = () => { setPicked(null); setWrong(null); setStep((s) => s + 1) }
-  const restart = () => { setPicked(null); setWrong(null); setStep(0) }
-  return (
-    <Section>
-      <div className="mx-auto w-full max-w-[1200px]">
-        <Tag>{t("分类体系", "Categories")}</Tag>
-        <H2>{t("分类不是为了统计好看，是为了算自由。", "Categories aren't for pretty charts. They're for the math.")}</H2>
-        <Lead>{t("七个一级分类，每一类在 FIRE 公式里有一个位置。来，给这三笔钱归个类。", "Seven top-level categories, each with a seat in the FIRE formula. Try filing these three.")}</Lead>
-        <div className="mt-10 grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-20">
-          <div>
-            {!done ? (
-              <>
-                <div className="tag">{t(`第 ${step + 1} 笔 / 共 3 笔`, `Entry ${step + 1} of 3`)}</div>
-                <div key={step} className="quiz-card mt-3 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3"><span className="text-3xl">{q.e}</span><span className="text-[22px] font-semibold">{lang === "zh" ? q.zh : q.en}</span></div>
-                  <span className="font-mono text-xl">{q.amt}</span>
-                </div>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {CATS.map((x) => (
-                    <button key={x.id} type="button" className="stamp" data-on={x.id === picked} data-right={x.id === picked} data-wrong={x.id === wrong} onClick={() => choose(x.id)} disabled={!!picked}>
-                      <span className="text-base leading-none">{x.e}</span>{lang === "zh" ? x.zh : x.en}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-6 min-h-[72px] text-[15px] leading-relaxed">
-                  {picked && c ? (
-                    <>
-                      <div className="text-success">{t("对。", "Right.")} <b>{lang === "zh" ? c.role[0] : c.role[1]}</b></div>
-                      <p className="mt-1 text-muted-foreground">{lang === "zh" ? c.d[0] : c.d[1]}</p>
-                      <Button size="sm" className="mt-4" onClick={next}>{step < QUIZ.length - 1 ? t("下一笔", "Next") : t("看结论", "See why")}</Button>
-                    </>
-                  ) : wrong ? <span className="text-destructive">{t("不是这类。", "Not that one.")} <span className="text-muted-foreground">{lang === "zh" ? q.hintZh : q.hintEn}</span></span>
-                  : <span className="text-muted-foreground">{t("点一个分类。", "Pick a category.")}</span>}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="tag">{t("三笔都对", "All three filed")}</div>
-                <p className="mt-3 text-[17px] leading-relaxed">{t("房租进 Lean FI 的分母，火锅只进标准 FI，分红进覆盖率的分子。分类不是给饼图用的，是在告诉公式：哪些钱决定你最低能活，哪些钱决定你现在这样活，哪些钱在替你上班。", "Rent goes into Lean FI, hotpot only into Standard FI, the dividend into coverage. Categories aren't for a pie chart. They tell the formula which money keeps you alive, which keeps you living like this, and which is already working for you.")}</p>
-                <Button variant="outline" size="sm" className="mt-5" onClick={restart}>{t("再来一遍", "Play again")}</Button>
-              </>
-            )}
-          </div>
-          <div>
-            <Line k="Lean FI" dim={dim("lean")}>= 25 × (<Tok id="fixed" active={active} />+<Tok id="essential" active={active} />)</Line>
-            <Line k={t("标准 FI", "Standard")} dim={dim("std")}>= 25 × (<Tok id="fixed" active={active} />+<Tok id="essential" active={active} />+<Tok id="flexible" active={active} />)</Line>
-            <Line k={t("覆盖率", "Coverage")} dim={dim("cover")}>= <Tok id="passive" active={active} /> ÷ (<Tok id="fixed" active={active} />+<Tok id="essential" active={active} />)</Line>
-            <Line k={t("储蓄率", "Savings")} dim={dim("rate")}>= 1 − {t("支出", "spend")} ÷ (<Tok id="salary" active={active} />+<Tok id="passive" active={active} />)</Line>
-            <Line k={t("不进公式", "Excluded")} dim={dim("out")}><Tok id="other" active={active} /><Tok id="otherIncome" active={active} /></Line>
-          </div>
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-function VersionHighlights() {
-  const { t, lang } = useLang()
-  const pick = (copy: [string, string]) => copy[lang === "zh" ? 0 : 1]
-  return (
-    <Section id="new-in-1-1">
-      <div className="mx-auto w-full max-w-[1200px]">
-        <Tag>Coast · v1.1</Tag>
-        <H2>{t("v1.1，新功能与升级。", "What's new in Coast 1.1.")}</H2>
-        <Lead>{t("账户、分类、花钱前的试算，以及每天记账的细节，都有了新能力。点开每项可看具体用法和免费 / Pro 边界。", "New account tools, categories, spending decisions and everyday capture. Open any feature for instructions and its Free / Pro limits.")}</Lead>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {V11_HIGHLIGHTS.map((feature) => (
-            <a key={feature.href} href={`guide.html?lang=${lang}#${feature.href}`} className="rounded-2xl border border-rule bg-card p-6 transition-colors hover:border-primary/50 focus-visible:outline-2 focus-visible:outline-primary">
-              <div className="mb-4 text-xs font-medium text-primary">{feature.pro ? "Pro" : feature.href === "spending" ? t("免费 + Pro", "Free + Pro") : t("免费", "Free")}</div>
-              <h3 className="font-sans text-lg tracking-normal">{pick(feature.title)}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{pick(feature.body)}</p>
-              <span className="mt-5 inline-block text-sm font-medium text-primary">{t("查看用法 →", "How it works →")}</span>
-            </a>
-          ))}
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-/* ---------- 更多亮点：三栏索引 + 小动画 ---------- */
-const ICONS: Record<SketchId, React.ComponentType<{ className?: string }>> = { batch: ListChecks, shapes: Shapes, hours: Hourglass, scan: ScanLine, refund: Undo2, reconcile: Scale, recurring: Repeat, rules: Wand2, review: FileText, repeat: ShoppingBag, scenarios: GitBranch, widgets: LayoutGrid, currency: Globe, themes: Palette, privacy: EyeOff }
-/** `isNew`：最近一个版本新上的，卡片右上挂「New」（下个版本发布时把旧的摘掉） */
-const MORE: { id: SketchId; pro?: boolean; isNew?: boolean; zh: [string, string]; en: [string, string] }[] = [
-  // 1.0.7：截图记账回来了（还多了通知记账），放回第一格
-  { id: "scan", isNew: true, zh: ["快捷记账", "付完款轻点背面，截图里的金额、商户、付款卡自动认出来；iOS 27 起付款通知一到就记。全在手机本地识别。"], en: ["Quick Capture", "Back-tap after paying and the amount, merchant and card are read from the screen; on iOS 27 payment notifications record themselves. All on-device."] },
-  { id: "batch", zh: ["批量修改", "多选几笔，一次改分类、账户、标签、备注或日期。"], en: ["Batch edit", "Select a few entries and change category, account, tags, note or date at once."] },
-  { id: "hours", zh: ["时薪换算", "每笔花销折成要上多久的班。时薪按你记的工资自动算，只需填工作时间。"], en: ["Hours of work", "Every expense as hours of work, from the pay you already record — just add your hours."] },
-  { id: "refund", zh: ["分次退款", "1000 先退 500 到信用卡，再退 200 到储蓄卡，都记得住。"], en: ["Partial refunds", "¥500 back to the card, ¥200 to savings, later. It keeps track."] },
-  { id: "reconcile", zh: ["余额校准", "核对一次真实余额，之后流水自动往上叠。"], en: ["Reconcile once", "Check your real balance once; entries stack on top."] },
-  { id: "recurring", zh: ["周期账单识别", "同名、金额 ±15%、出现 3 次以上，才叫周期。"], en: ["Recurring detection", "Same name, ±15% amount, seen 3+ times. Then it counts."] },
-  { id: "rules", zh: ["分类规则学习", "改一次分类，问你要不要记住，之后自动归类。"], en: ["Rules that learn", "Change a category once, it offers to remember."] },
-  { id: "review", pro: true, zh: ["月度回顾", "免费版给一句话摘要，Pro 查看完整收支回顾与自由日变化。"], en: ["Month in review", "A one-line summary is free; Pro adds the full spending review and freedom-date impact."] },
-  { id: "repeat", pro: true, zh: ["复购洞察", "哪家店去了多少次、花了多少，一年下来是什么数。"], en: ["Repeat-buy insights", "Which places you keep going back to, and what a year of that costs."] },
-  { id: "scenarios", pro: true, zh: ["场景模拟", "换城市、涨薪、买房，几条路存下来并排比。"], en: ["Scenarios", "Move cities, get a raise, buy a home. Save paths, compare."] },
-  { id: "widgets", isNew: true, zh: ["桌面小组件", "新增资产晴雨表小组件。今日支出、预算、净资产、自由倒计时、财务总览，桌面与锁屏都能看。"], en: ["Widgets", "New asset weather widgets, alongside spending, budget, net worth, countdown and overview widgets for Home and Lock Screens."] },
-  { id: "currency", zh: ["多币种", "全部币种可选、常用的排前面；每日汇率自动拉，缺汇率时不瞎算，会提醒你补。免费。"], en: ["Multi-currency", "Every currency, favorites first; daily rates, and a missing rate is flagged instead of guessed. Free."] },
-  { id: "themes", pro: true, zh: ["主题与图标", "蔚蓝、霓彩、极简黑三套主题，另有多款 App 图标；分类图标导入和账户 App 图标搜索免费。"], en: ["Themes & icons", "Three themes: Azure, Bloom and Mono, plus alternate app icons. Category-icon imports and account app-icon search are free."] },
-  { id: "privacy", zh: ["隐私模式", "一个眼睛开关，全 App 金额一键打码。"], en: ["Privacy mode", "One toggle blurs every amount in the app."] },
-  { id: "shapes", zh: ["分类图标换形状", "圆形、圆角方形、叶片、水滴、花朵，记账面板跟着换。"], en: ["Icon shapes", "Circle, rounded square, leaf, drop or flower behind your category icons."] },
-]
-/** 跟随鼠标微倾的卡片：transform 全部交给 GSAP（CSS hover 的 transform 会和它打架），阴影走 CSS */
-function TiltCard({ children }: { children: React.ReactNode }) {
-  const { t } = useLang()
-  const ref = React.useRef<HTMLDivElement>(null)
-  const fx = React.useRef<{ rx: gsap.QuickToFunc; ry: gsap.QuickToFunc; y: gsap.QuickToFunc } | null>(null)
-  useGSAP(() => {
-    const el = ref.current!
-    gsap.set(el, { transformPerspective: 900, transformOrigin: "50% 50%" })
-    const opt = { duration: 0.45, ease: "power3" }
-    fx.current = { rx: gsap.quickTo(el, "rotationX", opt), ry: gsap.quickTo(el, "rotationY", opt), y: gsap.quickTo(el, "y", opt) }
-  }, { scope: ref })
-  const move = (e: React.MouseEvent<HTMLDivElement>) => {
-    const f = fx.current; if (!f || matchMedia("(hover: none), (prefers-reduced-motion: reduce)").matches) return
-    const r = e.currentTarget.getBoundingClientRect()
-    const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5
-    f.ry(px * 8); f.rx(-py * 6); f.y(-4)
-  }
-  const leave = () => { const f = fx.current; if (!f) return; f.rx(0); f.ry(0); f.y(0) }
-  return <div ref={ref} data-reveal data-card tabIndex={0} role="button" aria-label={t("重播功能演示", "Replay feature demo")} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.click() } }} className="feature-card group" onMouseMove={move} onMouseLeave={leave}>{children}</div>
-}
-
-function More() {
-  const { t, lang } = useLang()
-  return (
-    <Section>
-      <div className="mx-auto w-full max-w-[1200px]">
-        <Tag>{t("还有这些", "And then some")}</Tag>
-        <H2>{t("为一年只用两次的场景，也认真做了。", "Built carefully, even for things you'll do twice a year.")}</H2>
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {MORE.map((m) => {
-            const [title, body] = lang === "zh" ? m.zh : m.en
-            const Icon = ICONS[m.id]
-            return (
-              <TiltCard key={m.id}>
-                <div className="flex h-6 items-center justify-between">
-                  <Icon className="size-5 text-muted-foreground transition-colors group-hover:text-primary" />
-                  <span className="flex gap-1.5">
-                    {m.isNew && <span className="tag rounded-full bg-primary px-2 py-0.5 text-[11px] text-primary-foreground">New</span>}
-                    {m.pro && <span className="tag rounded-full bg-muted px-2 py-0.5 text-[11px] text-primary">Pro</span>}
-                  </span>
-                </div>
-                <h3 className="mt-5 font-sans text-[17px] font-semibold tracking-normal">{title}</h3>
-                <p className="mt-2 min-h-[44px] text-[14px] leading-relaxed text-muted-foreground">{body}</p>
-                <div className="stage mt-6"><div className="stage-body"><Sketch id={m.id} /></div></div>
-              </TiltCard>
-            )
-          })}
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-/* ---------- 截图带：桌面端竖向滚动驱动横向平移 ---------- */
-const SHOTS = [
-  ["fire-pro", "FIRE 页 · 收支试算", "FIRE · What-If"],
-  ["budget", "预算 · 消费节奏", "Budget · pace"],
-  ["recurring", "周期账单识别", "Recurring detection"],
-  ["ledger", "账单首页", "Ledger"],
-  ["templates", "记账模板", "Templates"],
-  ["assets", "资产概览与晴雨表", "Assets & financial weather"],
-]
-function Shots() {
-  const { lang, t } = useLang()
-  const root = React.useRef<HTMLElement>(null)
-  const track = React.useRef<HTMLDivElement>(null)
-  useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
-      // 距离按轨道自己的可见宽度算（它在 max-w 1200 的容器里），不能拿整个 section 的宽度
-      const dist = () => Math.max(0, track.current!.scrollWidth - track.current!.clientWidth)
-      if (dist() <= 0) return
-      gsap.to(track.current, {
-        x: () => -dist(), ease: "none",
-        scrollTrigger: { trigger: root.current, pin: true, scrub: 0.6, start: "top 84px", end: () => "+=" + dist(), invalidateOnRefresh: true, anticipatePin: 1 },
-      })
-    })
-  }, { scope: root })
-  return (
-    <section ref={root} className="rule overflow-hidden py-16 md:h-[calc(100vh-84px)] md:py-0">
-      <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col justify-center">
-        <div className="tag px-6 md:px-10">{t("界面", "Screens")}</div>
-        <div ref={track} className="no-scrollbar mt-8 flex gap-8 overflow-x-auto px-6 pb-4 md:overflow-visible md:px-10">
-          {SHOTS.map(([img, zh, en]) => (
-            <figure key={img} className="w-[220px] shrink-0">
-              <Device src={screen(img, lang)} alt={lang === "zh" ? zh : en} width={200} />
-              <figcaption className="tag mt-4 text-center">{lang === "zh" ? zh : en}</figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 /* ---------- 数据 ---------- */
 const PRIV = [
   { icon: Cloud, zh: ["iCloud 私有库同步", "同一 Apple 账户多设备同步，开发者也看不到。"], en: ["Private iCloud sync", "Your devices sync; the developer can't see it."] },
@@ -597,90 +446,12 @@ function Pricing() {
 
 /* ---------- 收尾：倒计时 + 自由日凭证 + FI 进度标尺 + footer ---------- */
 function Closing() {
-  const { t, lang } = useLang()
-  const { cut, raise } = React.useContext(SimContext)
-  const p = plan(cut / 100, raise / 100)
-  const [now, setNow] = React.useState(() => Date.now())
-  React.useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id) }, [])
-  const target = React.useMemo(() => { if (p.mid === null) return null; const d = new Date(); d.setMonth(d.getMonth() + p.mid); d.setHours(9, 0, 0, 0); return d.getTime() }, [p.mid])
-  let parts: { v: string; zh: string; en: string }[] = []
-  if (target) {
-    const diff = Math.max(0, target - now)
-    const days = Math.floor(diff / 86400000), y = Math.floor(days / 365), mo = Math.floor((days % 365) / 30.4), dd = Math.floor((days % 365) % 30.4)
-    const h = Math.floor((diff % 86400000) / 3600000), mi = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000)
-    parts = [{ v: String(y), zh: "年", en: "yrs" }, { v: String(mo), zh: "个月", en: "mos" }, { v: String(dd), zh: "天", en: "days" }, { v: `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:${String(s).padStart(2, "0")}`, zh: "", en: "" }]
-  }
-  const tdate = target ? new Date(target) : null
-  const savingsRate = Math.max(0, Math.round((p.s / p.inc) * 100))
-  const progress = Math.min(1, NET / p.fi)
-  const wan = (n: number) => (lang === "zh" ? `¥${(n / 10000).toFixed(n >= 1e6 ? 0 : 1)} 万` : `¥${Math.round(n / 1000)}k`)
-  const ticks = React.useMemo(() => { const step = 500000; const out: number[] = []; for (let v = 0; v <= p.fi; v += step) out.push(v); return out }, [p.fi])
-
-  const root = React.useRef<HTMLElement>(null)
-  useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const split = SplitText.create(".closing-q", { type: lang === "zh" ? "chars" : "words", charsClass: "cq", wordsClass: "cq", autoSplit: true })
-      gsap.from(split.chars.length ? split.chars : split.words, { opacity: 0.12, stagger: 0.02, ease: "none", scrollTrigger: { trigger: ".closing-q", start: "top 85%", end: "top 45%", scrub: true } })
-      gsap.from(".ruler .fill", { scaleX: 0, duration: 1.4, ease: "power3.out", scrollTrigger: { trigger: ".ruler", start: "top 85%", once: true } })
-      gsap.from(".ruler .you", { opacity: 0, y: -6, duration: 0.5, delay: 1.1, scrollTrigger: { trigger: ".ruler", start: "top 85%", once: true } })
-      return () => split.revert()
-    })
-  }, { scope: root, dependencies: [lang], revertOnUpdate: true })
-
-  return (
-    <section ref={root} className="rule px-6 pt-24 md:px-10 md:pt-32">
-      <div className="mx-auto w-full max-w-[1200px]">
-        <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_380px] md:gap-20">
-          <div>
-            <div className="tag">{t("按演示账本，距离自由日", "On the demo ledger, freedom is")}</div>
-            {target ? (
-              <div className="countdown mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[40px] leading-none md:text-[64px]">
-                {parts.map((x, i) => <span key={i}>{x.v}<span className="ml-1.5 font-sans text-base text-muted-foreground md:text-xl">{lang === "zh" ? x.zh : x.en}</span></span>)}
-              </div>
-            ) : <div className="mt-4 text-[28px] text-muted-foreground">{t("当前收支算不出自由日。", "No freedom date at this rate.")}</div>}
-            <div className="mt-12 font-heading text-[22px] leading-[1.35] md:text-[30px]">Coast</div>
-            <p className="closing-q mt-1 max-w-[760px] font-heading text-[22px] leading-[1.35] text-muted-foreground md:text-[30px]">{t("每一笔，都是通往自由的一步。", "Every entry is a step toward freedom.")}</p>
-            <div className="mt-10"><DownloadButton size="lg" full /></div>
-          </div>
-          <div data-reveal className="cal self-start">
-            <div className="cal-top" />
-            <div className="p-7 pb-8">
-              <div className="tag font-mono">{tdate ? tdate.getFullYear() : "—"}</div>
-              <div className="cal-month mt-1">{tdate ? (lang === "zh" ? `${tdate.getMonth() + 1} 月` : tdate.toLocaleDateString("en-US", { month: "long" })) : "—"}</div>
-              <div className="mt-2 text-[15px]">{t("自由日", "Freedom day")}<span className="text-muted-foreground"> · {t("距今", "in")} {p.mid !== null ? `${Math.floor(p.mid / 12)}${t(" 年 ", "y ")}${p.mid % 12}${t(" 个月", "m")}` : "—"}</span></div>
-              <div className="mt-7 grid grid-cols-2 gap-x-6 gap-y-4 pr-24 font-mono text-[13px]">
-                <div><div className="tag">{t("净资产", "Net worth")}</div><div className="mt-0.5">{wan(NET)}</div></div>
-                <div><div className="tag">{t("自由所需", "FI number")}</div><div className="mt-0.5">{wan(p.fi)}</div></div>
-                <div><div className="tag">{t("储蓄率", "Savings rate")}</div><div className="mt-0.5">{savingsRate}%</div></div>
-                <div><div className="tag">{t("年化 / 提取率", "Return / withdrawal")}</div><div className="mt-0.5">5% / 4%</div></div>
-              </div>
-              <div className="mt-8 text-[12px] text-muted-foreground">{t("演示账本 · 拖上面的滑杆会变", "Demo ledger · moves with the sliders above")}</div>
-            </div>
-            <div className="stamp-seal" aria-hidden="true"><span><b>FI</b>{t("自由日", "FREEDOM")}<br />COAST</span></div>
-          </div>
-        </div>
-        <div className="mt-20 md:mt-24">
-          <div className="flex items-baseline justify-between"><span className="tag">{t("FI 进度", "FI progress")}</span><span className="tag">{t(`已攒 ${Math.round(progress * 100)}%`, `${Math.round(progress * 100)}% there`)}</span></div>
-          <div className="ruler mt-3" aria-hidden="true">
-            <div className="track" />
-            <div className="fill" style={{ width: `${progress * 100}%` }} />
-            {ticks.map((v) => <span key={v} className={`tick ${v % 1000000 === 0 ? "major" : ""}`} style={{ left: `${(v / p.fi) * 100}%` }} />)}
-            {ticks.filter((v) => v % 1000000 === 0 && v / p.fi < 0.9).map((v) => <span key={"l" + v} className="lbl" style={{ left: `${(v / p.fi) * 100}%`, transform: v === 0 ? "none" : undefined }}>{v === 0 ? "¥0" : wan(v)}</span>)}
-            <span className="lbl" style={{ left: "100%", transform: "translateX(-100%)" }}>{t("自由 · ", "Free · ")}{wan(p.fi)}</span>
-            <span className="you" style={{ left: `${progress * 100}%` }}>{t("你在这 · ", "You · ")}{wan(NET)}</span>
-          </div>
-        </div>
-        <div className="mt-16 md:mt-20"><Footer /></div>
-      </div>
-    </section>
-  )
+  const { t } = useLang()
+  return <section className="home-closing"><div className="mx-auto max-w-[1120px] px-6 py-20 text-center"><H2 className="mx-auto">{t("每一笔，都是通往自由的一步。", "Every entry is a step toward freedom.")}</H2><div className="mt-8"><DownloadButton size="lg" full /></div><div className="mt-20"><Footer /><p className="review-source-note">{t("用户评价节选自中国区 App Store；全球评分按各地区评分人数加权汇总，更新于 2026 年 11 月 3 日。", "Reviews excerpted from the China App Store; worldwide ratings weighted by storefront rating counts. Updated November 3, 2026.")}</p></div></div></section>
 }
 
 export default function Home() {
   const root = React.useRef<HTMLElement>(null)
-  const [cut, setCut] = React.useState(0)
-  const [raise, setRaise] = React.useState(0)
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add({ motion: "(prefers-reduced-motion: no-preference)", reduced: REDUCED }, (ctx) => {
@@ -694,22 +465,18 @@ export default function Home() {
     return () => window.removeEventListener("load", onLoad)
   }, { scope: root })
   return (
-    <SimContext.Provider value={{ cut, raise, setCut, setRaise }}>
+    <>
       <Header />
-      <main ref={root}>
+      <main ref={root} className="coast-home">
         <Hero />
+        <Reviews />
         <Features />
-        <VersionHighlights />
-        <Simulator />
-        <Categories />
-        <More />
-        <Shots />
         <Privacy />
         <Pricing />
         <Faq />
         <Contact />
         <Closing />
       </main>
-    </SimContext.Provider>
+    </>
   )
 }
